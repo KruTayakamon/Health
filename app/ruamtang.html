@@ -1,0 +1,707 @@
+<title>ร่วมทาง</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Pridi:wght@400;600&family=Noto+Sans+Thai:wght@400;500;700&display=swap">
+<style>
+/* Layout: one-screen phone app; sticky header, scrolling content, fixed bottom tab bar. Home = today at a glance + the one action (weigh). */
+:root{
+  --bg:#F3F4F0; --surface:#FFFFFF; --fg:#1E2A28; --muted:#5E6B68; --line:#DCE1DD;
+  --accent:#2F6F62; --accent-ink:#FFFFFF; --accent-soft:#DCEBE6;
+  --warm:#B8771F; --warm-soft:#F6E9D3; --danger:#B5483C; --danger-soft:#F7DFDC; --ok:#2F6F62;
+  --display:"Pridi","Noto Sans Thai",serif; --body:"Noto Sans Thai",system-ui,sans-serif;
+  --radius:14px; --shadow:0 1px 2px rgba(20,30,28,.06),0 6px 18px rgba(20,30,28,.06);
+}
+@media (prefers-color-scheme: dark){ :root:not([data-theme="light"]){
+  --bg:#141A19; --surface:#1D2423; --fg:#E8ECEA; --muted:#9AA8A4; --line:#2C3634;
+  --accent:#7FC4B2; --accent-ink:#0F1F1B; --accent-soft:#24403A;
+  --warm:#E0A95A; --warm-soft:#3A2E1C; --danger:#E07B70; --danger-soft:#3D2320; --ok:#7FC4B2;
+  --shadow:0 1px 2px rgba(0,0,0,.3),0 6px 18px rgba(0,0,0,.25); color-scheme:dark }}
+:root[data-theme="dark"]{
+  --bg:#141A19; --surface:#1D2423; --fg:#E8ECEA; --muted:#9AA8A4; --line:#2C3634;
+  --accent:#7FC4B2; --accent-ink:#0F1F1B; --accent-soft:#24403A;
+  --warm:#E0A95A; --warm-soft:#3A2E1C; --danger:#E07B70; --danger-soft:#3D2320; --ok:#7FC4B2;
+  --shadow:0 1px 2px rgba(0,0,0,.3),0 6px 18px rgba(0,0,0,.25); color-scheme:dark }
+*{box-sizing:border-box}
+html,body{height:100%}
+body{background:var(--bg);color:var(--fg);font-family:var(--body);font-size:16px;line-height:1.5;margin:0}
+body::before{content:"";position:fixed;inset:0 0 auto;height:env(safe-area-inset-top,0px);z-index:10;background:var(--bg)}
+button,input,select,textarea{font:inherit;color:inherit}
+h1,h2,h3{font-family:var(--display);font-weight:600;line-height:1.25;margin:0;text-wrap:balance}
+h1{font-size:1.5rem}h2{font-size:1.2rem}h3{font-size:1.02rem}
+p{margin:0}
+.num{font-variant-numeric:tabular-nums}
+header.top{position:sticky;top:env(safe-area-inset-top,0px);z-index:5;background:var(--bg);
+  padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));padding-block:12px 8px;
+  display:flex;align-items:baseline;justify-content:space-between;gap:12px;max-width:560px;margin:0 auto}
+header.top .brand{font-family:var(--display);font-size:1.35rem;font-weight:600;color:var(--accent)}
+header.top .date{color:var(--muted);font-size:.9rem}
+main{max-width:560px;margin:0 auto;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));
+  padding-block:4px calc(84px + env(safe-area-inset-bottom,0px))}
+section.view{display:flex;flex-direction:column;gap:14px}
+.card{background:var(--surface);border:1px solid var(--line);border-radius:var(--radius);padding:16px;display:flex;flex-direction:column;gap:10px;min-width:0}
+.card.primary{border-color:var(--accent);box-shadow:var(--shadow)}
+.eyebrow{font-size:.74rem;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);font-weight:500}
+.row{display:flex;gap:10px;align-items:center;flex-wrap:wrap}
+.row>input{width:auto}
+.row.between{justify-content:space-between}
+.grow{flex:1 1 auto;min-width:0}
+.muted{color:var(--muted)}
+.small{font-size:.88rem}
+.big{font-family:var(--display);font-size:2.4rem;line-height:1;font-weight:600}
+.stat{display:flex;flex-direction:column;gap:2px;min-width:0}
+.stat .v{font-family:var(--display);font-size:1.5rem;font-weight:600;line-height:1.1}
+.stat .l{font-size:.8rem;color:var(--muted)}
+.stats{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}
+.bar{height:10px;border-radius:6px;background:var(--line);overflow:hidden}
+.bar>i{display:block;height:100%;background:var(--accent);border-radius:6px;width:0;transition:width .4s ease}
+.bar>i.over{background:var(--warm)}
+.btn{appearance:none;border:1px solid var(--line);background:var(--surface);border-radius:12px;padding:12px 16px;font-weight:500;cursor:pointer;text-align:center;min-height:46px}
+.btn:focus-visible,.tab:focus-visible,input:focus-visible,textarea:focus-visible,select:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+.btn.accent{background:var(--accent);color:var(--accent-ink);border-color:var(--accent)}
+.btn.ghost{background:transparent}
+.btn.warm{background:var(--warm-soft);border-color:transparent;color:var(--fg)}
+.btn.danger{background:var(--danger-soft);border-color:transparent;color:var(--fg)}
+.btn[disabled]{opacity:.55;cursor:default}
+.btn.block{width:100%}
+.field{display:flex;flex-direction:column;gap:6px}
+.field label{font-size:.85rem;color:var(--muted)}
+input[type=text],input[type=number],textarea,select{width:100%;flex:1 1 140px;border:1px solid var(--line);background:var(--bg);border-radius:10px;padding:11px 12px;min-width:0}
+textarea{min-height:88px;resize:vertical}
+input[type=range]{width:100%;accent-color:var(--accent)}
+.chips{display:flex;gap:8px;flex-wrap:wrap}
+.chip{border:1px solid var(--line);background:var(--bg);border-radius:999px;padding:6px 12px;font-size:.9rem;cursor:pointer}
+.chip.on{background:var(--accent-soft);border-color:var(--accent);color:var(--fg)}
+.pill{display:inline-block;border-radius:999px;padding:2px 10px;font-size:.8rem;background:var(--accent-soft);color:var(--fg)}
+.pill.warm{background:var(--warm-soft)}
+.pill.danger{background:var(--danger-soft)}
+.note{background:var(--accent-soft);border-radius:10px;padding:10px 12px;font-size:.92rem}
+.note.warm{background:var(--warm-soft)}
+.note.danger{background:var(--danger-soft)}
+.list{display:flex;flex-direction:column;gap:8px}
+.item{display:flex;gap:10px;align-items:flex-start;padding:10px 12px;border:1px solid var(--line);border-radius:10px;background:var(--bg);min-width:0}
+.item .t{flex:1 1 auto;min-width:0}
+.item .t b{font-weight:500}
+.item .del{border:none;background:transparent;color:var(--muted);cursor:pointer;padding:0 4px;font-size:1.1rem;line-height:1}
+.check{display:grid;grid-template-columns:repeat(4,1fr);gap:8px}
+.check>div{text-align:center;border:1px solid var(--line);border-radius:10px;padding:8px 4px;font-size:.82rem;background:var(--bg)}
+.check>div.done{background:var(--accent-soft);border-color:var(--accent)}
+.check>div span{display:block;font-size:1.2rem}
+.score{display:grid;grid-template-columns:repeat(4,1fr);gap:6px}
+.score>div{text-align:center;font-size:.8rem;border-radius:8px;padding:6px 2px;background:var(--bg);border:1px solid var(--line)}
+.score>div b{display:block;font-size:1.1rem;font-weight:500}
+.spark{width:100%;height:64px;display:block}
+.chat{display:flex;flex-direction:column;gap:10px;min-height:120px}
+.msg{max-width:88%;padding:10px 13px;border-radius:14px;white-space:pre-wrap;word-break:break-word}
+.msg.me{align-self:flex-end;background:var(--accent);color:var(--accent-ink);border-bottom-right-radius:4px}
+.msg.ai{align-self:flex-start;background:var(--surface);border:1px solid var(--line);border-bottom-left-radius:4px}
+.msg.sys{align-self:center;background:transparent;color:var(--muted);font-size:.85rem;text-align:center}
+nav.tabs{position:fixed;left:0;right:0;bottom:0;z-index:6;background:var(--surface);border-top:1px solid var(--line);
+  padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));padding-bottom:env(safe-area-inset-bottom,0px)}
+nav.tabs .in{max-width:560px;margin:0 auto;display:grid;grid-template-columns:repeat(5,1fr)}
+.tab{appearance:none;border:none;background:transparent;padding:9px 2px 8px;display:flex;flex-direction:column;align-items:center;gap:2px;font-size:.74rem;color:var(--muted);cursor:pointer}
+.tab svg{width:22px;height:22px;stroke:currentColor;fill:none;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}
+.tab.on{color:var(--accent);font-weight:500}
+.toast{position:fixed;left:50%;transform:translateX(-50%);bottom:calc(92px + env(safe-area-inset-bottom,0px));background:var(--fg);color:var(--bg);padding:10px 16px;border-radius:999px;font-size:.9rem;z-index:20;opacity:0;transition:opacity .25s;pointer-events:none;max-width:90vw;text-align:center}
+.toast.show{opacity:1}
+.result{border-left:3px solid var(--accent);padding-left:12px;display:flex;flex-direction:column;gap:8px}
+.result h3{color:var(--accent)}
+.divider{height:1px;background:var(--line)}
+.hotline{border:1px solid var(--danger);border-radius:12px;padding:12px;background:var(--danger-soft)}
+.hotline b{font-size:1.3rem;font-family:var(--display)}
+details summary{cursor:pointer;color:var(--muted);font-size:.9rem}
+img.preview{max-width:100%;border-radius:10px;max-height:220px;object-fit:cover}
+@media (prefers-reduced-motion: reduce){ .bar>i,.toast{transition:none} }
+</style>
+
+<header class="top">
+  <div class="brand">ร่วมทาง</div>
+  <div class="date num" id="hdrDate"></div>
+</header>
+
+<main>
+<!-- ========== HOME ========== -->
+<section class="view" id="view-home">
+  <div class="card primary" id="weighCard">
+    <div class="eyebrow">สิ่งเดียวของวันนี้</div>
+    <h2 id="weighTitle">พิมพ์เลขบนตาชั่ง</h2>
+    <div class="row">
+      <input type="number" inputmode="decimal" step="0.1" min="40" max="250" id="weighInput" placeholder="เช่น 114.6" class="grow">
+      <button class="btn accent" id="weighSave">บันทึก</button>
+    </div>
+    <p class="small muted" id="weighHint">ชั่งหลังเข้าห้องน้ำ ก่อนกิน ชุดเดิม แล้วไม่ต้องดูเลขรายวัน ดูค่าเฉลี่ย 7 วันข้างล่างแทน</p>
+  </div>
+
+  <div class="card">
+    <div class="row between"><div class="eyebrow">น้ำหนัก</div><span class="pill" id="trendPill">ยังไม่มีข้อมูล</span></div>
+    <div class="stats">
+      <div class="stat"><span class="v num" id="wLatest">–</span><span class="l">ล่าสุด</span></div>
+      <div class="stat"><span class="v num" id="wAvg">–</span><span class="l">เฉลี่ย 7 วัน</span></div>
+      <div class="stat"><span class="v num" id="wDelta">–</span><span class="l">เทียบสัปดาห์ก่อน</span></div>
+    </div>
+    <svg class="spark" id="spark" viewBox="0 0 320 64" preserveAspectRatio="none" aria-label="กราฟน้ำหนัก 28 วัน"></svg>
+    <p class="small muted">เป้าถัดไป: <b id="nextMilestone">112</b> กก.</p>
+  </div>
+
+  <div class="card">
+    <div class="row between"><div class="eyebrow">วันนี้</div><span class="small muted num" id="todayKind">วันปกติ</span></div>
+    <div>
+      <div class="row between small"><span>พลังงาน</span><span class="num" id="kcalText">0 / 1,700</span></div>
+      <div class="bar"><i id="kcalBar"></i></div>
+    </div>
+    <div>
+      <div class="row between small"><span>โปรตีน</span><span class="num" id="protText">0 / 140 ก.</span></div>
+      <div class="bar"><i id="protBar"></i></div>
+    </div>
+    <div class="check" id="todayCheck">
+      <div id="ck-weigh"><span>⚖️</span>ชั่ง</div>
+      <div id="ck-eat"><span>🍚</span>กิน</div>
+      <div id="ck-move"><span>🏃</span>ขยับ</div>
+      <div id="ck-night"><span>🌙</span>คืนนี้</div>
+    </div>
+    <p class="small muted" id="returnLine"></p>
+  </div>
+
+  <div class="card">
+    <div class="eyebrow">สมุดหลักฐาน</div>
+    <p id="winLine" class="small">ยังไม่มีบันทึก ทุกก้าวเล็ก ๆ จะถูกจดไว้ตรงนี้</p>
+    <div class="row">
+      <button class="btn grow" id="goWeek">สรุปสัปดาห์</button>
+      <button class="btn warm grow" id="badDay">วันนี้ไม่ไหว</button>
+    </div>
+  </div>
+
+  <div class="card" id="badDayCard" hidden>
+    <h3>โอเค วันนี้ไม่ต้องทำอะไร</h3>
+    <p id="badDayText" class="small"></p>
+    <div class="note">ขั้นต่ำสุดของวันนี้ เลือกอันเดียว: ดื่มน้ำ 1 แก้ว · กินไข่ต้ม 1 ฟอง · นอนให้ตรงเวลา · หรือแค่เปิดมาอีกทีพรุ่งนี้เช้า</div>
+    <p class="small muted">พรุ่งนี้เริ่มใหม่จากศูนย์ ไม่มีการชดเชย ไม่มีหนี้ ถ้าอยากคุย กดแท็บ "คุย"</p>
+    <button class="btn ghost" id="badDayClose">ปิด</button>
+  </div>
+</section>
+
+<!-- ========== EAT ========== -->
+<section class="view" id="view-eat" hidden>
+  <div class="card">
+    <div class="eyebrow">กิน</div>
+    <div class="chips" id="mealChips">
+      <button class="chip" data-v="เช้า">เช้า</button><button class="chip" data-v="กลางวัน">กลางวัน</button>
+      <button class="chip" data-v="ว่าง">ว่าง</button><button class="chip" data-v="เย็น">เย็น</button>
+    </div>
+    <div class="field"><label for="foodText">กินอะไร บอกขนาดด้วยถ้าทำได้ (ข้าวครึ่งจาน หมูกรอบ 6 ชิ้น แก้วใหญ่)</label>
+      <textarea id="foodText" placeholder="เช่น กะเพราหมูสับไข่ดาว ข้าวครึ่งจาน จากร้านตามสั่ง"></textarea></div>
+    <div class="row">
+      <label class="btn grow" for="foodPhoto" style="cursor:pointer">📷 ถ่ายรูป / เลือกรูป</label>
+      <input type="file" id="foodPhoto" accept="image/*" capture="environment" hidden>
+      <label class="row small" style="gap:6px"><input type="checkbox" id="foodSocial"> มื้อสังคม/บุฟเฟ่ต์</label>
+    </div>
+    <img class="preview" id="foodPreview" alt="" hidden>
+    <div class="row">
+      <button class="btn accent grow" id="foodAnalyze">วิเคราะห์</button>
+      <button class="btn grow" id="foodAsk">แค่ถาม ยังไม่กิน</button>
+    </div>
+    <p class="small muted" id="foodStatus"></p>
+  </div>
+
+  <div class="card" id="foodResult" hidden>
+    <div class="result">
+      <h3 id="frTitle">ผลวิเคราะห์</h3>
+      <div class="stats">
+        <div class="stat"><span class="v num" id="frKcal">–</span><span class="l">กิโลแคลอรี่ (ช่วง)</span></div>
+        <div class="stat"><span class="v num" id="frProt">–</span><span class="l">โปรตีน ก.</span></div>
+        <div class="stat"><span class="v" id="frConf">–</span><span class="l">ความมั่นใจ</span></div>
+      </div>
+      <div class="score" id="frScore"></div>
+      <p class="small" id="frDriver"></p>
+      <p id="frFeedback"></p>
+      <div class="note" id="frSwap"></div>
+      <div><div class="eyebrow">มื้อถัดไป</div><div class="list small" id="frNext"></div></div>
+      <p class="small" id="frOne"></p>
+    </div>
+    <div class="row">
+      <button class="btn accent grow" id="foodSave">บันทึกมื้อนี้</button>
+      <button class="btn ghost" id="foodDiscard">ไม่บันทึก</button>
+    </div>
+  </div>
+
+  <div class="card" id="foodManual" hidden>
+    <div class="eyebrow">บันทึกเอง (วิเคราะห์อัตโนมัติไม่พร้อมตอนนี้)</div>
+    <div class="row">
+      <div class="field grow"><label for="mKcal">กิโลแคลอรี่</label><input type="number" id="mKcal" inputmode="numeric"></div>
+      <div class="field grow"><label for="mProt">โปรตีน (ก.)</label><input type="number" id="mProt" inputmode="numeric"></div>
+    </div>
+    <button class="btn accent" id="foodManualSave">บันทึก</button>
+  </div>
+
+  <div class="card">
+    <div class="row between"><div class="eyebrow">วันนี้กินไป</div><span class="small muted num" id="eatTotals"></span></div>
+    <div class="list" id="foodList"><p class="small muted">ยังไม่มีมื้อวันนี้</p></div>
+  </div>
+</section>
+
+<!-- ========== MOVE ========== -->
+<section class="view" id="view-move" hidden>
+  <div class="card">
+    <div class="eyebrow">ขยับ</div>
+    <div class="field"><label for="moveText">ทำอะไร นานแค่ไหน (เดินลู่ 40 นาที / เวท 4 ท่า + เดิน 15 / เดินห้างกับเพื่อน 1 ชม.)</label>
+      <textarea id="moveText" placeholder="เช่น ยิม เครื่อง 4 ท่า 2 เซ็ต แล้วเดินลู่ 15 นาที"></textarea></div>
+    <div class="row">
+      <div class="field grow"><label for="moveMin">นาที</label><input type="number" id="moveMin" inputmode="numeric" placeholder="40"></div>
+      <div class="field grow"><label for="moveKcalWatch">นาฬิกาบอก (ถ้ามี)</label><input type="number" id="moveKcalWatch" inputmode="numeric" placeholder="kcal"></div>
+    </div>
+    <button class="btn accent" id="moveAnalyze">ประเมินและบันทึก</button>
+    <p class="small muted" id="moveStatus"></p>
+  </div>
+  <div class="card" id="moveResult" hidden>
+    <div class="result">
+      <h3 id="mrTitle"></h3>
+      <div class="stats">
+        <div class="stat"><span class="v num" id="mrKcal">–</span><span class="l">ที่ควรนับจริง</span></div>
+        <div class="stat"><span class="v num" id="mrMin">–</span><span class="l">นาที</span></div>
+        <div class="stat"><span class="v" id="mrInt">–</span><span class="l">ความหนัก</span></div>
+      </div>
+      <div class="note" id="mrAdvice"></div>
+      <p class="small" id="mrOne"></p>
+    </div>
+  </div>
+  <div class="card">
+    <div class="eyebrow">สัปดาห์นี้</div>
+    <div class="list" id="moveList"><p class="small muted">ยังไม่มีบันทึก</p></div>
+  </div>
+  <div class="card">
+    <details><summary>โปรแกรมยิมเดือนแรก</summary>
+      <p class="small">สัปดาห์ 1–2 "แค่ไป" 2 ครั้ง ครั้งละ 30–40 นาที: เดินลู่ 15 นาที + leg press · chest press · seated row · lat pulldown 2 เซ็ต × 10–12 เบา ๆ<br>
+      สัปดาห์ 3+ 3 ครั้ง: 6 ท่า + แพลงก์ 3 เซ็ต × 10–12 เพิ่มน้ำหนักเมื่อทำ 12 ได้ 2 ครั้งติด จบด้วยเดินลู่ชัน 15–20 นาที<br>
+      ไม่วิ่ง ไม่กระโดด จนกว่าจะต่ำกว่า 105</p></details>
+  </div>
+</section>
+
+<!-- ========== NIGHT ========== -->
+<section class="view" id="view-night" hidden>
+  <div class="card">
+    <div class="eyebrow">ก่อนนอน 1 นาที</div>
+    <div class="field"><label for="sleepH">เมื่อคืนนอน <b class="num" id="sleepV">6.5</b> ชั่วโมง</label><input type="range" id="sleepH" min="3" max="10" step="0.5" value="6.5"></div>
+    <div class="field"><label for="hungerV">วันนี้หิวแค่ไหน <b class="num" id="hungerT">5</b> / 10</label><input type="range" id="hungerV" min="1" max="10" value="5"></div>
+    <div class="field"><label for="stressV">เครียด <b class="num" id="stressT">3</b> / 5</label><input type="range" id="stressV" min="1" max="5" value="3"></div>
+    <div class="field"><label for="stepsV">ก้าว (ถ้ามี)</label><input type="number" id="stepsV" inputmode="numeric" placeholder="เช่น 5200"></div>
+    <div class="field"><label for="journalV">3 บรรทัดถึงตัวเอง (ไม่บังคับ): วันนี้รู้สึก… สิ่งที่หนักใจ… สิ่งเล็ก ๆ ที่ทำได้…</label><textarea id="journalV"></textarea></div>
+    <button class="btn accent" id="nightSave">บันทึกและสรุปวัน</button>
+    <p class="small muted" id="nightStatus"></p>
+  </div>
+  <div class="card" id="nightResult" hidden>
+    <div class="result"><h3>สรุปวันนี้</h3><p id="nrSummary" style="white-space:pre-wrap"></p><p id="nrReply" style="white-space:pre-wrap"></p></div>
+  </div>
+</section>
+
+<!-- ========== TALK ========== -->
+<section class="view" id="view-talk" hidden>
+  <div class="card">
+    <div class="row between"><div class="eyebrow">คุย</div>
+      <div class="chips"><button class="chip on" data-mode="coach" id="modeCoach">โค้ช</button><button class="chip" data-mode="companion" id="modeComp">เพื่อนร่วมทาง</button></div></div>
+    <p class="small muted" id="talkHint">โค้ช: ถามเรื่องแผน อาหาร ยิม นัดบุฟเฟ่ต์ · เพื่อนร่วมทาง: ท้อ อาย เหงา แค่อยากมีคนฟัง ไม่มีตัวเลข</p>
+    <div class="chat" id="chat"></div>
+    <div class="hotline" id="hotline" hidden>ถ้าตอนนี้รู้สึกว่าไม่อยากอยู่ หรืออยากทำร้ายตัวเอง โทรหาคนที่เรียนมาเพื่อสิ่งนี้ได้เลย ฟรี 24 ชั่วโมง<br><b>สายด่วนสุขภาพจิต 1323</b><br><span class="small">การโทรไม่ได้แปลว่าอ่อนแอ และเป็นความลับ</span></div>
+    <div class="row">
+      <textarea id="talkInput" class="grow" style="min-height:52px" placeholder="พิมพ์อะไรก็ได้"></textarea>
+      <button class="btn accent" id="talkSend">ส่ง</button>
+    </div>
+    <div class="row">
+      <button class="btn ghost small" id="winAdd">จดเป็นหลักฐาน</button>
+      <button class="btn ghost small" id="chatClear">ล้างบทสนทนา</button>
+    </div>
+  </div>
+</section>
+
+<!-- ========== WEEK ========== -->
+<section class="view" id="view-week" hidden>
+  <div class="card">
+    <div class="row between"><div class="eyebrow">สรุปสัปดาห์</div><span class="small muted num" id="weekRange"></span></div>
+    <div class="stats">
+      <div class="stat"><span class="v num" id="wkAvg">–</span><span class="l">เฉลี่ย 7 วัน</span></div>
+      <div class="stat"><span class="v num" id="wkDelta">–</span><span class="l">ลดจริง</span></div>
+      <div class="stat"><span class="v num" id="wkExp">–</span><span class="l">คาดว่าควรลด</span></div>
+    </div>
+    <div class="divider"></div>
+    <div class="stats">
+      <div class="stat"><span class="v num" id="wkKcal">–</span><span class="l">kcal เฉลี่ย/วัน</span></div>
+      <div class="stat"><span class="v num" id="wkProt">–</span><span class="l">โปรตีนเฉลี่ย</span></div>
+      <div class="stat"><span class="v num" id="wkLog">–</span><span class="l">วันที่บันทึก</span></div>
+    </div>
+    <div class="stats">
+      <div class="stat"><span class="v num" id="wkGym">–</span><span class="l">ยิม/เวท</span></div>
+      <div class="stat"><span class="v num" id="wkSocial">–</span><span class="l">วันสังคม</span></div>
+      <div class="stat"><span class="v num" id="wkSleep">–</span><span class="l">นอนเฉลี่ย</span></div>
+    </div>
+    <div class="divider"></div>
+    <div class="row between"><h3>คะแนนพฤติกรรม</h3><span class="big num" id="wkScore">–</span></div>
+    <div class="list small" id="wkScoreList"></div>
+    <p class="small muted">4 สัปดาห์แรกวัดด้วยคะแนนนี้ ไม่ใช่ตาชั่ง ≥ 80 = สัปดาห์สำเร็จ</p>
+    <button class="btn accent" id="weekDiag">ขอคำวินิจฉัยและปรับ 1 อย่าง</button>
+    <p class="small muted" id="weekStatus"></p>
+  </div>
+  <div class="card" id="weekResult" hidden>
+    <div class="result"><h3>จากโค้ช</h3><p id="wkText" style="white-space:pre-wrap"></p></div>
+  </div>
+  <div class="card">
+    <div class="eyebrow">สมุดหลักฐานทั้งหมด</div>
+    <div class="list small" id="winsAll"></div>
+  </div>
+  <div class="card">
+    <details><summary>งบและเป้าที่ใช้อยู่ (แก้ผ่านโค้ชใน Claude Code)</summary><p class="small num" id="settingsText"></p></details>
+  </div>
+</section>
+</main>
+
+<nav class="tabs"><div class="in">
+  <button class="tab on" data-view="home"><svg viewBox="0 0 24 24"><path d="M3 11l9-8 9 8v9a1 1 0 0 1-1 1h-5v-6H9v6H4a1 1 0 0 1-1-1z"/></svg>หน้าหลัก</button>
+  <button class="tab" data-view="eat"><svg viewBox="0 0 24 24"><path d="M4 4v6a3 3 0 0 0 6 0V4M7 4v16M17 4c-2 0-3 2-3 5v3h3v8"/></svg>กิน</button>
+  <button class="tab" data-view="move"><svg viewBox="0 0 24 24"><path d="M13 5a1.5 1.5 0 1 0 0-3 1.5 1.5 0 0 0 0 3zM6 21l4-7 3 2v5M9 12l2-4 4 1 3 3M15 9l-2 4"/></svg>ขยับ</button>
+  <button class="tab" data-view="night"><svg viewBox="0 0 24 24"><path d="M20 15a8 8 0 0 1-11-11 8 8 0 1 0 11 11z"/></svg>คืนนี้</button>
+  <button class="tab" data-view="talk"><svg viewBox="0 0 24 24"><path d="M4 5h16v11H9l-5 4z"/></svg>คุย</button>
+</div></nav>
+<div class="toast" id="toast" role="status"></div>
+
+<script>
+/* ---------- constants ---------- */
+const DEFAULTS = {budget_normal:1700, budget_social:2100, floor:1300, protein:140, tdee:2375, next_milestone:112,
+  name:"ครูทยากมล", start_kg:115, record_low_kg:92, height_cm:166, age:35, sex:"หญิง", conditions:"PCOS (metformin), กำลังหยุด Mounjaro, ยาลดไขมัน"};
+let settings = {...DEFAULTS};
+const FOOD_DB = "ข้าวหมูกรอบ|1 จานร้านตามสั่ง|700-900|28|หมูกรอบ ~100 ก. คือตัวการ\nหมูกรอบ|100 ก. (~8-10 ชิ้น)|400-450|22|ของโปรด—ใช้เป็นกับข้าวร่วมโต๊ะ 5-6 ชิ้น ≈ 220\nข้าวกะเพราหมูสับไข่ดาว|1 จาน|650-800|32|สั่งข้าวครึ่งจาน ไม่เอาน้ำมันเยอะ -200\nข้าวกะเพราไก่ (ไม่มีไข่)|1 จาน|500-650|28\nข้าวมันไก่|1 จาน|600-750|25|ไก่ต้มไม่เอาหนัง ข้าวครึ่งจาน ≈ 400\nข้าวมันไก่ทอด|1 จาน|750-900|26\nข้าวขาหมู|1 จาน|650-850|28|ไม่เอาหนัง/มัน -200\nข้าวหมูแดง|1 จาน|550-700|25|น้ำราดหวาน ขอน้อย\nข้าวราดแกงเขียวหวานไก่|1 จาน|600-750|25|กะทิ\nข้าวราดผัดผักรวมหมู|1 จาน|450-600|20|ทางเลือกดีร้านตามสั่ง\nข้าวต้มปลา/ไก่|1 ชาม|300-400|20|ทางเลือกเช้า/เย็นเบา\nโจ๊กหมูใส่ไข่|1 ชาม|350-450|18\nก๋วยเตี๋ยวน้ำหมู/ไก่|1 ชาม|350-450|20|ไม่ซดน้ำซุปหมด เส้นน้อย\nก๋วยเตี๋ยวแห้ง|1 ชาม|450-550|20\nเย็นตาโฟ|1 ชาม|350-450|18\nผัดไทยกุ้งสด|1 จาน|550-700|20\nผัดซีอิ๊วหมู|1 จาน|550-700|22\nราดหน้าหมู|1 จาน|500-650|22\nส้มตำไทย|1 จาน|120-180|3|ดีมาก (ระวังน้ำตาล) \nไก่ย่าง (ไม่เอาหนัง)|1 ชิ้นสะโพก ~120 ก.|200-250|30|โปรตีนหลักร้านส้มตำ\nไก่ย่าง (มีหนัง)|1 ชิ้นสะโพก|300-350|28\nคอหมูย่าง|100 ก.|300-350|18\nลาบหมู|1 จาน|250-350|22\nน้ำตกหมู|1 จาน|250-350|24\nข้าวเหนียว|1 ห่อเล็ก ~80 ก.|150-180|3\nต้มยำกุ้งน้ำใส|1 ถ้วย|100-150|15|ดีมาก\nต้มยำน้ำข้น|1 ถ้วย|200-300|15\nแกงจืดเต้าหู้หมูสับ|1 ถ้วย|120-180|12|ทางเลือกกินกับแม่\nปลานึ่งมะนาว|1 ตัวกลาง (กินคนเดียวครึ่งตัว)|180-250|30|ทางเลือกดีสุด\nปลาทับทิมทอด|ครึ่งตัว|300-400|28\nไข่เจียว|2 ฟอง ร้านตามสั่ง|250-350|13|น้ำมันเยอะ\nไข่ดาว|1 ฟอง|110-140|6\nไข่ต้ม|1 ฟอง|70-75|6|โปรตีนฉุกเฉิน\nผัดผักบุ้งไฟแดง|1 จาน|150-250|4\nผักลวก/ผักต้ม|1 จานเล็ก|30-60|2|เพิ่มได้ไม่อั้น\nข้าวสวย|1 จานเต็ม (~250 ก.)|320-350|6|ครึ่งจาน ≈ 165\nข้าวสวย|ครึ่งจาน|160-175|3|ค่าเริ่มต้นของแผน\nข้าวกล้อง|ครึ่งจาน|160-175|4\nโกโก้ร้าน (หวานปกติ)|แก้ว 16 oz|300-450|8|ตัวการ\nโกโก้ชงเอง นมสด ไม่ใส่น้ำตาล|โกโก้ 100% 2 ชช. + นมสด 200 มล.|140-160|8|ของโปรดในแผน\nโกโก้ชงเอง นมพร่องมันเนย ไม่ใส่น้ำตาล|โกโก้ 100% 2 ชช. + นม 200 มล.|100-120|8|ประหยัดสุด\nมัทฉะนมสด ชงเอง ไม่หวาน|มัทฉะ 2 ก. + นมสด 200 มล.|130-150|7|ของโปรดในแผน\nมัทฉะลาเต้ร้าน|แก้ว 16 oz|250-400|8\nชานมไข่มุก|แก้ว 16 oz|400-550|4|หลีกเลี่ยง\nน้ำอัดลม|กระป๋อง 325 มล.|130-140|0\nชาเขียวไม่หวาน/น้ำเปล่า|แก้ว|0-5|0|ค่าเริ่มต้นที่ร้าน\nนมสด|200 มล.|120-130|7\nนมโปรตีนสูง (7-11)|ขวด 250-300 มล.|150-200|20|หลังยิม\nอกไก่นุ่ม 7-11|1 ซอง ~100 ก.|100-120|22|โปรตีนฉุกเฉิน\nสลัดผัก 7-11 (ไม่ใส่น้ำสลัด)|1 กล่อง|40-80|3\nน้ำสลัดครีม|1 ซอง|80-120|0|ใช้ครึ่งซอง\nโยเกิร์ตกรีกธรรมดา|1 ถ้วย 150 ก.|100-130|12\nทูน่ากระป๋องในน้ำแร่|1 กระป๋อง 150 ก.|110-140|25\nแซนด์วิชแฮมชีส 7-11|1 ชิ้น|250-320|12\nขนมปังไส้ต่างๆ 7-11|1 ชิ้น|250-350|5\nไส้กรอก 7-11|1 ชิ้น|120-180|6\nชาบูบุฟเฟ่ต์ แบบมีกฎ|1 มื้อ 90 นาที|900-1300|80|ผัก+ซุปใสก่อน เนื้อไม่ติดมัน ไม่เส้น/ทอด/ของหวาน/น้ำหวาน\nชาบูบุฟเฟ่ต์ กินอิสระ|1 มื้อ|2000-3000|90|น้ำจิ้ม+ของทอด+ไอศกรีม+น้ำหวาน\nน้ำจิ้มสุกี้|1 ถ้วยเล็ก|80-120|1|3 ถ้วย ≈ 300\nพริกน้ำส้ม/ซีอิ๊ว/พอนสึ|1 ถ้วยเล็ก|10-30|0|น้ำจิ้มแทน\nเนื้อสันนอก/สันในสไลด์|100 ก.|170-220|22|เลือกชิ้นนี้\nหมูสามชั้นสไลด์|100 ก.|400-500|15|แค่ 2-3 ชิ้น\nอกไก่/ซีฟู้ดสไลด์|100 ก.|100-130|22|กินได้มาก\nไอศกรีมบุฟเฟ่ต์|1 ลูก|120-180|2\nซาชิมิแซลมอน|1 ชิ้น ~15 ก.|30-45|4\nซาชิมิปลาขาว/ทูน่า|1 ชิ้น|20-35|4\nนิกิริซูชิ|1 คำ|60-80|4|ข้าวซูชิมีน้ำตาล 8 คำ ≈ 550\nปลาแซลมอนย่างเซ็ต|1 เซ็ต (ข้าว+ซุป+ผัก)|550-700|38|ทางเลือกดีสุด\nปลาซาบะย่างเซ็ต|1 เซ็ต|550-700|35\nทงคัตสึเซ็ต|1 เซ็ต|900-1200|35\nราเมนทงคตสึ|1 ชาม|700-1000|30\nราเมนโชยุ/น้ำใส|1 ชาม|450-600|25|ไม่ซดน้ำหมด\nซุปมิโซะ|1 ถ้วย|40-70|4\nเอดามาเมะ|1 ถ้วยเล็ก|100-130|9\nสลัดญี่ปุ่น (น้ำสลัดงา)|1 จาน|120-200|3\nไก่คาราอาเกะ|5 ชิ้น|350-450|25\nยากินิกุ (เนื้อย่าง)|100 ก.|200-300|22|ซอสหวาน ขอน้อย\nเทริยากิไก่ข้าว|1 จาน|600-750|30\nกล้วยหอม|1 ผล|90-110|1\nฝรั่ง|1 ผล|80-110|2|ของว่างดีมาก\nแอปเปิล|1 ผล|80-100|0\nมะม่วงสุก|1 ผล|150-200|1\nทุเรียน|1 เม็ด|120-160|1";
+const RULES_FOOD = `คุณคือนักวิเคราะห์อาหาร + นักวางแผนการกิน ของ ${DEFAULTS.name} (หญิง 35 ปี 166 ซม. ~115 กก. PCOS ดื้ออินซูลิน ไม่ทำอาหาร กินกับแม่ตอนเย็น ชอบหมูกรอบ โกโก้ มัทฉะ ชาบู อาหารญี่ปุ่น)
+กฎ: ตอบภาษาไทย ให้แคลอรี่เป็นช่วง low–high เสมอ บอกความมั่นใจ (สูง=มีฉลาก/ชงเอง, กลาง=ร้านตามสั่ง, ต่ำ=บุฟเฟ่ต์/ของทอด/ไม่รู้ปริมาณ) ถ้าไม่ระบุขนาดให้สมมติจานร้านตามสั่งปกติ ระบุตัวการหลักของแคลอรี่ 1 อย่าง
+ให้คะแนนมื้อ 4 ด้าน เป็น "✅" "⚠️" หรือ "❌": โปรตีน(≥30ก.✅ 20–29⚠️ <20❌) ผัก(มีผักครึ่งฝ่ามือ✅) งบ(≤40% ของงบวัน✅ 40–55⚠️ >55❌) อิ่มนาน(โปรตีน+ไฟเบอร์สูง✅ คาร์บ/น้ำตาลล้วน❌)
+หลัก PCOS: โปรตีนก่อน ข้าวครึ่งจานเป็นค่าเริ่มต้น ไม่ตัดคาร์บเป็นศูนย์ เลี่ยงน้ำตาลเหลว
+feedback: 1–2 ประโยค ไม่ตำหนิ ไม่ใช้คำว่า โกง/พัง/ล้มเหลว ทุกมื้อคือข้อมูล · swap: วิธีสั่ง/ปรับครั้งหน้าที่ลดได้มากสุด 1 ประโยค พร้อมตัวเลขที่ประหยัด
+next_meal: 3 ตัวเลือกสำหรับมื้อถัดไปที่ซื้อได้จริง (ร้านตามสั่ง/ข้าวแกง · 7-11 · กินกับแม่) คำนึงถึงงบและโปรตีนที่ยังขาด แต่ละข้อสั้น ≤ 20 คำ พร้อม kcal ประมาณ
+one_thing: "ทำต่อ 1 อย่าง: ..." ข้อเดียว ทำได้วันนี้
+ห้ามแนะนำให้กินต่ำกว่า 1,300/วัน ห้ามแนะนำอาหารเสริม/ยา/fasting
+ตารางอ้างอิง (ชื่อ|เสิร์ฟ|kcal|โปรตีน):\n`;
+const RULES_MOVE = `คุณคือนักวิเคราะห์การออกกำลังกายของ ${DEFAULTS.name} (115 กก. PCOS เข่าต้องถนอม เคยลดถึง 92 ด้วยยิม) ตอบภาษาไทย
+ประเมินพลังงาน ≈ MET × 115 × ชั่วโมง (เดินช้า 2.8 เดินเร็ว 3.8 ลู่ชัน 5 ปั่น 5 เวท 3.5 ว่ายน้ำ 4.5) แล้ว **คูณ 0.8** เป็นค่าที่ควรนับจริง ถ้ามีค่าจากนาฬิกาให้ใช้ min(นาฬิกา×0.8, สูตร)
+ตัดสิน: เดิน/คาร์ดิโอเบา <45 นาที → "พอ ดื่มน้ำ" · คาร์ดิโอ 45–60 → กินตามแผน ไม่กินคืน · เวททุกครั้ง → โปรตีน 25–40 ก. ภายใน 2 ชม. ถ้ายังมีงบ ถ้างบหมด → โปรตีนล้วน ≤150 kcal (อกไก่ 7-11/ไข่ต้ม 2/นมโปรตีน) · >90 นาที → เติมคาร์บ+โปรตีน นับเพิ่มได้ครึ่งเดียว
+ย้ำสั้น ๆ ว่าหน้าที่หลักของการออกกำลังคือรักษากล้ามเนื้อ+แก้ดื้ออินซูลิน ไม่ใช่เผาแคลอรี่ ถ้าครั้งแรกหลังหยุดนานหรือ >60 นาที ให้เตือนว่าครั้งหน้า 30–45 นาทีพอ เป้าคือสม่ำเสมอ
+ไม่ตำหนิ จบด้วย one_thing "ทำต่อ 1 อย่าง: ..."`;
+const RULES_COACH = `คุณคือโค้ชหลักของ ${DEFAULTS.name} (หญิง 35 ครู 166 ซม. เริ่ม 115 กก. PCOS กิน metformin กำลังหยุด Mounjaro เพราะค่าใช้จ่าย ไม่ทำอาหาร กินกับแม่ ขี้เหงา ชอบนัดเพื่อนกินชาบู ชอบหมูกรอบ โกโก้ มัทฉะ ไม่ดื่มแอลกอฮอล์ ไม่กินดึก เคยลดถึง 92 ด้วยยิม)
+งบ: วันปกติ 1,650–1,750 kcal วันสังคม 2,000–2,200 (≤2 วัน/สัปดาห์) โปรตีน 130–150 ก. พื้นต่ำสุด 1,300 เป้าลด 0.4–0.7 กก./สัปดาห์ เป้าถัดไปอันเดียวคือ 112 (ห้ามพูดถึง 70 เว้นแต่ถูกถาม)
+กฎบุฟเฟ่ต์ชาบู: ไม่อดมาก่อน ผัก+ซุปใสก่อน เนื้อไม่ติดมัน น้ำจิ้มพริกน้ำส้ม/พอนสึ ไม่เอาเส้น/ทอด/ไอศกรีม น้ำเปล่า หยุดที่อิ่ม 7/10 พรุ่งนี้กินปกติไม่ชดเชย
+ท่าที: ตรง สั้น มีตัวเลขเป็นช่วง ไม่ตำหนิ ไม่ใช้คำว่า โกง/พัง/ล้มเหลว ถ้าเธอกลับมาหลังหายไป ห้ามถามว่าหายไปไหน ห้ามทวง เริ่มจากวันนี้
+เรื่องยา (Mounjaro/metformin/PCOS) → ให้ข้อมูลทั่วไปแล้วบอก "ถามหมอ" ห้ามแนะนำอาหารเสริม/ยาลดน้ำหนัก/fasting >16 ชม./กินต่ำกว่า 1,300
+ตอบ ≤ 8 บรรทัด จบด้วย "ทำต่อ 1 อย่าง: ..." เสมอ`;
+const RULES_COMP = `คุณคือ "เพื่อนร่วมทาง" ของ ${DEFAULTS.name} (หญิง 35 ครู กำลังลดน้ำหนักเงียบ ๆ ไม่อยากให้ใครรู้ รู้สึกบอบช้ำ ไม่มี inspiration เหมือนไม่มีคนเคียงข้าง อายที่ไม่เคยทำได้ ไม่กล้าตั้งเป้า)
+กฎ: ฟังก่อน แก้ทีหลัง ข้อความแรกห้ามมีตัวเลข แคลอรี่ น้ำหนัก หรือแผน สะท้อนสิ่งที่เธอรู้สึกด้วยคำของเธอเอง ถามว่าอยากให้ฟังอย่างเดียวหรือช่วยคิด ไม่พูด "สู้ ๆ" "คิดบวก" ใช้ข้อเท็จจริงแทนคำปลอบ:
+- เธอเคยลดถึง 92 ด้วยการออกกำลังกาย ร่างกายนี้ทำได้มาแล้ว
+- พยายามครั้งที่ 5 คือหลักฐานของการไม่ยอมแพ้ ไม่ใช่ความล้มเหลว
+- Mounjaro 2.5 mg คือโดสเริ่มต้น IF ขัดกับชีวิตเธอ = เครื่องมือผิด ไม่ใช่นิสัย
+- ความอายเรื่องน้ำหนักแปลว่าเธอถูกตัดสินมานาน ไม่ได้แปลว่าเธอผิด
+- การลดเงียบ ๆ โดยมีระบบนี้เป็นพยานคนเดียวคือแผนหลัก ห้ามเสนอให้ "บอกใครสักคน" เป็นทางออกแรก
+เครื่องมือ: เธอเป็นครู ถ้าเธอตำหนิตัวเอง ถามว่า "ถ้านักเรียนสอบตกวิชานี้มา 3 ครั้งแล้วบอกว่าหนูไม่มีทางทำได้ ครูจะพูดกับเขาว่าอะไร" แล้วขอให้พูดประโยคนั้นกับตัวเอง
+ถ้าท้อ: อ้างถึง "หลักฐาน" ที่ให้มาในบริบท 1–2 บรรทัด แล้วเสนอขั้นต่ำสุดอย่างเดียวที่เล็กจนปฏิเสธไม่ได้ พรุ่งนี้เริ่มใหม่ไม่มีหนี้
+เส้นแดง: ถ้ามีสัญญาณซึมเศร้าต่อเนื่อง ≥2 สัปดาห์ / ไม่อยากอยู่ / ทำร้ายตัวเอง / กินแบบควบคุมไม่ได้ซ้ำ ๆ → พูดอบอุ่นว่าสมควรได้รับการดูแลจากนักจิตวิทยา/จิตแพทย์ (เป็นความลับเหมือนกัน) และสายด่วนสุขภาพจิต 1323 ฟรี 24 ชม.
+บอกตรง ๆ เมื่อเกี่ยวข้องว่าตัวเองเป็น AI อยู่ตรงนี้ทุกวันได้ แต่ไม่ใช่ตัวแทนคนจริง
+ตอบ 3–6 บรรทัด อบอุ่น ตรง ไม่เทศนา ถามกลับ 1 คำถาม`;
+const RULES_NIGHT = `คุณคือโค้ชพฤติกรรมของ ${DEFAULTS.name} ตอบภาษาไทย 3 บรรทัดพอดี: (1) สิ่งที่ทำได้ดีวันนี้ 1 อย่าง จากข้อมูลจริง (2) ข้อสังเกต 1 อย่างจากนอน/หิว/เครียด/อาหาร ถ้านอน <6 ชม. ให้พูดเรื่องนอนก่อนอาหาร ถ้ากิน <1,300 ให้บอกว่าน้อยไปและพรุ่งนี้เพิ่มมื้อโปรตีน ถ้ามีบันทึก 3 บรรทัด ให้ตอบรับสั้น ๆ ไม่วิเคราะห์ (3) "ทำต่อ 1 อย่าง: ..." สำหรับพรุ่งนี้ ที่เล็กที่สุด ไม่ตำหนิ ไม่พูดถึงน้ำหนัก`;
+const RULES_WEEK = `คุณคือนักวิเคราะห์ความก้าวหน้าของ ${DEFAULTS.name} (PCOS → เป้า 0.4–0.7 กก./สัปดาห์ หลังสัปดาห์ที่ 2; สัปดาห์ 1–2 อาจลด 1.5–2.5 จากน้ำ อย่าใช้เป็นมาตรฐาน) ตอบภาษาไทย
+ถ้าลดได้ ≥50% ของคาดการณ์ = ตามเกณฑ์ ถ้าไม่ ให้วินิจฉัยตามลำดับ หยุดที่ข้อแรกที่เจอ: 1 บันทึก <80% → ข้อมูลไม่พอ ปัญหาคือการบันทึก ไม่ปรับงบ · 2 มื้อความมั่นใจต่ำ >30% → สัปดาห์สอบเทียบ กินของนับง่าย · 3 น้ำคั่ง (เพิ่งเริ่ม/เพิ่มเวท ชาบู/โซเดียมวันก่อนชั่ง ก่อนประจำเดือน นอนน้อย) → รออีกสัปดาห์ ไม่ปรับงบ · 4 นอน <6 ชม. ≥4 คืน → แก้นอนก่อน · 5 วันสังคม >2 หรือวันสังคม >2,500 → ปรับกฎบุฟเฟ่ต์ ไม่ลดงบวันปกติ · 6 ขยับน้อยลง → เพิ่มเดิน · 7 พอร์ชันโตหลังหยุดยา → โปรตีน/ผักต้นมื้อ · 8 ผ่านทุกข้อและ ≥3 สัปดาห์ติด adherence ≥90% → TDEE จริงต่ำกว่าสูตร → เพิ่มเดิน 2,000 ก้าวก่อน หรือลดงบ 100–150 และเสนอคุยหมอ
+4 สัปดาห์แรกนำด้วยคะแนนพฤติกรรมก่อนน้ำหนัก
+รูปแบบ: ทำได้ดี 2 อย่าง (ต้องมี) · สถานะเทียบเกณฑ์ 1 บรรทัด · วินิจฉัย (ข้อไหน เพราะอะไร) หรือ "ไม่ต้องวินิจฉัย" · ปรับ 1 อย่างสำหรับสัปดาห์หน้า ข้อเดียว · ถ้าเฉลี่ย 7 วันต่ำกว่าหลักชัย 112 ครั้งแรก ให้ฉลองสั้น ๆ และบอกหลักชัยถัดไปอันเดียว (110) ไม่ตำหนิ ≤ 10 บรรทัด`;
+const RED_FLAGS = /ไม่อยากอยู่|อยากตาย|ฆ่าตัวตาย|ทำร้ายตัวเอง|ไม่อยากมีชีวิต|จบชีวิต|หายไปจากโลก/;
+
+/* ---------- state ---------- */
+let db=null, sample=null, sampleLimits=null;
+let cache = {weight:[], food:[], exercise:[], daily:[], wins:[], journal:[]};
+let unsub = [];
+let pending = null; // analysed food awaiting save
+let chatHistory = []; let chatMode="coach";
+let selectedMeal = null;
+
+/* ---------- utils ---------- */
+const $ = id => document.getElementById(id);
+const pad = n => String(n).padStart(2,"0");
+function ymd(d=new Date()){ return d.getFullYear()+"-"+pad(d.getMonth()+1)+"-"+pad(d.getDate()); }
+function hm(d=new Date()){ return pad(d.getHours())+":"+pad(d.getMinutes()); }
+function addDays(s,n){ const d=new Date(s+"T12:00:00"); d.setDate(d.getDate()+n); return ymd(d); }
+function thaiDate(s){ const d=new Date(s+"T12:00:00"); const days=["อา","จ","อ","พ","พฤ","ศ","ส"]; const mons=["ม.ค.","ก.พ.","มี.ค.","เม.ย.","พ.ค.","มิ.ย.","ก.ค.","ส.ค.","ก.ย.","ต.ค.","พ.ย.","ธ.ค."]; return days[d.getDay()]+" "+d.getDate()+" "+mons[d.getMonth()]; }
+function fmt(n,dp=0){ return (Math.round(n*10**dp)/10**dp).toLocaleString("th-TH",{minimumFractionDigits:dp,maximumFractionDigits:dp}); }
+function mean(a){ return a.length? a.reduce((x,y)=>x+y,0)/a.length : null; }
+function toast(t){ const el=$("toast"); el.textContent=t; el.classList.add("show"); clearTimeout(toast._t); toast._t=setTimeout(()=>el.classList.remove("show"),2200); }
+function defaultMeal(){ const h=new Date().getHours(); return h<10?"เช้า":h<14?"กลางวัน":h<17?"ว่าง":"เย็น"; }
+function isoWeek(s){ const d=new Date(s+"T12:00:00Z"); const day=(d.getUTCDay()+6)%7; d.setUTCDate(d.getUTCDate()-day+3); const y=d.getUTCFullYear(); const first=new Date(Date.UTC(y,0,4)); const w=1+Math.round(((d-first)/86400000-3+((first.getUTCDay()+6)%7))/7); return y+"-W"+pad(w); }
+async function safeJSON(prompt, opts){ // sample.json with one retry on invalid_json
+  try { return await sample.json(prompt, opts); } catch(e){ if(e && e.code==="invalid_json"){ return await sample.json(prompt+"\n\nตอบเป็น JSON ล้วนเท่านั้น ห้ามมีข้อความอื่น", opts);} throw e; }
+}
+function errMsg(e){ const c=e&&e.code; if(c==="rate_limited") return "ใช้บ่อยเกินไปชั่วคราว รอสักครู่แล้วลองใหม่"; if(c==="not_granted"||c==="sampling_disabled") return "ยังไม่ได้อนุญาตให้หน้านี้ถาม Claude"; if(c==="image_rejected"||c==="images_unavailable") return "รูปใช้ไม่ได้ ลองพิมพ์แทน"; if(c==="prompt_too_large") return "ข้อความยาวเกิน ลองสั้นลง"; return "วิเคราะห์ไม่สำเร็จ ลองอีกครั้ง หรือบันทึกเอง"; }
+
+/* ---------- derived data ---------- */
+function todayFood(){ const t=ymd(); return cache.food.filter(f=>f.date===t); }
+function todayTotals(){ const fs=todayFood(); return {kcal: fs.reduce((s,f)=>s+((+f.kcal_low||0)+(+f.kcal_high||0))/2,0), prot: fs.reduce((s,f)=>s+(+f.protein_g||0),0), social: fs.some(f=>f.social)}; }
+function budgetToday(){ return todayTotals().social ? settings.budget_social : settings.budget_normal; }
+function weightSeries(){ return cache.weight.slice().sort((a,b)=>a.date<b.date?-1:1); }
+function avgRange(from,to){ const v=cache.weight.filter(w=>w.date>=from&&w.date<=to).map(w=>+w.kg); return {avg:mean(v), n:v.length}; }
+function weekStats(end=ymd()){
+  const start=addDays(end,-6), pStart=addDays(end,-13), pEnd=addDays(end,-7);
+  const cur=avgRange(start,end), prev=avgRange(pStart,pEnd);
+  const fs=cache.food.filter(f=>f.date>=start&&f.date<=end);
+  const byDay={}; fs.forEach(f=>{ const d=byDay[f.date]||(byDay[f.date]={k:0,p:0,social:false,low:0,n:0}); d.k+=((+f.kcal_low||0)+(+f.kcal_high||0))/2; d.p+=+f.protein_g||0; d.social=d.social||!!f.social; d.n++; if(f.confidence==="ต่ำ") d.low++; });
+  const days=Object.values(byDay); const foodDays=days.length;
+  const kcal=mean(days.map(d=>d.k)), prot=mean(days.map(d=>d.p));
+  const social=days.filter(d=>d.social).length; const meals=fs.length; const lowconf=fs.filter(f=>f.confidence==="ต่ำ").length;
+  const ex=cache.exercise.filter(e=>e.date>=start&&e.date<=end); const gym=ex.filter(e=>/เวท|ยิม|เครื่อง|weight/i.test(e.type||"")).length; const exMin=ex.reduce((s,e)=>s+(+e.minutes||0),0);
+  const dl=cache.daily.filter(d=>d.date>=start&&d.date<=end); const sleep=mean(dl.map(d=>+d.sleep_h).filter(x=>x>0));
+  const weighDays=cache.weight.filter(w=>w.date>=start&&w.date<=end).length;
+  const deficit = kcal!=null ? settings.tdee - kcal : null; const expected = deficit!=null ? -deficit*7/7700 : null;
+  const delta = (cur.avg!=null&&prev.avg!=null)? cur.avg-prev.avg : null;
+  const wins=cache.wins.filter(w=>w.date>=start&&w.date<=end).length;
+  let score=0, items=[];
+  const add=(ok,half,label)=>{ const pts=ok?20:half?10:0; score+=pts; items.push({label,pts}); };
+  add(weighDays>=5, weighDays>=3, `ชั่ง ${weighDays}/7 วัน`);
+  add(foodDays>=6, foodDays>=4, `บันทึกมื้อ ${foodDays}/7 วัน`);
+  add(gym>=2, gym===1, `ยิม/เวท ${gym} ครั้ง`);
+  add(dl.length>=5, dl.length>=3, `เช็กอินก่อนนอน ${dl.length}/7`);
+  add(foodDays>0&&social<=2, false, `มื้อสังคม ${social} วัน (≤2)`);
+  return {start,end,cur,prev,delta,kcal,prot,foodDays,social,meals,lowconf,gym,exMin,sleep,weighDays,deficit,expected,score,items,nights:dl.length,wins};
+}
+
+/* ---------- render ---------- */
+function renderHeader(){ $("hdrDate").textContent = thaiDate(ymd()); }
+function renderHome(){
+  const ws=weightSeries(); const t=ymd();
+  const todayW = ws.find(w=>w.date===t);
+  $("weighTitle").textContent = todayW ? `วันนี้ชั่งแล้ว ${fmt(todayW.kg,1)} กก.` : "พิมพ์เลขบนตาชั่ง";
+  $("weighHint").textContent = todayW ? "พอแล้วสำหรับงานบังคับของวันนี้ ที่เหลือเป็นของแถม" : "ชั่งหลังเข้าห้องน้ำ ก่อนกิน ชุดเดิม แล้วไม่ต้องดูเลขรายวัน ดูค่าเฉลี่ย 7 วันข้างล่างแทน";
+  const last=ws[ws.length-1]; $("wLatest").textContent = last? fmt(last.kg,1):"–";
+  const st=weekStats();
+  $("wAvg").textContent = st.cur.avg!=null? fmt(st.cur.avg,1):"–";
+  $("wDelta").textContent = st.delta!=null? (st.delta>0?"+":"")+fmt(st.delta,2):"–";
+  const pill=$("trendPill");
+  if(st.cur.avg==null){ pill.textContent="ยังไม่มีข้อมูล"; pill.className="pill"; }
+  else if(st.delta==null){ pill.textContent=`เฉลี่ยจาก ${st.cur.n} วัน รออีกสัปดาห์ค่อยเทียบ`; pill.className="pill"; }
+  else if(st.delta<=-0.2){ pill.textContent="แนวโน้มลง"; pill.className="pill"; }
+  else if(st.delta<0.3){ pill.textContent="ทรงตัว (ปกติ ดูต่ออีกสัปดาห์)"; pill.className="pill"; }
+  else { pill.textContent="ขึ้นชั่วคราว (น้ำ/โซเดียม/เวทใหม่)"; pill.className="pill warm"; }
+  $("nextMilestone").textContent = settings.next_milestone;
+  renderSpark(ws);
+  const tt=todayTotals(); const b=budgetToday();
+  $("todayKind").textContent = tt.social? "วันสังคม":"วันปกติ";
+  $("kcalText").textContent = `${fmt(tt.kcal)} / ${fmt(b)}`;   const ki=$("kcalBar"); ki.style.width=Math.min(100,tt.kcal/b*100)+"%"; ki.className = tt.kcal>b? "over":"";
+  $("protText").textContent = `${fmt(tt.prot)} / ${settings.protein} ก.`; $("protBar").style.width=Math.min(100,tt.prot/settings.protein*100)+"%";
+  $("ck-weigh").classList.toggle("done",!!todayW);
+  $("ck-eat").classList.toggle("done",todayFood().length>0);
+  $("ck-move").classList.toggle("done",cache.exercise.some(e=>e.date===t));
+  $("ck-night").classList.toggle("done",cache.daily.some(d=>d.date===t));
+  // return line: days active in last 7
+  const active=new Set([...cache.weight,...cache.food,...cache.exercise,...cache.daily].map(x=>x.date).filter(d=>d>=addDays(t,-6)&&d<=t)).size;
+  $("returnLine").textContent = active? `7 วันที่ผ่านมาเปิดมาบันทึก ${active} วัน สิ่งที่วัดคือกลับมาเร็วแค่ไหน ไม่ใช่ไม่พลาดเลย` : "วันนี้คือวันแรก แค่พิมพ์เลขก็พอ";
+  const w=cache.wins.slice().sort((a,b)=>a.ts<b.ts?1:-1)[0];
+  $("winLine").textContent = w? `${thaiDate(w.date)} — ${w.text}` : "ยังไม่มีบันทึก ทุกก้าวเล็ก ๆ จะถูกจดไว้ตรงนี้";
+}
+function renderSpark(ws){
+  const svg=$("spark"); const t=ymd(); const from=addDays(t,-27);
+  const pts=ws.filter(w=>w.date>=from).map(w=>({x:(new Date(w.date+"T12:00:00")-new Date(from+"T12:00:00"))/86400000, y:+w.kg}));
+  if(pts.length<2){ svg.innerHTML=`<text x="4" y="38" font-size="12" fill="var(--muted)">กราฟจะขึ้นเมื่อมีน้ำหนัก 2 วันขึ้นไป</text>`; return; }
+  const ys=pts.map(p=>p.y); const lo=Math.min(...ys)-0.5, hi=Math.max(...ys)+0.5;
+  const X=x=>6+x/27*308, Y=y=>58-(y-lo)/(hi-lo)*52;
+  const d=pts.map((p,i)=>(i?"L":"M")+X(p.x).toFixed(1)+" "+Y(p.y).toFixed(1)).join(" ");
+  const area=d+` L${X(pts[pts.length-1].x).toFixed(1)} 62 L${X(pts[0].x).toFixed(1)} 62 Z`;
+  // 7-day moving average
+  const ma=pts.map((p,i)=>{ const win=pts.filter(q=>q.x>p.x-7&&q.x<=p.x); return {x:p.x,y:mean(win.map(q=>q.y))}; });
+  const dm=ma.map((p,i)=>(i?"L":"M")+X(p.x).toFixed(1)+" "+Y(p.y).toFixed(1)).join(" ");
+  const last=pts[pts.length-1];
+  svg.innerHTML=`<path d="${area}" fill="var(--accent-soft)" opacity=".6"/><path d="${d}" stroke="var(--line)" stroke-width="1.5" fill="none"/><path d="${dm}" stroke="var(--accent)" stroke-width="2.5" fill="none" stroke-linecap="round"/><circle cx="${X(last.x).toFixed(1)}" cy="${Y(last.y).toFixed(1)}" r="3.5" fill="var(--accent)"/><text x="6" y="12" font-size="10" fill="var(--muted)">${fmt(hi-0.5,1)}</text><text x="6" y="60" font-size="10" fill="var(--muted)">${fmt(lo+0.5,1)}</text>`;
+}
+function renderEat(){
+  const fs=todayFood().slice().sort((a,b)=>(a.time||"")<(b.time||"")?-1:1); const tt=todayTotals();
+  $("eatTotals").textContent = fs.length? `${fmt(tt.kcal)} kcal · โปรตีน ${fmt(tt.prot)} ก. · เหลือ ${fmt(Math.max(0,budgetToday()-tt.kcal))}` : "";
+  const L=$("foodList"); L.innerHTML="";
+  if(!fs.length){ L.innerHTML='<p class="small muted">ยังไม่มีมื้อวันนี้</p>'; return; }
+  fs.forEach(f=>{ const el=document.createElement("div"); el.className="item";
+    el.innerHTML=`<div class="t"><b>${f.meal||""} ${f.time||""}</b> ${esc(f.text||"")}<br><span class="small muted num">${fmt(f.kcal_low)}–${fmt(f.kcal_high)} kcal · โปรตีน ${fmt(f.protein_g)} ก. · ${f.confidence||""}${f.social?" · สังคม":""}</span></div><button class="del" aria-label="ลบ" title="ลบ">×</button>`;
+    el.querySelector(".del").onclick=()=>del("food",f.id); L.appendChild(el); });
+  if(!selectedMeal){ selectedMeal=defaultMeal(); } document.querySelectorAll("#mealChips .chip").forEach(c=>c.classList.toggle("on",c.dataset.v===selectedMeal));
+}
+function renderMove(){
+  const from=addDays(ymd(),-6); const ex=cache.exercise.filter(e=>e.date>=from).sort((a,b)=>a.date<b.date?1:-1);
+  const L=$("moveList"); L.innerHTML=""; if(!ex.length){ L.innerHTML='<p class="small muted">ยังไม่มีบันทึก</p>'; return; }
+  ex.forEach(e=>{ const el=document.createElement("div"); el.className="item"; el.innerHTML=`<div class="t"><b>${thaiDate(e.date)}</b> ${esc(e.type||"")} ${e.minutes||""} นาที<br><span class="small muted num">นับจริง ≈ ${fmt(e.est_kcal||0)} kcal · ${e.intensity||""}</span></div><button class="del" aria-label="ลบ">×</button>`; el.querySelector(".del").onclick=()=>del("exercise",e.id); L.appendChild(el); });
+}
+function renderWeek(){
+  const st=weekStats();
+  $("weekRange").textContent = `${thaiDate(st.start)} – ${thaiDate(st.end)}`;
+  $("wkAvg").textContent = st.cur.avg!=null? fmt(st.cur.avg,1):"–";
+  $("wkDelta").textContent = st.delta!=null? (st.delta>0?"+":"")+fmt(st.delta,2):"–";
+  $("wkExp").textContent = st.expected!=null? fmt(st.expected,2):"–";
+  $("wkKcal").textContent = st.kcal!=null? fmt(st.kcal):"–";
+  $("wkProt").textContent = st.prot!=null? fmt(st.prot):"–";
+  $("wkLog").textContent = `${st.foodDays}/7`;
+  $("wkGym").textContent = st.gym; $("wkSocial").textContent = st.social; $("wkSleep").textContent = st.sleep!=null? fmt(st.sleep,1):"–";
+  $("wkScore").textContent = st.score;
+  $("wkScoreList").innerHTML = st.items.map(i=>`<div class="row between"><span>${i.label}</span><span class="num">${i.pts}/20</span></div>`).join("");
+  const W=$("winsAll"); W.innerHTML = cache.wins.length? cache.wins.slice().sort((a,b)=>a.ts<b.ts?1:-1).map(w=>`<div class="item"><div class="t"><b class="num">${w.date}</b> ${esc(w.text)}</div></div>`).join("") : '<p class="muted">ยังไม่มี</p>';
+  $("settingsText").textContent = `วันปกติ ${settings.budget_normal} · วันสังคม ${settings.budget_social} · พื้นต่ำสุด ${settings.floor} · โปรตีน ${settings.protein} ก. · TDEE ที่ใช้ ${settings.tdee} · เป้าถัดไป ${settings.next_milestone} กก.`;
+}
+function renderAll(){ renderHeader(); renderHome(); renderEat(); renderMove(); renderWeek(); }
+function esc(s){ return String(s).replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c])); }
+
+/* ---------- db ---------- */
+async function add(col,data){ if(!db){ toast("ยังไม่เชื่อมฐานข้อมูล ลองเปิดหน้าใหม่"); throw new Error("nodb"); } data.ts=new Date().toISOString(); const ref=await db.collection(col).add(data); return ref.id; }
+async function setDoc(col,id,data){ if(!db){ toast("ยังไม่เชื่อมฐานข้อมูล"); throw new Error("nodb"); } data.ts=new Date().toISOString(); await db.collection(col).doc(id).set(data); }
+async function del(col,id){ try{ await db.collection(col).doc(id).delete(); toast("ลบแล้ว"); }catch(e){ toast("ลบไม่สำเร็จ"); } }
+function watch(col){ const u=db.collection(col).onSnapshot(snap=>{ cache[col]=snap.docs.map(d=>({id:d.id,...d.data()})); renderAll(); }, e=>{ console.warn(col,e); }); unsub.push(u); }
+async function initDb(){
+  db = (window.claude&&claude.use)? await claude.use("db") : null;
+  if(!db){ $("weighHint").textContent="เปิดหน้านี้ขณะล็อกอิน claude.ai เพื่อให้บันทึกได้"; return; }
+  ["weight","food","exercise","daily","wins","journal"].forEach(watch);
+  try{ const s=await db.doc("settings/profile").get(); if(s.exists){ settings={...DEFAULTS,...s.data()}; renderAll(); } }catch(e){}
+  db.doc("settings/profile").onSnapshot(s=>{ if(s.exists){ settings={...DEFAULTS,...s.data()}; renderAll(); } },()=>{});
+}
+async function initSample(){
+  sample = (window.claude&&claude.use)? await claude.use("sample") : null;
+  if(!sample){ $("foodStatus").textContent="วิเคราะห์อัตโนมัติไม่พร้อมในมุมมองนี้ บันทึกเองได้"; $("foodManual").hidden=false; return; }
+  try{ sampleLimits = await sample.limits(); }catch(e){ sampleLimits=null; }
+}
+
+/* ---------- actions ---------- */
+$("weighSave").onclick = async ()=>{
+  const v=parseFloat($("weighInput").value); if(!(v>40&&v<250)){ toast("ใส่ตัวเลขระหว่าง 40–250"); return; }
+  try{ await setDoc("weight", ymd(), {date:ymd(), kg:v, note:""}); $("weighInput").value=""; toast("บันทึกแล้ว ไม่ต้องดูเลขรายวัน"); }catch(e){}
+};
+document.querySelectorAll("#mealChips .chip").forEach(c=>c.onclick=()=>{ selectedMeal=c.dataset.v; renderEat(); });
+let photoBlob=null;
+$("foodPhoto").onchange = async e=>{ const f=e.target.files&&e.target.files[0]; if(!f) return; photoBlob = await shrink(f); const url=URL.createObjectURL(photoBlob); $("foodPreview").src=url; $("foodPreview").hidden=false; };
+async function shrink(file){ // downscale to ≤1280px JPEG to keep prompt small
+  try{ const img=await createImageBitmap(file); const s=Math.min(1,1280/Math.max(img.width,img.height)); const c=document.createElement("canvas"); c.width=Math.round(img.width*s); c.height=Math.round(img.height*s); c.getContext("2d").drawImage(img,0,0,c.width,c.height); return await new Promise(r=>c.toBlob(r,"image/jpeg",.85)); }catch(e){ return file; }
+}
+async function analyzeFood(saveable){
+  const text=$("foodText").value.trim(); if(!text&&!photoBlob){ toast("พิมพ์หรือถ่ายรูปก่อน"); return; }
+  if(!sample){ $("foodManual").hidden=false; return; }
+  const tt=todayTotals(); const b=budgetToday()+($("foodSocial").checked?settings.budget_social-settings.budget_normal:0);
+  const prompt = RULES_FOOD + FOOD_DB + `\n\nบริบทวันนี้: กินไปแล้ว ${fmt(tt.kcal)} kcal โปรตีน ${fmt(tt.prot)} ก. งบวัน ${fmt(b)} โปรตีนเป้า ${settings.protein} มื้อ: ${selectedMeal||defaultMeal()} ${$("foodSocial").checked?"(มื้อสังคม/บุฟเฟ่ต์)":""} เวลา ${hm()}
+${saveable?"เธอกินมื้อนี้แล้ว":"เธอยังไม่ได้กิน แค่ถามว่าควรกิน/สั่งอย่างไร ให้ feedback เป็นคำแนะนำก่อนกิน"}
+สิ่งที่กิน: ${text||"(ดูจากรูป)"}${photoBlob?"\nมีรูปแนบ ประเมินขนาดจานจากรูป ถ้าไม่ชัดให้บอกความมั่นใจต่ำ":""}
+ตอบเป็น JSON เท่านั้น: {"items":[{"name":"","kcal_low":0,"kcal_high":0,"protein_g":0}],"kcal_low":0,"kcal_high":0,"protein_g":0,"fiber_g":0,"confidence":"สูง|กลาง|ต่ำ","main_driver":"","score":{"protein":"✅","veg":"⚠️","budget":"✅","fullness":"✅"},"feedback":"","swap":"","next_meal":["","",""],"one_thing":"ทำต่อ 1 อย่าง: ...","question":""}
+question = คำถามกลับ 1 ข้อเฉพาะถ้าจะเปลี่ยนตัวเลขเกิน 150 kcal ไม่งั้นเว้นว่าง`;
+  $("foodStatus").textContent="กำลังวิเคราะห์…"; $("foodAnalyze").disabled=true; $("foodAsk").disabled=true;
+  try{
+    const opts={modelTier:"default", cache:false}; if(photoBlob && sampleLimits && sampleLimits.images) opts.images=[photoBlob];
+    const r = await safeJSON(prompt, opts);
+    pending = {...r, text, saveable};
+    showFoodResult(r, saveable); $("foodStatus").textContent="";
+  }catch(e){ $("foodStatus").textContent=errMsg(e); if(e&&(e.code==="not_granted"||e.code==="sampling_disabled")) $("foodManual").hidden=false; }
+  finally{ $("foodAnalyze").disabled=false; $("foodAsk").disabled=false; }
+}
+function showFoodResult(r, saveable){
+  $("frTitle").textContent = saveable? "ผลวิเคราะห์มื้อนี้":"คำแนะนำก่อนกิน";
+  $("frKcal").textContent = `${fmt(r.kcal_low)}–${fmt(r.kcal_high)}`; $("frProt").textContent = fmt(r.protein_g); $("frConf").textContent = r.confidence||"–";
+  const sc=r.score||{}; $("frScore").innerHTML = [["โปรตีน",sc.protein],["ผัก",sc.veg],["งบ",sc.budget],["อิ่มนาน",sc.fullness]].map(([l,v])=>`<div><b>${v||"–"}</b>${l}</div>`).join("");
+  $("frDriver").textContent = r.main_driver? "ตัวการหลัก: "+r.main_driver : "";
+  $("frFeedback").textContent = (r.feedback||"") + (r.question? " "+r.question:"");
+  $("frSwap").textContent = r.swap||""; $("frSwap").hidden=!r.swap;
+  $("frNext").innerHTML = (r.next_meal||[]).map(n=>`<div class="item"><div class="t">${esc(n)}</div></div>`).join("");
+  $("frOne").textContent = r.one_thing||"";
+  $("foodSave").hidden = !saveable; $("foodResult").hidden=false; $("foodResult").scrollIntoView({behavior:"smooth",block:"start"});
+}
+$("foodAnalyze").onclick=()=>analyzeFood(true); $("foodAsk").onclick=()=>analyzeFood(false);
+$("foodSave").onclick = async ()=>{
+  if(!pending) return; const r=pending;
+  try{ await add("food",{date:ymd(), time:hm(), meal:selectedMeal||defaultMeal(), text:r.text, items:r.items||[], kcal_low:+r.kcal_low||0, kcal_high:+r.kcal_high||0, protein_g:+r.protein_g||0, fiber_g:+r.fiber_g||0, confidence:r.confidence||"กลาง", score:r.score||{}, feedback:r.feedback||"", social:$("foodSocial").checked, main_driver:r.main_driver||""});
+    resetFoodForm(); toast("บันทึกมื้อแล้ว"); }catch(e){}
+};
+$("foodDiscard").onclick=()=>{ resetFoodForm(); };
+function resetFoodForm(){ pending=null; $("foodResult").hidden=true; $("foodText").value=""; photoBlob=null; $("foodPreview").hidden=true; $("foodPhoto").value=""; $("foodSocial").checked=false; }
+$("foodManualSave").onclick = async ()=>{ const k=+$("mKcal").value, p=+$("mProt").value||0; const text=$("foodText").value.trim(); if(!(k>0)){ toast("ใส่แคลอรี่"); return; }
+  try{ await add("food",{date:ymd(), time:hm(), meal:selectedMeal||defaultMeal(), text, items:[], kcal_low:Math.round(k*0.9), kcal_high:Math.round(k*1.1), protein_g:p, fiber_g:0, confidence:"กลาง", score:{}, feedback:"บันทึกเอง", social:$("foodSocial").checked}); $("mKcal").value=""; $("mProt").value=""; resetFoodForm(); toast("บันทึกแล้ว"); }catch(e){} };
+
+$("moveAnalyze").onclick = async ()=>{
+  const text=$("moveText").value.trim(); const min=+$("moveMin").value||0; const watch=+$("moveKcalWatch").value||0;
+  if(!text&&!min){ toast("บอกว่าทำอะไรหรือกี่นาที"); return; }
+  const tt=todayTotals();
+  let r=null;
+  if(sample){
+    $("moveStatus").textContent="กำลังประเมิน…"; $("moveAnalyze").disabled=true;
+    try{ r = await safeJSON(RULES_MOVE+`\n\nวันนี้กินไปแล้ว ${fmt(tt.kcal)} kcal โปรตีน ${fmt(tt.prot)} ก. งบ ${fmt(budgetToday())} เวลา ${hm()}\nสิ่งที่ทำ: ${text||"ไม่ระบุ"} ${min?min+" นาที":""} ${watch?"นาฬิกาบอก "+watch+" kcal":""}\nประวัติ 7 วัน: ยิม ${weekStats().gym} ครั้ง\nตอบ JSON เท่านั้น: {"type":"ชื่อสั้น","minutes":0,"intensity":"เบา|กลาง|หนัก","est_kcal":0,"is_strength":false,"advice":"กินเพิ่มหรือพอ + เหตุผล ≤ 3 ประโยค","one_thing":"ทำต่อ 1 อย่าง: ..."}`, {modelTier:"quick",cache:false}); }
+    catch(e){ $("moveStatus").textContent=errMsg(e); }
+    finally{ $("moveAnalyze").disabled=false; }
+  }
+  if(!r){ // deterministic fallback
+    const m=min||30; const met=/เวท|ยิม|เครื่อง/.test(text)?3.5:/ลู่|ชัน|ปั่น/.test(text)?5:/เร็ว/.test(text)?3.8:3; const est=Math.round(Math.min(met*115*m/60, watch||Infinity)*0.8);
+    r={type:text||"ออกกำลังกาย",minutes:m,intensity:m>60?"หนัก":"กลาง",est_kcal:est,is_strength:/เวท|ยิม|เครื่อง/.test(text),advice:(/เวท|ยิม|เครื่อง/.test(text)?"เวทเทรนนิ่ง: โปรตีน 25–40 ก. ภายใน 2 ชม. (อกไก่ 7-11 / ไข่ต้ม 2 / นมโปรตีน) ถ้ายังมีงบ":"พอแค่นี้ ดื่มน้ำ ไม่ต้องกินคืน"),one_thing:"ทำต่อ 1 อย่าง: ดื่มน้ำ 2 แก้ว"};
+  }
+  try{ await add("exercise",{date:ymd(), time:hm(), type:r.type||text, minutes:+r.minutes||min, intensity:r.intensity||"กลาง", est_kcal:+r.est_kcal||0, watch_kcal:watch||null, is_strength:!!r.is_strength, note:text});
+    $("mrTitle").textContent=r.type||text; $("mrKcal").textContent=fmt(r.est_kcal||0); $("mrMin").textContent=r.minutes||min; $("mrInt").textContent=r.intensity||"–"; $("mrAdvice").textContent=r.advice||""; $("mrOne").textContent=r.one_thing||""; $("moveResult").hidden=false;
+    $("moveText").value=""; $("moveMin").value=""; $("moveKcalWatch").value=""; $("moveStatus").textContent=""; toast("บันทึกแล้ว");
+    if(r.is_strength) await add("wins",{date:ymd(), text:`ไปยิม/เวท ${r.minutes||min} นาที`});
+  }catch(e){}
+};
+
+["sleepH","hungerV","stressV"].forEach(id=>$(id).oninput=()=>{ $("sleepV").textContent=$("sleepH").value; $("hungerT").textContent=$("hungerV").value; $("stressT").textContent=$("stressV").value; });
+$("nightSave").onclick = async ()=>{
+  const d={date:ymd(), sleep_h:+$("sleepH").value, hunger:+$("hungerV").value, stress:+$("stressV").value, steps:+$("stepsV").value||null, logged_all: todayFood().length>0};
+  const journal=$("journalV").value.trim();
+  $("nightStatus").textContent="กำลังบันทึก…"; $("nightSave").disabled=true;
+  try{
+    await setDoc("daily", ymd(), d);
+    if(journal) await add("journal",{date:ymd(), text:journal});
+    const tt=todayTotals(); const ex=cache.exercise.filter(e=>e.date===ymd()); const w=cache.weight.find(x=>x.date===ymd());
+    const summary = `วันนี้: ${todayFood().length} มื้อ ≈ ${fmt(tt.kcal)} kcal (งบ ${fmt(budgetToday())}) · โปรตีน ${fmt(tt.prot)} ก.${ex.length?` · ขยับ ${ex.map(e=>e.type+" "+(e.minutes||"")+" นาที").join(", ")}`:""}${w?` · ชั่ง ${fmt(w.kg,1)}`:""}\nนอน ${d.sleep_h} ชม. · หิว ${d.hunger}/10 · เครียด ${d.stress}/5${tt.kcal>0&&tt.kcal<settings.floor?`\n⚠️ วันนี้กินต่ำกว่า ${settings.floor} พรุ่งนี้เพิ่มมื้อโปรตีน (metformin + กินน้อย = เสี่ยงน้ำตาลต่ำ)`:""}`;
+    $("nrSummary").textContent=summary; $("nrReply").textContent=""; $("nightResult").hidden=false;
+    if(sample){ try{ const r=await sample(RULES_NIGHT+`\n\nข้อมูลวันนี้: ${summary}\nมื้อ: ${todayFood().map(f=>f.text).join(" / ")||"ไม่มีบันทึก"}${journal?`\n3 บรรทัดของเธอ: ${journal}`:""}\nพรุ่งนี้: ${new Date().getDay()===0?"จันทร์ (สอน)":""}`,{modelTier:"quick",cache:false}); $("nrReply").textContent=r.text; }catch(e){ $("nrReply").textContent="ทำต่อ 1 อย่าง: พรุ่งนี้เช้าแค่พิมพ์เลขบนตาชั่ง"; } }
+    else $("nrReply").textContent="ทำต่อ 1 อย่าง: พรุ่งนี้เช้าแค่พิมพ์เลขบนตาชั่ง";
+    $("journalV").value=""; $("nightStatus").textContent=""; toast("บันทึกแล้ว ฝันดี");
+  }catch(e){ $("nightStatus").textContent="บันทึกไม่สำเร็จ ลองใหม่"; }
+  finally{ $("nightSave").disabled=false; }
+};
+
+/* talk */
+function pushMsg(role,text){ chatHistory.push({role,content:text}); const el=document.createElement("div"); el.className="msg "+(role==="user"?"me":"ai"); el.textContent=text; $("chat").appendChild(el); el.scrollIntoView({behavior:"smooth",block:"end"}); return el; }
+function sysMsg(t){ const el=document.createElement("div"); el.className="msg sys"; el.textContent=t; $("chat").appendChild(el); }
+document.querySelectorAll("[data-mode]").forEach(c=>c.onclick=()=>{ chatMode=c.dataset.mode; document.querySelectorAll("[data-mode]").forEach(x=>x.classList.toggle("on",x===c)); sysMsg(chatMode==="coach"?"โหมดโค้ช":"โหมดเพื่อนร่วมทาง ไม่มีตัวเลข ฟังก่อน"); });
+function contextBlock(){
+  const st=weekStats(); const tt=todayTotals(); const wins=cache.wins.slice().sort((a,b)=>a.ts<b.ts?1:-1).slice(0,5).map(w=>`- ${w.date} ${w.text}`).join("\n");
+  const last=weightSeries().slice(-1)[0];
+  return chatMode==="coach"
+    ? `\n\nข้อมูลตอนนี้ (${ymd()} ${hm()}): น้ำหนักล่าสุด ${last?fmt(last.kg,1):"-"} เฉลี่ย 7 วัน ${st.cur.avg!=null?fmt(st.cur.avg,1):"-"} เทียบสัปดาห์ก่อน ${st.delta!=null?fmt(st.delta,2):"-"} · วันนี้กิน ${fmt(tt.kcal)} kcal โปรตีน ${fmt(tt.prot)} งบ ${fmt(budgetToday())} · สัปดาห์นี้ยิม ${st.gym} วันสังคม ${st.social} บันทึก ${st.foodDays}/7\nมื้อวันนี้: ${todayFood().map(f=>f.text).join(" / ")||"-"}\nหลักฐานล่าสุด:\n${wins||"-"}`
+    : `\n\nหลักฐาน (ชัยชนะเล็ก ๆ ที่จดไว้ ใช้อ้างอิงเมื่อเธอท้อ):\n${wins||"- ยังไม่มี"}\nวันนี้ ${ymd()} เธอเปิดแอปมา 7 วันที่ผ่านมาบันทึก ${new Set([...cache.weight,...cache.food,...cache.exercise,...cache.daily].map(x=>x.date).filter(d=>d>=addDays(ymd(),-6))).size} วัน`;
+}
+$("talkSend").onclick = async ()=>{
+  const t=$("talkInput").value.trim(); if(!t) return; $("talkInput").value="";
+  pushMsg("user",t);
+  if(RED_FLAGS.test(t)) $("hotline").hidden=false;
+  if(!sample){ pushMsg("assistant","ตอนนี้คุยอัตโนมัติไม่พร้อมในมุมมองนี้ เปิดหน้านี้จาก claude.ai ขณะล็อกอิน หรือพิมพ์ /talk ใน Claude Code"); return; }
+  const rules=(chatMode==="coach"?RULES_COACH:RULES_COMP)+contextBlock();
+  const msgs=[{role:"user",content:rules+"\n\n(ข้อความต่อไปคือบทสนทนาจริง ตอบข้อความล่าสุด)"},{role:"assistant",content:"รับทราบ"}, ...chatHistory.slice(-12)];
+  const el=pushMsg("assistant","…"); chatHistory.pop();
+  try{ const r=await sample(msgs,{modelTier:chatMode==="coach"?"default":"default",cache:false,onText:u=>{ el.textContent=u.text||"…"; }}); el.textContent=r.text; chatHistory.push({role:"assistant",content:r.text}); }
+  catch(e){ el.textContent=errMsg(e); }
+};
+$("talkInput").addEventListener("keydown",e=>{ if(e.key==="Enter"&&!e.shiftKey&&!e.isComposing){ e.preventDefault(); $("talkSend").click(); } });
+$("chatClear").onclick=()=>{ chatHistory=[]; $("chat").innerHTML=""; $("hotline").hidden=true; };
+$("winAdd").onclick = async ()=>{ const t=$("talkInput").value.trim(); if(!t){ toast("พิมพ์สิ่งที่ทำได้ลงช่องข้อความก่อน แล้วกดจด"); return; } try{ await add("wins",{date:ymd(), text:t}); $("talkInput").value=""; toast("จดไว้แล้ว"); }catch(e){} };
+
+/* week */
+$("weekDiag").onclick = async ()=>{
+  if(!sample){ $("weekStatus").textContent="ต้องเปิดจาก claude.ai ขณะล็อกอิน หรือพิมพ์ /week-review ใน Claude Code"; return; }
+  const st=weekStats(); $("weekStatus").textContent="กำลังวิเคราะห์…"; $("weekDiag").disabled=true;
+  const data=`สัปดาห์ ${st.start} ถึง ${st.end}\nเฉลี่ย 7 วัน ${st.cur.avg!=null?fmt(st.cur.avg,2):"-"} (ชั่ง ${st.weighDays}/7) สัปดาห์ก่อน ${st.prev.avg!=null?fmt(st.prev.avg,2):"-"} ลดจริง ${st.delta!=null?fmt(st.delta,2):"-"} คาดการณ์ ${st.expected!=null?fmt(st.expected,2):"-"} (TDEE ${settings.tdee} deficit ${st.deficit!=null?fmt(st.deficit):"-"})\nkcal เฉลี่ย ${st.kcal!=null?fmt(st.kcal):"-"} โปรตีนเฉลี่ย ${st.prot!=null?fmt(st.prot):"-"} บันทึก ${st.foodDays}/7 วัน ${st.meals} มื้อ ความมั่นใจต่ำ ${st.lowconf} มื้อ วันสังคม ${st.social}\nยิม/เวท ${st.gym} ครั้ง ออกกำลังรวม ${st.exMin} นาที นอนเฉลี่ย ${st.sleep!=null?fmt(st.sleep,1):"-"} เช็กอิน ${st.nights}/7\nคะแนนพฤติกรรม ${st.score}/100: ${st.items.map(i=>i.label+" "+i.pts).join(", ")}\nหลักฐานสัปดาห์นี้: ${cache.wins.filter(w=>w.date>=st.start&&w.date<=st.end).map(w=>w.text).join(" / ")||"-"}\nสัปดาห์ที่เท่าไหร่ของโปรแกรม: ${Math.max(1,Math.ceil(((new Date(st.end+"T12:00:00")-new Date("2026-11-03T12:00:00"))/86400000+1)/7))}`;
+  try{ const r=await sample(RULES_WEEK+"\n\nข้อมูล:\n"+data,{modelTier:"default",cache:false}); $("wkText").textContent=r.text; $("weekResult").hidden=false;
+    await setDoc("weekly", isoWeek(st.end), {week:isoWeek(st.end), date:st.end, avg_kg:st.cur.avg, delta_kg:st.delta, expected_kg:st.expected, kcal_avg:st.kcal, protein_avg:st.prot, food_days:st.foodDays, gym:st.gym, social:st.social, sleep_avg:st.sleep, score:st.score, text:r.text});
+    $("weekStatus").textContent="บันทึกรายงานแล้ว"; }
+  catch(e){ $("weekStatus").textContent=errMsg(e); }
+  finally{ $("weekDiag").disabled=false; }
+};
+
+/* bad day */
+$("badDay").onclick = async ()=>{
+  const w=cache.wins.slice().sort((a,b)=>a.ts<b.ts?1:-1).slice(0,2);
+  $("badDayText").textContent = (w.length? "สิ่งที่คุณทำมาแล้วและมีคนเห็น: "+w.map(x=>x.text).join(" · ")+". " : "") + "วันนี้ไม่ต้องกินให้ถูก ไม่ต้องชั่ง ไม่ต้องบันทึกอะไร แค่เปิดมาบอกก็นับแล้ว";
+  $("badDayCard").hidden=false; $("badDayCard").scrollIntoView({behavior:"smooth"});
+  try{ if(db && !cache.daily.some(d=>d.date===ymd())) await setDoc("daily", ymd(), {date:ymd(), bad_day:true, note:"ไม่ไหว"}); }catch(e){}
+};
+$("badDayClose").onclick=()=>{ $("badDayCard").hidden=true; };
+$("goWeek").onclick=()=>show("week");
+
+/* routing */
+const VIEWS=["home","eat","move","night","talk","week"];
+function show(v){ if(!VIEWS.includes(v)) v="home"; VIEWS.forEach(x=>{ $("view-"+x).hidden = x!==v; }); document.querySelectorAll(".tab").forEach(t=>t.classList.toggle("on",t.dataset.view===v)); if(location.hash!=="#"+v) history.replaceState(null,"","#"+v); window.scrollTo({top:0}); if(v==="week") renderWeek(); if(v==="eat") renderEat(); }
+document.querySelectorAll(".tab").forEach(t=>t.onclick=()=>show(t.dataset.view));
+window.addEventListener("hashchange",()=>show(location.hash.slice(1)));
+show(location.hash.slice(1)||"home");
+renderAll();
+initDb(); initSample();
+</script>

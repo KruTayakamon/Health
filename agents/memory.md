@@ -1,5 +1,7 @@
 # 🗄️ คลังข้อมูล (Memory / Data Store)
 
+> **ตั้งแต่ 5 พ.ย. 2026 แหล่งข้อมูลหลักคือฐานข้อมูลของแอป "ร่วมทาง"** (https://claude.ai/artifact/7ybhGJmME1CMqZdj9voert) อ่าน/เขียนด้วย `ArtifactData` — ไฟล์ใน logs/ คือสำเนา (sync ด้วย `scripts/db_to_logs.py`) โครงสร้างเอกสารใน db ตรงกับตารางข้างล่าง บวก `ts` (ISO) และสำหรับ food: `items[]`, `score{}`, `feedback`, `main_driver`
+
 ทุก agent อ่าน/เขียนไฟล์เดียวกัน ต่อท้าย (append) เสมอ ไม่เขียนทับ
 
 | ไฟล์ | รูปแบบ | ตัวอย่าง |
