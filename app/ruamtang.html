@@ -139,6 +139,20 @@ img.preview{max-width:100%;border-radius:10px;max-height:220px;object-fit:cover}
 .cmp .r{display:grid;grid-template-columns:1fr auto auto auto;gap:8px;font-size:.88rem;align-items:center}
 .cmp .r .d{font-weight:700}
 .up{color:var(--ok)}.dn{color:var(--danger)}
+.form{background:linear-gradient(150deg,var(--sky),var(--mint) 60%,var(--butter));border-color:transparent;box-shadow:var(--shadow)}
+.form .top{display:flex;gap:12px;align-items:center}
+.form img{width:112px;height:112px;border-radius:22px;flex:0 0 112px;background:#FFF9EE;object-fit:cover;box-shadow:0 6px 16px rgba(120,90,140,.15)}
+.form .nm{font-family:var(--display);font-size:1.25rem;font-weight:500;line-height:1.2}
+.traits{display:flex;gap:6px;flex-wrap:wrap}
+.trait{border-radius:999px;padding:3px 10px;font-size:.78rem;background:var(--surface);border:1px solid var(--line)}
+.trait.base{background:var(--warm-soft);border-color:transparent}
+.trait.lock{opacity:.5;border-style:dashed}
+.zoo{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}
+.zoo>div{text-align:center;font-size:.72rem;display:flex;flex-direction:column;gap:4px;align-items:center;color:var(--muted)}
+.zoo img{width:100%;aspect-ratio:1;border-radius:16px;background:#FFF9EE;object-fit:cover}
+.zoo>div.lock img{filter:grayscale(1) brightness(.3) contrast(0);opacity:.35}
+.zoo>div.now{color:var(--fg);font-weight:500}
+.zoo>div.now img{outline:3px solid var(--accent)}
 .linkrow{display:grid;grid-template-columns:1fr 1fr;gap:8px}
 .linkrow .btn{display:flex;flex-direction:column;align-items:center;gap:2px;padding:10px}
 .linkrow .btn span{font-size:1.4rem;line-height:1}
@@ -201,6 +215,13 @@ canvas.confetti{position:fixed;inset:0;z-index:31;pointer-events:none}
       <span>❄️ <b class="num" id="freezeN">1</b> วันพักที่ใช้ได้</span>
       <span>⭐ <b class="num" id="xpTotal">0</b> XP รวม</span>
     </div>
+  </div>
+
+  <div class="card form" id="formCard">
+    <div class="row between"><div class="eyebrow">ร่างประจำด่านของคุณ</div><span class="small muted num" id="formKg"></span></div>
+    <div class="top"><img id="formImg" alt=""><div class="grow" style="min-width:0"><div class="nm" id="formName"></div><p class="small" id="formBio"></p></div></div>
+    <div class="traits" id="formTraits"></div>
+    <p class="small muted" id="formNext"></p>
   </div>
 
   <div class="card gift" id="giftCard">
@@ -456,6 +477,11 @@ canvas.confetti{position:fixed;inset:0;z-index:31;pointer-events:none}
     <div class="album" id="album"></div>
   </div>
   <div class="card">
+    <div class="row between"><div class="eyebrow">ขบวนร่าง</div><span class="small muted num" id="zooCount"></span></div>
+    <p class="small muted">เปลี่ยนตามค่าเฉลี่ย 7 วันที่ "เคยถึง" ถึงแล้วไม่ถอยกลับ ร่างข้างหน้ายังเป็นเงา</p>
+    <div class="zoo" id="zoo"></div>
+  </div>
+  <div class="card">
     <div class="eyebrow">ความสำเร็จ</div>
     <div class="list small" id="achList"></div>
   </div>
@@ -640,6 +666,43 @@ const STICKERS=[
  {id:"a_photo",e:"📷",n:"ถ่ายรูปมื้อแรก",ach:1},{id:"a_moon",e:"🌙",n:"ปิดครัวครบ 12",ach:1},{id:"a_water",e:"💧",n:"น้ำครบ 8",ach:1},{id:"a_fire7",e:"🔥",n:"7 วันติด",ach:1},
  {id:"a_back",e:"🫶",n:"กลับมาแล้ว",ach:1},{id:"a_rest",e:"🛌",n:"วันพักก็มา",ach:1},{id:"a_week",e:"📊",n:"สรุปสัปดาห์แรก",ach:1},{id:"a_112",e:"🚩",n:"ถึงด่าน 112",ach:1},
  {id:"a_pupa",e:"🦋",n:"ผ่านดักแด้",ach:1}];
+const FORMS=[
+ {kg:115,img:"animals/elephant.png",name:"ช้างน้อยปุ๊กลุ๊ก",base:"อวบอั๋น",bio:"ตัวใหญ่ ใจใหญ่ และจำได้ทุกอย่าง รวมถึงตอนที่เคยทำได้ 92 ช้างไม่เคยลืม"},
+ {kg:112,img:"animals/hippo.png",name:"ฮิปโปแช่น้ำ",base:"ชิลล์ ๆ",bio:"ดูอืดแต่วิ่งเร็วกว่าคน และรักน้ำเป็นชีวิตจิตใจ (8 แก้วนะ ไม่ใช่สระ)"},
+ {kg:110,img:"animals/cow.png",name:"วัวนมโปรตีน",base:"เคี้ยวช้า",bio:"กินช้า เคี้ยวนาน โปรตีนเต็มที่ ไม่รีบไปไหน เพราะรู้ว่าจะไปถึงอยู่ดี"},
+ {kg:105,img:"animals/bear.png",name:"หมีนักยกเวท",base:"แกร่ง",bio:"ยกของหนักได้สบาย แต่ให้ความสำคัญกับการนอนเป็นอันดับหนึ่งเสมอ"},
+ {kg:99,img:"animals/tiger.png",name:"เสือต่ำกว่าร้อย",base:"สง่า",bio:"เดินเงียบ ตาคม ไม่ต้องบอกใครว่ากำลังทำอะไร ผลลัพธ์พูดเอง"},
+ {kg:92,img:"animals/cat.png",name:"เหมียวสถิติเดิม",base:"อิสระ",bio:"มาถึงจุดที่เคยมาแล้ว แต่คราวนี้มาด้วยนิสัย ไม่ใช่ความบังเอิญ"},
+ {kg:85,img:"animals/swan.png",name:"หงส์ขาวหน้าสระ",base:"สง่างาม",bio:"ใครจะเชื่อว่าเคยเป็นช้าง หงส์ไม่พูดถึง หงส์แค่ว่ายต่อ"},
+ {kg:78,img:"animals/peacock.png",name:"นกยูงรำแพน",base:"เฉิดฉาย",bio:"ถึงเวลาแสดงตัวแล้ว จะโพสต์หรือไม่โพสต์ก็เรื่องของนกยูง"},
+ {kg:70,img:"animals/dragon.png",name:"มังกรทองร่วมทาง",base:"ตำนาน",bio:"ในตำนานเล่าว่ามีครูคนหนึ่งเริ่มจากพิมพ์เลขบนตาชั่งวันละครั้ง"}];
+const TRAITS=[
+ {id:"smart",t:"ฉลาดหลักแหลม",how:"บันทึกมื้อ 7 วัน",ok:()=>new Set(cache.food.map(f=>f.date)).size>=7},
+ {id:"strong",t:"บึกบึน",how:"ยิม/เวท 3 ครั้ง",ok:()=>cache.exercise.filter(e=>e.is_strength).length>=3},
+ {id:"calm",t:"ใจเย็น",how:"ปิดครัวครบ 12 ชม. 3 ครั้ง",ok:()=>cache.fast.filter(f=>(+f.hours||0)>=12).length>=3},
+ {id:"wet",t:"ชุ่มฉ่ำ",how:"น้ำครบ 8 แก้ว 3 วัน",ok:()=>cache.daily.filter(d=>(+d.water||0)>=8).length>=3},
+ {id:"sleep",t:"นอนเก่ง",how:"นอน ≥7 ชม. 5 คืน",ok:()=>cache.daily.filter(d=>(+d.sleep_h||0)>=7).length>=5},
+ {id:"back",t:"ไม่ยอมแพ้",how:"กลับมาหลังหายไป",ok:()=>achievements().includes("a_back")},
+ {id:"social",t:"สายโซเชียล",how:"มื้อสังคมแบบมีกฎ 2 ครั้ง",ok:()=>cache.food.filter(f=>f.social).length>=2},
+ {id:"walker",t:"ขาเดิน",how:"ขยับ 10 ครั้ง",ok:()=>cache.exercise.length>=10}];
+function lowestAvgEver(){ // lowest 7-day average ever reached (needs ≥4 weigh days in the window)
+  const ws=weightSeries(); if(!ws.length) return null; let best=null;
+  for(const w of ws){ const from=addDays(w.date,-6); const v=ws.filter(x=>x.date>=from&&x.date<=w.date).map(x=>+x.kg); if(v.length>=4){ const m=mean(v); if(best==null||m<best) best=m; } }
+  return best;
+}
+function formIndex(){ const low=lowestAvgEver(); if(low==null) return 0; let i=0; FORMS.forEach((f,k)=>{ if(low<=f.kg+0.001) i=k; }); return i; }
+function renderForm(){
+  const i=formIndex(); const f=FORMS[i]; const next=FORMS[i+1]; const low=lowestAvgEver();
+  $("formImg").src=f.img; $("formImg").alt=f.name; $("formName").textContent=f.name; $("formBio").textContent=f.bio;
+  $("formKg").textContent = low!=null? `ต่ำสุดที่เคยถึง ${fmt(low,1)}` : "รอชั่งครบ 4 วัน";
+  const earned=TRAITS.filter(t=>{ try{return t.ok();}catch(e){return false;} });
+  $("formTraits").innerHTML=`<span class="trait base">${f.base}</span>`+earned.map(t=>`<span class="trait">${t.t}</span>`).join("")+TRAITS.filter(t=>!earned.includes(t)).slice(0,2).map(t=>`<span class="trait lock" title="${t.how}">🔒 ${t.how}</span>`).join("");
+  $("formNext").textContent = next? `ร่างถัดไปรออยู่ที่ ${next.kg} กก. (ค่าเฉลี่ย 7 วัน) ยังเป็นเงาอยู่ในกล่องสะสม` : "สุดทางแล้ว นี่คือตำนาน";
+  $("zooCount").textContent=`${i+1} / ${FORMS.length}`;
+  $("zoo").innerHTML=FORMS.map((x,k)=>`<div class="${k<i?"":k===i?"now":"lock"}"><img src="${x.img}" alt="" loading="lazy"><span>${k<=i? x.name : "??? · "+x.kg}</span></div>`).join("");
+  try{ const seen=localStorage.getItem("rt_form"); if(seen!=null && i>+seen){ celebrateForm(i); } localStorage.setItem("rt_form",String(i)); }catch(e){}
+}
+function celebrateForm(i){ const f=FORMS[i]; const d=document.createElement("div"); d.className="celebrate"; d.innerHTML=`<div class="box"><img src="${f.img}" alt="" style="width:140px;height:140px;border-radius:28px"><h2>ร่างใหม่: ${f.name}</h2><p class="small">${f.bio}</p><button class="btn accent block" id="celebOk2">เย้!</button></div>`; document.body.appendChild(d); d.querySelector("#celebOk2").onclick=()=>d.remove(); confetti(); }
 const TEASE={
  morning:["ตื่นยัง 👀 ตาชั่งรอจนง่วงแล้วนะ","เช้านี้ขอเลขเดียว แล้วฉันจะเงียบทั้งวัน สัญญา (อาจจะ)","ชั่งก่อน กาแฟทีหลัง… ล้อเล่น กาแฟก่อนก็ได้ แต่ชั่งด้วยนะ","ตาชั่งบอกว่าคิดถึง เหยียบหน่อย"],
  late:["ยังไม่ชั่งก็ไม่ว่า พรุ่งนี้เช้าฉันจะทวง… เบา ๆ","วันนี้ข้ามตาชั่งไปก่อน บันทึกมื้อสักมื้อให้ฉันดูหน่อยสิ","ไม่ชั่งก็ได้ แต่แวะมาหาแบบนี้ฉันก็ดีใจแล้ว"],
@@ -829,7 +892,7 @@ function renderMap(){
   const li=levelOf(totalXp());
   $("mapSvg").innerHTML=`<path d="${path}" stroke="var(--line)" stroke-width="10" fill="none" stroke-linecap="round"/><path id="mapProg" d="${path}" stroke="var(--accent)" stroke-width="10" fill="none" stroke-linecap="round" opacity=".9"/>`
     +pts.map((p,i)=>`<g opacity="${visible(i)?1:.25}"><circle cx="${p.x}" cy="${p.y}" r="14" fill="${reached(i)?"var(--accent)":"var(--surface)"}" stroke="var(--accent)" stroke-width="3"/><text x="${p.x}" y="${p.y+5}" text-anchor="middle" font-size="12" fill="${reached(i)?"var(--accent-ink)":"var(--fg)"}" font-weight="700">${visible(i)?p.kg:"?"}</text><text x="${p.x+(i%2?-22:22)}" y="${p.y+4}" text-anchor="${i%2?"end":"start"}" font-size="12" fill="var(--fg)">${visible(i)?p.l:"หมอก"}</text></g>`).join("")
-    +`<g transform="translate(${mx-24} ${my-50})">${mascotSVG("happy",li,48).replace('<svg ','<svg x="0" y="0" ')}</g>`;
+    +`<image href="${FORMS[formIndex()].img}" x="${mx-26}" y="${my-58}" width="52" height="52" style="filter:drop-shadow(0 3px 4px rgba(0,0,0,.15))"/>`;
   try{ const pr=$("mapProg"); const L=pr.getTotalLength(); pr.style.strokeDasharray=L; pr.style.strokeDashoffset=L*(1-(idx+f)/(pts.length-1)); }catch(e){}
   $("mapPos").textContent = st.cur.avg!=null? `ตอนนี้ ${fmt(st.cur.avg,1)} → ด่านถัดไป ${b.kg}` : "ยังไม่มีค่าเฉลี่ย";
 }
@@ -840,7 +903,7 @@ function renderPlay(){
   $("xpBar").style.width = next? Math.min(100,(xp-cur.xp)/(next.xp-cur.xp)*100)+"%" : "100%";
   $("xpTotal").textContent=xp;
   const s=streakInfo(); $("streakN").textContent=s.n; $("freezeN").textContent=s.freeze;
-  renderGift(); renderAlbum(); renderMap();
+  renderGift(); renderForm(); renderAlbum(); renderMap();
   $("mascot").innerHTML=mascotSVG(mascotMood(),li,96); $("bubble").textContent=bubbleText();
   const qs=questList(); $("questDone").textContent=`${qs.filter(q=>q.done).length}/${qs.length}`;
   $("quests").innerHTML=qs.map(q=>`<div class="quest ${q.done?"done":""}"><div class="box">${q.done?"✓":""}</div><span>${q.label}</span><span class="xp">+${q.xp} XP</span></div>`).join("");
