@@ -1,31 +1,34 @@
 <title>ร่วมทาง</title>
 <meta name="claude:viewport-fit-sides" content="cover">
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Pridi:wght@400;600&family=Noto+Sans+Thai:wght@400;500;700&display=swap">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Mitr:wght@400;500;600&family=Noto+Sans+Thai:wght@400;500;700&display=swap">
 <style>
 /* Layout: one-screen phone app; sticky header, scrolling content, fixed bottom tab bar. Home = today at a glance + the one action (weigh). */
 :root{
-  --bg:#F3F4F0; --surface:#FFFFFF; --fg:#1E2A28; --muted:#5E6B68; --line:#DCE1DD;
-  --accent:#2F6F62; --accent-ink:#FFFFFF; --accent-soft:#DCEBE6;
-  --warm:#B8771F; --warm-soft:#F6E9D3; --danger:#B5483C; --danger-soft:#F7DFDC; --ok:#2F6F62;
-  --display:"Pridi","Noto Sans Thai",serif; --body:"Noto Sans Thai",system-ui,sans-serif;
-  --radius:14px; --shadow:0 1px 2px rgba(20,30,28,.06),0 6px 18px rgba(20,30,28,.06);
+  --bg:#FFF6F3; --surface:#FFFFFF; --fg:#4A3F55; --muted:#8C8198; --line:#F3E3EA;
+  --accent:#8E7CC3; --accent-ink:#FFFFFF; --accent-soft:#EFE9FB;
+  --warm:#E8955A; --warm-soft:#FFE9D6; --danger:#D9706B; --danger-soft:#FFE0DE; --ok:#5FB39A;
+  --mint:#CFF0E4; --pink:#FBD3E3; --sky:#D6ECFB; --butter:#FFF1BF; --lilac:#E6DDFB;
+  --display:"Mitr","Noto Sans Thai",sans-serif; --body:"Noto Sans Thai",system-ui,sans-serif;
+  --radius:18px; --shadow:0 2px 4px rgba(120,90,140,.06),0 10px 24px rgba(120,90,140,.10);
 }
 @media (prefers-color-scheme: dark){ :root:not([data-theme="light"]){
-  --bg:#141A19; --surface:#1D2423; --fg:#E8ECEA; --muted:#9AA8A4; --line:#2C3634;
-  --accent:#7FC4B2; --accent-ink:#0F1F1B; --accent-soft:#24403A;
-  --warm:#E0A95A; --warm-soft:#3A2E1C; --danger:#E07B70; --danger-soft:#3D2320; --ok:#7FC4B2;
-  --shadow:0 1px 2px rgba(0,0,0,.3),0 6px 18px rgba(0,0,0,.25); color-scheme:dark }}
+  --bg:#221C2B; --surface:#2D2638; --fg:#F2EAF6; --muted:#A99DB8; --line:#3E3450;
+  --accent:#C4B5FD; --accent-ink:#1F1830; --accent-soft:#3B314F;
+  --warm:#F5B583; --warm-soft:#4A3526; --danger:#F09C97; --danger-soft:#4A2A2C; --ok:#8FD7BC;
+  --mint:#2F4D44; --pink:#4E3140; --sky:#2E3F50; --butter:#4A4330; --lilac:#3B314F;
+  --shadow:0 2px 4px rgba(0,0,0,.3),0 10px 24px rgba(0,0,0,.3); color-scheme:dark }}
 :root[data-theme="dark"]{
-  --bg:#141A19; --surface:#1D2423; --fg:#E8ECEA; --muted:#9AA8A4; --line:#2C3634;
-  --accent:#7FC4B2; --accent-ink:#0F1F1B; --accent-soft:#24403A;
-  --warm:#E0A95A; --warm-soft:#3A2E1C; --danger:#E07B70; --danger-soft:#3D2320; --ok:#7FC4B2;
-  --shadow:0 1px 2px rgba(0,0,0,.3),0 6px 18px rgba(0,0,0,.25); color-scheme:dark }
+  --bg:#221C2B; --surface:#2D2638; --fg:#F2EAF6; --muted:#A99DB8; --line:#3E3450;
+  --accent:#C4B5FD; --accent-ink:#1F1830; --accent-soft:#3B314F;
+  --warm:#F5B583; --warm-soft:#4A3526; --danger:#F09C97; --danger-soft:#4A2A2C; --ok:#8FD7BC;
+  --mint:#2F4D44; --pink:#4E3140; --sky:#2E3F50; --butter:#4A4330; --lilac:#3B314F;
+  --shadow:0 2px 4px rgba(0,0,0,.3),0 10px 24px rgba(0,0,0,.3); color-scheme:dark }
 *{box-sizing:border-box}
 html,body{height:100%}
 body{background:var(--bg);color:var(--fg);font-family:var(--body);font-size:16px;line-height:1.5;margin:0}
 body::before{content:"";position:fixed;inset:0 0 auto;height:env(safe-area-inset-top,0px);z-index:10;background:var(--bg)}
 button,input,select,textarea{font:inherit;color:inherit}
-h1,h2,h3{font-family:var(--display);font-weight:600;line-height:1.25;margin:0;text-wrap:balance}
+h1,h2,h3{font-family:var(--display);font-weight:500;line-height:1.25;margin:0;text-wrap:balance}
 h1{font-size:1.5rem}h2{font-size:1.2rem}h3{font-size:1.02rem}
 p{margin:0}
 .num{font-variant-numeric:tabular-nums}
@@ -37,7 +40,7 @@ header.top .date{color:var(--muted);font-size:.9rem}
 main{max-width:560px;margin:0 auto;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));
   padding-block:4px calc(84px + env(safe-area-inset-bottom,0px))}
 section.view{display:flex;flex-direction:column;gap:14px}
-.card{background:var(--surface);border:1px solid var(--line);border-radius:var(--radius);padding:16px;display:flex;flex-direction:column;gap:10px;min-width:0}
+.card{background:var(--surface);border:1px solid var(--line);border-radius:var(--radius);padding:16px;box-shadow:0 1px 0 rgba(120,90,140,.03);display:flex;flex-direction:column;gap:10px;min-width:0}
 .card.primary{border-color:var(--accent);box-shadow:var(--shadow)}
 .eyebrow{font-size:.74rem;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);font-weight:500}
 .row{display:flex;gap:10px;align-items:center;flex-wrap:wrap}
@@ -56,7 +59,7 @@ section.view{display:flex;flex-direction:column;gap:14px}
 .bar>i.over{background:var(--warm)}
 .btn{appearance:none;border:1px solid var(--line);background:var(--surface);border-radius:12px;padding:12px 16px;font-weight:500;cursor:pointer;text-align:center;min-height:46px}
 .btn:focus-visible,.tab:focus-visible,input:focus-visible,textarea:focus-visible,select:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
-.btn.accent{background:var(--accent);color:var(--accent-ink);border-color:var(--accent)}
+.btn.accent{background:var(--accent);color:var(--accent-ink);border-color:var(--accent);box-shadow:0 4px 12px rgba(142,124,195,.3)}
 .btn.ghost{background:transparent}
 .btn.warm{background:var(--warm-soft);border-color:transparent;color:var(--fg)}
 .btn.danger{background:var(--danger-soft);border-color:transparent;color:var(--fg)}
@@ -110,7 +113,35 @@ nav.tabs .in{max-width:560px;margin:0 auto;display:grid;grid-template-columns:re
 details summary{cursor:pointer;color:var(--muted);font-size:.9rem}
 img.preview{max-width:100%;border-radius:10px;max-height:220px;object-fit:cover}
 /* play layer */
-.hero{background:linear-gradient(160deg,var(--accent-soft),var(--surface) 70%);border-color:transparent;box-shadow:var(--shadow);gap:12px}
+.hero{background:linear-gradient(150deg,var(--lilac),var(--pink) 55%,var(--sky));border-color:transparent;box-shadow:var(--shadow);gap:12px;position:relative;overflow:hidden}
+.hero::after{content:"";position:absolute;right:-30px;top:-30px;width:120px;height:120px;border-radius:50%;background:var(--butter);opacity:.5;pointer-events:none}
+.hero>*{position:relative}
+.mascot{width:108px;height:108px;flex:0 0 108px}
+.gift{background:linear-gradient(140deg,var(--butter),var(--pink));border-color:transparent;text-align:center;align-items:center}
+.giftbox{font-size:3rem;line-height:1;cursor:pointer;transition:transform .2s}
+.giftbox.shake{animation:shake .6s ease-in-out 2}
+@keyframes shake{0%,100%{transform:rotate(0)}25%{transform:rotate(-8deg) scale(1.05)}75%{transform:rotate(8deg) scale(1.05)}}
+.reveal{background:var(--surface);border-radius:14px;padding:12px;width:100%;display:flex;flex-direction:column;gap:6px;align-items:center}
+.reveal .big{font-size:2.6rem}
+.rar1{color:var(--muted)}.rar2{color:var(--accent)}.rar3{color:var(--warm)}
+.album{display:grid;grid-template-columns:repeat(4,1fr);gap:8px}
+.stk{aspect-ratio:1;border-radius:14px;background:var(--surface);border:1px solid var(--line);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;font-size:.68rem;text-align:center;padding:4px;color:var(--muted);cursor:pointer}
+.stk .e{font-size:1.7rem;line-height:1}
+.stk.locked .e{filter:grayscale(1);opacity:.25}
+.stk.own{background:var(--accent-soft);border-color:var(--accent);color:var(--fg)}
+.stk.eq{outline:2px solid var(--warm)}
+.map{width:100%;height:auto;display:block}
+.chg{display:grid;grid-template-columns:repeat(2,1fr);gap:8px}
+.chg>div{background:var(--bg);border-radius:12px;padding:10px;display:flex;flex-direction:column;gap:2px}
+.chg b{font-family:var(--display);font-size:1.4rem;font-weight:500}
+.chg span{font-size:.78rem;color:var(--muted)}
+.cmp{display:flex;flex-direction:column;gap:6px}
+.cmp .r{display:grid;grid-template-columns:1fr auto auto auto;gap:8px;font-size:.88rem;align-items:center}
+.cmp .r .d{font-weight:700}
+.up{color:var(--ok)}.dn{color:var(--danger)}
+.linkrow{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.linkrow .btn{display:flex;flex-direction:column;align-items:center;gap:2px;padding:10px}
+.linkrow .btn span{font-size:1.4rem;line-height:1}
 .hero .top{display:flex;gap:12px;align-items:center}
 .mascot{width:96px;height:96px;flex:0 0 96px}
 .mascot svg{width:100%;height:100%;display:block}
@@ -119,7 +150,7 @@ img.preview{max-width:100%;border-radius:10px;max-height:220px;object-fit:cover}
 .bubble{position:relative;background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:10px 12px;font-size:.95rem;flex:1 1 auto;min-width:0}
 .bubble::before{content:"";position:absolute;left:-7px;top:18px;width:12px;height:12px;background:var(--surface);border-left:1px solid var(--line);border-bottom:1px solid var(--line);transform:rotate(45deg)}
 .lvl{display:flex;gap:10px;align-items:center}
-.lvl .badge{background:var(--warm);color:#fff;border-radius:999px;padding:3px 10px;font-weight:700;font-size:.85rem;white-space:nowrap}
+.lvl .badge{background:var(--accent);color:var(--accent-ink);border-radius:999px;padding:3px 10px;font-weight:700;font-size:.85rem;white-space:nowrap}
 .lvl .title{font-family:var(--display);font-weight:600}
 .xpbar{height:8px;border-radius:5px;background:var(--line);overflow:hidden}
 .xpbar>i{display:block;height:100%;background:var(--warm);border-radius:5px;transition:width .5s ease}
@@ -170,6 +201,14 @@ canvas.confetti{position:fixed;inset:0;z-index:31;pointer-events:none}
       <span>❄️ <b class="num" id="freezeN">1</b> วันพักที่ใช้ได้</span>
       <span>⭐ <b class="num" id="xpTotal">0</b> XP รวม</span>
     </div>
+  </div>
+
+  <div class="card gift" id="giftCard">
+    <div class="eyebrow">กล่องของขวัญวันนี้</div>
+    <div class="giftbox" id="giftBox">🎁</div>
+    <p class="small" id="giftHint">บันทึกอะไรสักอย่างวันนี้ กล่องจะเปิดได้</p>
+    <button class="btn accent" id="giftOpen" hidden>เปิดกล่อง</button>
+    <div class="reveal" id="giftReveal" hidden></div>
   </div>
 
   <div class="card primary" id="weighCard">
@@ -242,9 +281,11 @@ canvas.confetti{position:fixed;inset:0;z-index:31;pointer-events:none}
   <div class="card">
     <div class="eyebrow">สมุดหลักฐาน</div>
     <p id="winLine" class="small">ยังไม่มีบันทึก ทุกก้าวเล็ก ๆ จะถูกจดไว้ตรงนี้</p>
-    <div class="row">
-      <button class="btn grow" id="goWeek">สรุปสัปดาห์</button>
-      <button class="btn warm grow" id="badDay">วันนี้ไม่ไหว</button>
+    <div class="linkrow">
+      <button class="btn" id="goMap"><span>🗺️</span>แผนที่การเดินทาง</button>
+      <button class="btn" id="goAlbum"><span>📒</span>กล่องสะสม</button>
+      <button class="btn" id="goWeek"><span>📊</span>สรุปสัปดาห์</button>
+      <button class="btn warm" id="badDay"><span>🛌</span>วันนี้ไม่ไหว</button>
     </div>
   </div>
 
@@ -389,6 +430,42 @@ canvas.confetti{position:fixed;inset:0;z-index:31;pointer-events:none}
   </div>
 </section>
 
+<!-- ========== MAP ========== -->
+<section class="view" id="view-map" hidden>
+  <div class="card">
+    <div class="eyebrow">การเดินทางของฉัน</div>
+    <div class="chg" id="chg"></div>
+    <p class="small muted" id="chgNote"></p>
+  </div>
+  <div class="card">
+    <div class="row between"><div class="eyebrow">สัปดาห์นี้ vs สัปดาห์ก่อน</div></div>
+    <div class="cmp" id="cmp"></div>
+  </div>
+  <div class="card">
+    <div class="row between"><div class="eyebrow">แผนที่</div><span class="small muted" id="mapPos"></span></div>
+    <svg class="map" id="mapSvg" viewBox="0 0 320 560" aria-label="แผนที่การเดินทาง"></svg>
+    <p class="small muted">ตำแหน่งบนแผนที่ใช้ค่าเฉลี่ย 7 วัน ไม่ใช่เลขรายวัน ด่านที่อยู่ในหมอกจะเห็นเมื่อถึงด่านก่อนหน้า</p>
+  </div>
+</section>
+
+<!-- ========== ALBUM ========== -->
+<section class="view" id="view-album" hidden>
+  <div class="card">
+    <div class="row between"><div class="eyebrow">กล่องสะสม</div><span class="small muted num" id="albumCount"></span></div>
+    <p class="small muted">ได้จากกล่องของขวัญรายวันและจากสิ่งที่ทำจริง แตะของแต่งตัวเพื่อใส่ให้เพื่อน</p>
+    <div class="album" id="album"></div>
+  </div>
+  <div class="card">
+    <div class="eyebrow">ความสำเร็จ</div>
+    <div class="list small" id="achList"></div>
+  </div>
+  <div class="card">
+    <div class="eyebrow">เลเวลของเพื่อน</div>
+    <div class="row" style="align-items:center"><div class="mascot" id="mascot2"></div><div class="grow small" id="stageText"></div></div>
+    <div class="list small" id="levelList2"></div>
+  </div>
+</section>
+
 <!-- ========== WEEK ========== -->
 <section class="view" id="view-week" hidden>
   <div class="card">
@@ -425,8 +502,8 @@ canvas.confetti{position:fixed;inset:0;z-index:31;pointer-events:none}
   </div>
   <div class="card">
     <details><summary>งบและเป้าที่ใช้อยู่ (แก้ผ่านโค้ชใน Claude Code)</summary><p class="small num" id="settingsText"></p></details>
-    <div class="row"><div class="field grow"><label for="mascotName">ชื่อเพื่อนตัวการ์ตูน</label><input type="text" id="mascotName" maxlength="20" placeholder="น้องเต่า"></div><button class="btn" id="mascotSave">ตั้งชื่อ</button></div>
-    <div class="list small" id="levelList"></div>
+    <div class="row"><div class="field grow"><label for="mascotName">ชื่อเพื่อนตัวการ์ตูน</label><input type="text" id="mascotName" maxlength="20" placeholder="น้องปุย"></div><button class="btn" id="mascotSave">ตั้งชื่อ</button></div>
+    <div class="list small" id="levelList" hidden></div>
   </div>
 </section>
 </main>
@@ -487,7 +564,7 @@ const RED_FLAGS = /ไม่อยากอยู่|อยากตาย|ฆ�
 
 /* ---------- state ---------- */
 let db=null, sample=null, sampleLimits=null;
-let cache = {weight:[], food:[], exercise:[], daily:[], wins:[], journal:[], fast:[], weekly:[]};
+let cache = {weight:[], food:[], exercise:[], daily:[], wins:[], journal:[], fast:[], weekly:[], gifts:[], collection:{}};
 let fastCurrent=null; let ringTimer=null;
 let unsub = [];
 let pending = null; // analysed food awaiting save
@@ -542,7 +619,42 @@ function weekStats(end=ymd()){
 }
 
 /* ---------- play layer: XP, levels, streak, quests, mascot ---------- */
-const LEVELS=[{xp:0,t:"เริ่มออกเดิน"},{xp:50,t:"กลับมาแล้ว"},{xp:120,t:"ชั่งจนชิน"},{xp:220,t:"เพื่อนตาชั่ง"},{xp:350,t:"ครูของตัวเอง"},{xp:520,t:"นักเดินหน้า"},{xp:740,t:"มือเก๋า"},{xp:1000,t:"สม่ำเสมอ"},{xp:1350,t:"ร่วมทางตัวจริง"},{xp:1800,t:"ตำนานเต่า"}];
+const LEVELS=[
+ {xp:0,t:"ไข่น้อย",stage:"egg",s:"ยังอยู่ในไข่ รอให้มีคนมาเคาะ"},
+ {xp:50,t:"หนอนตื่นแล้ว",stage:"cat",s:"ฟักแล้ว! ตัวเล็กแต่หิวใบไม้"},
+ {xp:120,t:"หนอนกินใบไม้",stage:"cat",s:"ได้ใบไม้เป็นของตัวเอง"},
+ {xp:220,t:"หนอนตัวเก่ง",stage:"cat",s:"ผ้าพันคอ + ดอกไม้ เริ่มมีสไตล์"},
+ {xp:350,t:"ดักแด้",stage:"pupa",s:"ข้างในกำลังเปลี่ยน ข้างนอกยังดูเหมือนเดิม เหมือนตาชั่งที่ช้ากว่านิสัย"},
+ {xp:520,t:"ดักแด้เรืองแสง",stage:"pupa",s:"ใกล้แล้ว อย่าเพิ่งเปิดดู"},
+ {xp:740,t:"ผีเสื้อแรกบิน",stage:"fly",s:"ออกมาแล้ว! ปีกยังสั่นอยู่เลย"},
+ {xp:1000,t:"ผีเสื้อสีสวย",stage:"fly",s:"ลายปีกเต็มแล้ว"},
+ {xp:1350,t:"ผีเสื้อมงกุฎ",stage:"fly",s:"ใครจะเชื่อว่าเคยเป็นไข่"},
+ {xp:1800,t:"ผีเสื้อทอง",stage:"fly",s:"ตำนานของสวนนี้"}];
+const STICKERS=[
+ {id:"egg",e:"🥚",n:"ไข่ต้มคู่ใจ",r:1},{id:"cocoa",e:"🍫",n:"โกโก้ชงเอง",r:1},{id:"matcha",e:"🍵",n:"มัทฉะนมสด",r:1},{id:"leaf",e:"🍃",n:"ใบไม้หนอน",r:1},
+ {id:"sprout",e:"🌱",n:"ต้นอ่อน",r:1},{id:"sun",e:"☀️",n:"เช้าใหม่",r:1},{id:"walk",e:"👟",n:"เดินเล่น",r:1},{id:"cloud",e:"☁️",n:"เมฆนุ่ม",r:1},
+ {id:"shabu",e:"🍲",n:"ชาบูมีกฎ",r:2},{id:"friend",e:"🫂",n:"นัดเพื่อน",r:2},{id:"star",e:"⭐",n:"ดาวเด่น",r:2},{id:"heart",e:"💗",n:"ใจดวงน้อย",r:2},
+ {id:"teacher",e:"📚",n:"ครูของตัวเอง",r:2},{id:"bow",e:"🎀",n:"โบว์ชมพู",r:2,wear:"bow"},{id:"beret",e:"🧢",n:"หมวกเบเร่ต์",r:2,wear:"beret"},
+ {id:"rainbow",e:"🌈",n:"หลังฝน",r:3},{id:"gift",e:"🎁",n:"กล่องลับ",r:3},{id:"balloon",e:"🎈",n:"ลูกโป่ง",r:3,wear:"balloon"},{id:"crownf",e:"🌸",n:"มงกุฎดอกไม้",r:3,wear:"flowercrown"},
+ {id:"a_scale",e:"⚖️",n:"ชั่งครั้งแรก",ach:1},{id:"a_scale7",e:"📅",n:"ชั่ง 7 วัน",ach:1},{id:"a_gym",e:"🏋️",n:"วันยิมแรก",ach:1},{id:"a_gym10",e:"💪",n:"ยิม 10 ครั้ง",ach:1},
+ {id:"a_photo",e:"📷",n:"ถ่ายรูปมื้อแรก",ach:1},{id:"a_moon",e:"🌙",n:"ปิดครัวครบ 12",ach:1},{id:"a_water",e:"💧",n:"น้ำครบ 8",ach:1},{id:"a_fire7",e:"🔥",n:"7 วันติด",ach:1},
+ {id:"a_back",e:"🫶",n:"กลับมาแล้ว",ach:1},{id:"a_rest",e:"🛌",n:"วันพักก็มา",ach:1},{id:"a_week",e:"📊",n:"สรุปสัปดาห์แรก",ach:1},{id:"a_112",e:"🚩",n:"ถึงด่าน 112",ach:1},
+ {id:"a_pupa",e:"🦋",n:"ผ่านดักแด้",ach:1}];
+const TEASE={
+ morning:["ตื่นยัง 👀 ตาชั่งรอจนง่วงแล้วนะ","เช้านี้ขอเลขเดียว แล้วฉันจะเงียบทั้งวัน สัญญา (อาจจะ)","ชั่งก่อน กาแฟทีหลัง… ล้อเล่น กาแฟก่อนก็ได้ แต่ชั่งด้วยนะ","ตาชั่งบอกว่าคิดถึง เหยียบหน่อย"],
+ late:["ยังไม่ชั่งก็ไม่ว่า พรุ่งนี้เช้าฉันจะทวง… เบา ๆ","วันนี้ข้ามตาชั่งไปก่อน บันทึกมื้อสักมื้อให้ฉันดูหน่อยสิ","ไม่ชั่งก็ได้ แต่แวะมาหาแบบนี้ฉันก็ดีใจแล้ว"],
+ back:["กลับมาแล้ว! ฉันไม่ถามหรอกว่าไปไหนมา (แต่คิดถึงนะ)","เฮ้ย มาแล้ว ไม่ต้องอธิบาย พิมพ์เลขมาเลย","หายไปแป๊บเดียวเอง ฉันยังนับว่าเธอยังอยู่ในเกม"],
+ weighed:["ชั่งแล้ว! วันนี้เธอชนะฉันไปหนึ่งแต้ม","โอเค งานบังคับจบ ที่เหลือถ้าทำฉันจะแกล้งทำเป็นไม่ประทับใจ","เรียบร้อย ตอนนี้จะไปกินโกโก้ก็ไม่มีใครว่า (ชงเองนะ)"],
+ move:["ไปขยับมาเหรอ ใครกันเนี่ย ไม่รู้จัก 😎","กล้ามเนื้อส่งข้อความมาว่า ขอบคุณ","วันนี้เท่มาก ฉันจะไม่พูดอะไรเพิ่ม… โอเคพูดแล้ว"],
+ evening:["ก่อนนอนเล่าให้ฟัง 3 ข้อ แล้วฉันจะเล่านิทาน… ไม่เล่าหรอก แต่ให้ XP","คืนนี้นอนกี่โมง ฉันจะคอยนับ (ไม่นับหรอก แต่บอกหน่อย)","แท็บ คืนนี้ รอเธออยู่ 1 นาทีเอง"],
+ kitchen:["ครัวปิดอยู่นะ ฉันเฝ้าตู้เย็นให้ ใครแอบเปิดฉันรู้","ปิดครัวอยู่ หิวก็ดื่มน้ำก่อน แล้วค่อยคุยกัน"],
+ bad:["วันนี้ไม่ต้องทำอะไรเลย ฉันนั่งอยู่ข้าง ๆ นี่แหละ","พักได้ ไม่หักแต้ม ไม่ถาม พรุ่งนี้ค่อยว่ากัน"],
+ good:["ภารกิจเกือบครบ เธอนี่มันตัวจริง","วันนี้ดีมาก ฉันจะจดไว้ในสมุดลับ (ไม่ลับ)"],
+ quiet:["วันนี้ชั่งแล้ว ที่เหลือตามสบาย ฉันไม่กดดัน (กดดันนิดนึง)","แวะมาเฉย ๆ ก็ได้นะ ฉันชอบ"],
+ giftmsg:["วันนี้เธอดูดีกว่าเมื่อวาน ฉันไม่ได้ดูตาชั่งนะ ดูที่เธอมา","รู้ไหมว่าคนที่พยายามครั้งที่ 5 หายากกว่าคนที่สำเร็จครั้งแรก","ถ้าวันนี้เหนื่อย จำไว้ว่าไข่ใบนี้ก็ยังอยู่ในสวนเพราะเธอ","ฉันเป็นแค่หนอนในแอป แต่ฉันเห็นทุกครั้งที่เธอมา","ครูที่ไม่ยอมแพ้กับตัวเอง สอนนักเรียนได้ดีกว่าที่คิดเยอะ"],
+ coupon:["คูปอง: โกโก้ร้าน 1 แก้วโดยไม่ต้องรู้สึกผิด (นับในงบวันสังคม)","คูปอง: หมูกรอบ 6 ชิ้นเป็นกับข้าวร่วมโต๊ะ ใช้ได้สัปดาห์นี้","คูปอง: ข้ามเช็กอินก่อนนอน 1 คืน XP ยังได้ครบ","คูปอง: ชาบูกับเพื่อน ฉันไม่ถามอะไรเลยนอกจากน้ำจิ้ม"]};
+function seed(s){ let x=0; for(const c of s) x=(x*31+c.charCodeAt(0))>>>0; return x; }
+function pick(arr,key){ return arr[seed(ymd()+"|"+key+"|"+(settings.mascot_name||""))%arr.length]; }
 const XP={weigh:10, meal:5, mealCap:4, move:15, strength:5, night:10, fast:10, water:5, week:20, bad:5, win:5};
 function dayWater(d){ const x=cache.daily.find(z=>z.date===d); return x? (+x.water||0):0; }
 function xpBreakdown(){
@@ -551,16 +663,19 @@ function xpBreakdown(){
   cache.exercise.forEach(e=>{ b.move+=XP.move+(e.is_strength?XP.strength:0); });
   cache.daily.forEach(d=>{ if(d.sleep_h!=null) b.night+=XP.night; if(d.bad_day) b.bad+=XP.bad; if((+d.water||0)>=6) b.water+=XP.water; });
   cache.fast.forEach(f=>{ if((+f.hours||0)>=12) b.fast+=XP.fast; });
+  b.gift=cache.gifts.filter(g=>g.opened&&g.type==="xp").reduce((s,g)=>s+(+g.xp||0),0);
   return b;
 }
 function totalXp(){ return Object.values(xpBreakdown()).reduce((a,c)=>a+c,0); }
 function levelOf(xp){ let i=0; LEVELS.forEach((l,k)=>{ if(xp>=l.xp) i=k; }); return i; }
 function activeDays(){ return new Set([...cache.weight,...cache.food,...cache.exercise,...cache.daily,...cache.wins,...cache.fast].map(x=>x.date).filter(Boolean)); }
 function streakInfo(){
-  const days=activeDays(); let d=ymd(); let n=0; let freezes=1; let used=0;
+  const days=activeDays(); let d=ymd(); let n=0; let freezes=1+cache.gifts.filter(g=>g.opened&&g.type==="freeze"&&g.date>=addDays(ymd(),-6)).length; let used=0;
   if(!days.has(d)){ d=addDays(d,-1); if(!days.has(d)) return {n:0,freeze:1}; }
   for(let i=0;i<400;i++){ if(days.has(d)){ n++; } else { if(freezes>0){ freezes--; used++; } else break; } d=addDays(d,-1); }
-  return {n, freeze:freezes};
+  // best streak ever (simple scan)
+  let best=0,run=0; const sorted=[...days].sort(); for(let i=0;i<sorted.length;i++){ if(i&&(new Date(sorted[i]+"T12:00:00")-new Date(sorted[i-1]+"T12:00:00"))/86400000<=2) run++; else run=1; best=Math.max(best,run); }
+  return {n, freeze:freezes, best};
 }
 function questList(){
   const t=ymd(); const fastToday=cache.fast.some(f=>f.date===t&&(+f.hours||0)>=12);
@@ -573,28 +688,50 @@ function questList(){
     {k:"night",label:"เช็กอินก่อนนอน",xp:XP.night,done:cache.daily.some(d=>d.date===t&&d.sleep_h!=null)},
   ];
 }
-function mascotName(){ return settings.mascot_name||"น้องเต่า"; }
+function mascotName(){ return settings.mascot_name||"น้องปุย"; }
+function equipped(){ return (cache.collection&&cache.collection.equip)||{}; }
 function mascotSVG(mood,level,size){
-  const acc=[]; 
-  if(level>=1) acc.push('<path d="M34 70q26 10 52 0" stroke="#D9534F" stroke-width="7" fill="none" stroke-linecap="round"/>'); // scarf from Lv2 (index1)
-  if(level>=2) acc.push('<g transform="translate(82 30)"><circle r="4" fill="#F28CB1"/><circle cx="6" cy="-2" r="3" fill="#F28CB1"/><circle cx="-5" cy="-3" r="3" fill="#F28CB1"/><circle cx="1" cy="-6" r="3" fill="#F28CB1"/><circle r="2" fill="#FFD166"/></g>');
-  if(level>=4) acc.push('<path d="M58 60l2.5 6 6.5.5-5 4.3 1.6 6.4L58 73.8 52.4 77.2 54 70.8l-5-4.3 6.5-.5z" fill="#FFD166"/>');
-  if(level>=6) acc.push('<g fill="none" stroke="#3B3B3B" stroke-width="2.2"><circle cx="76" cy="40" r="6"/><circle cx="92" cy="40" r="6"/><path d="M82 40h4M70 38l-6-2M98 38l6-2"/></g>');
-  if(level>=8) acc.push('<path d="M72 22l5 7 7-9 7 9 5-7v12H72z" fill="#FFD166" stroke="#E0A500"/>');
-  const eyes = mood==="sleepy" ? '<path d="M72 41q4 3 8 0M88 41q4 3 8 0" stroke="#3B3B3B" stroke-width="2.5" fill="none" stroke-linecap="round"/>'
-    : mood==="happy"||mood==="cheer" ? '<path d="M72 42q4-5 8 0M88 42q4-5 8 0" stroke="#3B3B3B" stroke-width="2.5" fill="none" stroke-linecap="round"/>'
-    : '<circle cx="76" cy="41" r="2.6" fill="#3B3B3B"/><circle cx="92" cy="41" r="2.6" fill="#3B3B3B"/>';
-  const mouth = mood==="cheer" ? '<ellipse cx="84" cy="51" rx="4.5" ry="3.5" fill="#B35A5A"/>' : mood==="sleepy" ? '<path d="M80 51h8" stroke="#3B3B3B" stroke-width="2" stroke-linecap="round"/>' : '<path d="M79 50q5 4 10 0" stroke="#3B3B3B" stroke-width="2" fill="none" stroke-linecap="round"/>';
-  const sparkle = mood==="cheer" ? '<g fill="#FFD166"><path d="M14 20l2 5 5 2-5 2-2 5-2-5-5-2 5-2z"/><path d="M106 72l1.5 3.5 3.5 1.5-3.5 1.5-1.5 3.5-1.5-3.5-3.5-1.5 3.5-1.5z"/></g>' : '';
-  const zz = mood==="sleepy" ? '<text x="100" y="26" font-size="14" fill="#7A8C88" font-family="sans-serif">z</text><text x="108" y="16" font-size="11" fill="#7A8C88" font-family="sans-serif">z</text>' : '';
-  return `<svg viewBox="0 0 120 100" width="${size||96}" height="${size||96}" aria-label="${mascotName()}">
-  <ellipse cx="60" cy="92" rx="34" ry="5" fill="rgba(0,0,0,.08)"/>
-  <ellipse cx="34" cy="78" rx="9" ry="7" fill="#8CC7A1"/><ellipse cx="74" cy="80" rx="9" ry="7" fill="#8CC7A1"/>
-  <path d="M22 66q-10 44 36 24 46 20 36-24-16-30-36-30t-36 30z" fill="#5FA879"/>
-  <path d="M34 62q26-20 52 0-26 10-52 0z" fill="#4C8F64" opacity=".5"/><path d="M38 72q22 12 44 0" stroke="#4C8F64" stroke-width="3" fill="none" opacity=".5"/>
-  <circle cx="84" cy="44" r="18" fill="#8CC7A1"/>
-  <circle cx="74" cy="48" r="3.5" fill="#F7A8A8" opacity=".7"/><circle cx="96" cy="48" r="3.5" fill="#F7A8A8" opacity=".7"/>
-  ${eyes}${mouth}${acc.join("")}${sparkle}${zz}</svg>`;
+  const st=LEVELS[level].stage; const eq=equipped(); const S=size||108;
+  const eye = (x,y)=> mood==="sleepy" ? `<path d="M${x-4} ${y}q4 3 8 0" stroke="#4A3F55" stroke-width="2.4" fill="none" stroke-linecap="round"/>`
+    : (mood==="happy"||mood==="cheer") ? `<path d="M${x-4} ${y+1}q4-5 8 0" stroke="#4A3F55" stroke-width="2.4" fill="none" stroke-linecap="round"/>`
+    : `<circle cx="${x}" cy="${y}" r="2.8" fill="#4A3F55"/><circle cx="${x+1}" cy="${y-1}" r="1" fill="#fff"/>`;
+  const mouth=(x,y)=> mood==="cheer" ? `<ellipse cx="${x}" cy="${y}" rx="4" ry="3" fill="#D97A8C"/>` : mood==="sleepy" ? `<path d="M${x-4} ${y}h8" stroke="#4A3F55" stroke-width="2" stroke-linecap="round"/>` : `<path d="M${x-5} ${y-1}q5 4 10 0" stroke="#4A3F55" stroke-width="2" fill="none" stroke-linecap="round"/>`;
+  const cheeks=(x,y)=>`<circle cx="${x-10}" cy="${y+5}" r="3" fill="#F7A8C0" opacity=".7"/><circle cx="${x+10}" cy="${y+5}" r="3" fill="#F7A8C0" opacity=".7"/>`;
+  const wear=(hx,hy)=>{ let w="";
+    if(eq.bow) w+=`<g transform="translate(${hx+12} ${hy-16})"><path d="M0 0l-9-6v12zM0 0l9-6v12z" fill="#F48FB1"/><circle r="2.5" fill="#E91E63"/></g>`;
+    if(eq.beret) w+=`<ellipse cx="${hx}" cy="${hy-17}" rx="16" ry="6" fill="#B39DDB"/><circle cx="${hx+2}" cy="${hy-23}" r="2" fill="#B39DDB"/>`;
+    if(eq.flowercrown) w+=`<g fill="#F8BBD0"><circle cx="${hx-12}" cy="${hy-16}" r="3.5"/><circle cx="${hx-4}" cy="${hy-19}" r="3.5"/><circle cx="${hx+4}" cy="${hy-19}" r="3.5"/><circle cx="${hx+12}" cy="${hy-16}" r="3.5"/></g><g fill="#FFF59D"><circle cx="${hx-12}" cy="${hy-16}" r="1.3"/><circle cx="${hx-4}" cy="${hy-19}" r="1.3"/><circle cx="${hx+4}" cy="${hy-19}" r="1.3"/><circle cx="${hx+12}" cy="${hy-16}" r="1.3"/></g>`;
+    if(eq.balloon) w+=`<path d="M${hx+28} ${hy+10}q6-14 2-30" stroke="#8C8198" stroke-width="1" fill="none"/><ellipse cx="${hx+30}" cy="${hy-26}" rx="9" ry="11" fill="#90CAF9"/><circle cx="${hx+27}" cy="${hy-30}" r="2.5" fill="#fff" opacity=".7"/>`;
+    return w; };
+  const sparkle = mood==="cheer"||level>=5 ? '<g fill="#FFD54F"><path d="M16 18l2 5 5 2-5 2-2 5-2-5-5-2 5-2z"/><path d="M104 70l1.5 3.5 3.5 1.5-3.5 1.5-1.5 3.5-1.5-3.5-3.5-1.5 3.5-1.5z"/></g>' : '';
+  const zz = mood==="sleepy" ? '<text x="98" y="26" font-size="14" fill="#A99DB8" font-family="sans-serif">z</text><text x="106" y="16" font-size="11" fill="#A99DB8" font-family="sans-serif">z</text>' : '';
+  let body="";
+  if(st==="egg"){
+    body=`<path d="M20 78q30 10 80 0" stroke="#A5D6A7" stroke-width="6" stroke-linecap="round"/><path d="M60 22c-18 0-30 20-30 40a30 26 0 0 0 60 0c0-20-12-40-30-40z" fill="#DFF5EA" stroke="#B7E3CF" stroke-width="2"/>
+      <circle cx="46" cy="40" r="4" fill="#CFF0E4"/><circle cx="74" cy="34" r="3" fill="#CFF0E4"/><circle cx="68" cy="68" r="4" fill="#CFF0E4"/>
+      ${eye(50,52)}${eye(70,52)}${mouth(60,61)}${cheeks(60,50)}${wear(60,40)}`;
+  } else if(st==="cat"){
+    const segs=[[24,74,13,"#C5E8D5"],[40,70,14,"#CFF0E4"],[56,67,15,"#DDF4EA"]];
+    body=`<path d="M8 86q52 10 104 0" stroke="#A5D6A7" stroke-width="6" stroke-linecap="round"/>`+segs.map(s=>`<circle cx="${s[0]}" cy="${s[1]}" r="${s[2]}" fill="${s[3]}"/>`).join("")
+      +`<circle cx="78" cy="58" r="20" fill="#E6F7EF"/><path d="M70 40q-4-10-10-12M86 40q4-10 10-12" stroke="#8C8198" stroke-width="2" fill="none" stroke-linecap="round"/><circle cx="60" cy="28" r="3" fill="#F48FB1"/><circle cx="96" cy="28" r="3" fill="#F48FB1"/>
+      ${eye(70,56)}${eye(86,56)}${mouth(78,66)}${cheeks(78,54)}`
+      +(level>=2?'<path d="M18 56q10-12 22 0q-10-4-22 0z" fill="#A5D6A7"/><path d="M22 55q6 2 14 0" stroke="#81C784" stroke-width="1.2"/>':'')
+      +(level>=3?'<path d="M60 76q18 8 36 0" stroke="#F48FB1" stroke-width="6" fill="none" stroke-linecap="round"/><g transform="translate(96 40)"><circle r="3.5" fill="#F8BBD0"/><circle cx="5" cy="-2" r="2.6" fill="#F8BBD0"/><circle cx="-4" cy="-3" r="2.6" fill="#F8BBD0"/><circle cx="1" cy="-5" r="2.6" fill="#F8BBD0"/><circle r="1.6" fill="#FFF59D"/></g>':'')
+      +wear(78,52);
+  } else if(st==="pupa"){
+    body=`<path d="M60 6v14" stroke="#81C784" stroke-width="3"/><path d="M40 12q20-10 40 0" stroke="#A5D6A7" stroke-width="5" fill="none" stroke-linecap="round"/>
+      <path d="M60 20c-16 0-26 18-26 38s10 30 26 30 26-10 26-30-10-38-26-38z" fill="${level>=5?"#E8DDFB":"#D9F0F4"}" stroke="${level>=5?"#C4B5FD":"#A8DCE6"}" stroke-width="2"/>
+      <path d="M44 40q16 6 32 0M42 56q18 6 36 0M46 72q14 5 28 0" stroke="${level>=5?"#C4B5FD":"#A8DCE6"}" stroke-width="2" fill="none" opacity=".8"/>
+      ${eye(52,50)}${eye(68,50)}${mouth(60,60)}${cheeks(60,48)}${level>=5?'<g fill="#FFF59D" opacity=".9"><circle cx="30" cy="30" r="3"/><circle cx="92" cy="36" r="2.5"/><circle cx="28" cy="76" r="2"/><circle cx="94" cy="80" r="3"/></g>':''}${wear(60,40)}`;
+  } else {
+    const wc = level>=9 ? ["#FFE082","#FFD54F"] : level>=7 ? ["#F8BBD0","#CE93D8"] : ["#F3D1E6","#D7C6F5"];
+    const pat = level>=7 ? '<g fill="#fff" opacity=".7"><circle cx="30" cy="44" r="5"/><circle cx="90" cy="44" r="5"/><circle cx="34" cy="70" r="3.5"/><circle cx="86" cy="70" r="3.5"/></g>' : '';
+    body=`<g class="wing"><path d="M58 52C40 20 8 22 10 44c2 16 24 20 44 16zM58 60C40 90 12 92 12 74c0-14 24-18 46-14z" fill="${wc[0]}" stroke="${wc[1]}" stroke-width="2"/><path d="M62 52C80 20 112 22 110 44c-2 16-24 20-44 16zM62 60c18 30 46 32 46 14 0-14-24-18-46-14z" fill="${wc[0]}" stroke="${wc[1]}" stroke-width="2"/></g>${pat}
+      <ellipse cx="60" cy="58" rx="9" ry="22" fill="#CFF0E4" stroke="#B7E3CF" stroke-width="2"/><circle cx="60" cy="36" r="13" fill="#E6F7EF"/>
+      <path d="M54 25q-4-9-10-10M66 25q4-9 10-10" stroke="#8C8198" stroke-width="2" fill="none" stroke-linecap="round"/><circle cx="44" cy="15" r="2.5" fill="#F48FB1"/><circle cx="76" cy="15" r="2.5" fill="#F48FB1"/>
+      ${eye(55,35)}${eye(65,35)}${mouth(60,43)}${cheeks(60,33)}${level>=8?'<path d="M48 22l4 6 8-9 8 9 4-6v10H48z" fill="#FFD54F" stroke="#F9A825"/>':''}${wear(60,30)}`;
+  }
+  return `<svg viewBox="0 0 120 100" width="${S}" height="${S}" aria-label="${mascotName()}"><ellipse cx="60" cy="94" rx="30" ry="4" fill="rgba(74,63,85,.08)"/>${body}${sparkle}${zz}</svg>`;
 }
 function mascotMood(){
   const t=ymd(); const h=new Date().getHours(); const bad=cache.daily.find(d=>d.date===t&&d.bad_day);
@@ -605,17 +742,96 @@ function mascotMood(){
   return "neutral";
 }
 function bubbleText(){
-  const t=ymd(); const h=new Date().getHours(); const name=mascotName();
+  const t=ymd(); const h_=new Date().getHours();
   const weighed=cache.weight.some(w=>w.date===t); const bad=cache.daily.find(d=>d.date===t&&d.bad_day);
   const days=activeDays(); const yesterday=days.has(addDays(t,-1)); const anyBefore=[...days].some(d=>d<t);
-  if(bad) return "วันนี้พักได้ ฉันอยู่ตรงนี้ พรุ่งนี้ค่อยเริ่มใหม่จากศูนย์";
-  if(!weighed && anyBefore && !yesterday) return "ดีใจที่กลับมา ไม่ต้องเล่าว่าหายไปไหน แค่พิมพ์เลขบนตาชั่งก็พอ";
-  if(!weighed && h<12) return "อรุณสวัสดิ์ ชั่งแล้วพิมพ์เลขให้หน่อยนะ แค่นั้นวันนี้ก็ครบแล้ว";
-  if(!weighed) return "ยังไม่ได้ชั่งก็ไม่เป็นไร พรุ่งนี้เช้าค่อยชั่ง วันนี้บันทึกมื้อสักมื้อไหม";
-  if(cache.exercise.some(e=>e.date===t)) return "วันนี้ขยับด้วย สุดยอดเลย กล้ามเนื้อกำลังขอบคุณอยู่";
-  if(h>=20 && !cache.daily.some(d=>d.date===t&&d.sleep_h!=null)) return "ก่อนนอนมาเล่าให้ฟัง 3 ข้อนะ นอน หิว เครียด";
-  const q=questList().filter(x=>x.done).length; if(q>=4) return "ภารกิจเกือบครบแล้ว วันนี้เป็นวันที่ดีมาก";
-  return "วันนี้ชั่งแล้ว ที่เหลือทำได้ก็ดี ไม่ทำก็ไม่ติดลบ";
+  if(bad) return pick(TEASE.bad,"bad");
+  if(!weighed && anyBefore && !yesterday) return pick(TEASE.back,"back");
+  if(!weighed && h_<12) return pick(TEASE.morning,"m");
+  if(!weighed) return pick(TEASE.late,"l");
+  if(cache.exercise.some(e=>e.date===t)) return pick(TEASE.move,"mv");
+  if(fastCurrent&&fastCurrent.start_ts&&h_>=19) return pick(TEASE.kitchen,"k");
+  if(h_>=20 && !cache.daily.some(d=>d.date===t&&d.sleep_h!=null)) return pick(TEASE.evening,"e");
+  if(questList().filter(x=>x.done).length>=4) return pick(TEASE.good,"g");
+  return pick(TEASE.quiet,"q");
+}
+/* gifts */
+function giftFor(date){ // deterministic daily gift
+  const r=seed(date+"|gift")%100; const owned=new Set(ownedStickerIds());
+  if(r<45){ const pool=STICKERS.filter(s=>!s.ach&&!owned.has(s.id)); if(pool.length){ const rr=seed(date+"|rar")%100; const want=rr<60?1:rr<90?2:3; const cand=pool.filter(s=>s.r===want).length? pool.filter(s=>s.r===want): pool; return {type:"sticker", id:cand[seed(date+"|pick")%cand.length].id}; } return {type:"xp", xp:15}; }
+  if(r<75) return {type:"xp", xp:5+(seed(date+"|xp")%16)};
+  if(r<85) return {type:"msg", text:TEASE.giftmsg[seed(date+"|msg")%TEASE.giftmsg.length]};
+  if(r<90) return {type:"freeze"};
+  return {type:"coupon", text:TEASE.coupon[seed(date+"|cp")%TEASE.coupon.length]};
+}
+function ownedStickerIds(){ const g=cache.gifts.filter(x=>x.opened&&x.type==="sticker").map(x=>x.id); return [...new Set(g)]; }
+function achievements(){
+  const a=[]; const t=ymd(); const st=streakInfo();
+  if(cache.weight.length>=1) a.push("a_scale"); if(cache.weight.length>=7) a.push("a_scale7");
+  const gym=cache.exercise.filter(e=>e.is_strength).length; if(gym>=1) a.push("a_gym"); if(gym>=10) a.push("a_gym10");
+  if(cache.food.some(f=>f.photo)) a.push("a_photo");
+  if(cache.fast.some(f=>(+f.hours||0)>=12)) a.push("a_moon");
+  if(cache.daily.some(d=>(+d.water||0)>=8)) a.push("a_water");
+  if(st.n>=7||st.best>=7) a.push("a_fire7");
+  const days=[...activeDays()].sort(); for(let i=1;i<days.length;i++){ if((new Date(days[i]+"T12:00:00")-new Date(days[i-1]+"T12:00:00"))/86400000>=2){ a.push("a_back"); break; } }
+  if(cache.daily.some(d=>d.bad_day)) a.push("a_rest");
+  if(cache.weekly.length>=1) a.push("a_week");
+  const ws=weekStats(); if(ws.cur.avg!=null&&ws.cur.n>=4&&ws.cur.avg<=112) a.push("a_112");
+  if(levelOf(totalXp())>=6) a.push("a_pupa");
+  return a;
+}
+function renderGift(){
+  const t=ymd(); const acted=activeDays().has(t); const g=cache.gifts.find(x=>x.date===t);
+  const box=$("giftBox"), hint=$("giftHint"), btn=$("giftOpen"), rev=$("giftReveal");
+  if(g&&g.opened){ box.textContent="🎀"; hint.hidden=true; btn.hidden=true; rev.hidden=false; rev.innerHTML=giftHTML(g); return; }
+  rev.hidden=true; hint.hidden=false; box.textContent="🎁";
+  if(acted){ hint.textContent="กล่องเปิดได้แล้ว แตะเลย"; btn.hidden=false; box.classList.add("shake"); } else { hint.textContent="บันทึกอะไรสักอย่างวันนี้ กล่องจะเปิดได้"; btn.hidden=true; box.classList.remove("shake"); }
+}
+function giftHTML(g){
+  if(g.type==="sticker"){ const s=STICKERS.find(x=>x.id===g.id)||{e:"✨",n:"สติกเกอร์",r:1}; return `<div class="big">${s.e}</div><b>${s.n}</b><span class="small rar${s.r}">${s.r===3?"หายาก":s.r===2?"ไม่ธรรมดา":"ธรรมดา"}${s.wear?" · ใส่ให้เพื่อนได้ในกล่องสะสม":""}</span>`; }
+  if(g.type==="xp") return `<div class="big">⭐</div><b>+${g.xp} XP</b><span class="small muted">โบนัสวันนี้</span>`;
+  if(g.type==="freeze") return `<div class="big">❄️</div><b>วันพักเพิ่ม 1 วัน</b><span class="small muted">ใช้ได้ในสัปดาห์นี้ สตรีคไม่ขาด</span>`;
+  if(g.type==="coupon") return `<div class="big">🎟️</div><b>คูปอง</b><span class="small">${esc(g.text)}</span>`;
+  return `<div class="big">💌</div><span class="small">${esc(g.text)}</span>`;
+}
+$("giftOpen").onclick = async ()=>{ const t=ymd(); if(cache.gifts.find(x=>x.date===t&&x.opened)) return; const g=giftFor(t); try{ await setDoc("gifts", t, {date:t, opened:true, ...g}); confetti(); }catch(e){} };
+$("giftBox").onclick = ()=>{ if(!$("giftOpen").hidden) $("giftOpen").click(); };
+/* album */
+function renderAlbum(){
+  const owned=new Set([...ownedStickerIds(),...achievements()]); const eq=equipped();
+  $("albumCount").textContent=`${owned.size} / ${STICKERS.length}`;
+  $("album").innerHTML=STICKERS.map(s=>{ const o=owned.has(s.id); return `<div class="stk ${o?"own":"locked"} ${s.wear&&eq[s.wear]?"eq":""}" data-id="${s.id}" title="${s.n}"><span class="e">${s.e}</span><span>${o?s.n:(s.ach?"ทำจริงถึงได้":"???")}</span></div>`; }).join("");
+  document.querySelectorAll("#album .stk.own").forEach(el=>{ const s=STICKERS.find(x=>x.id===el.dataset.id); if(s&&s.wear) el.onclick=async()=>{ const e={...equipped()}; e[s.wear]=!e[s.wear]; try{ await upsert("collection","equip",{...e}); toast(e[s.wear]?"ใส่แล้ว":"ถอดแล้ว"); }catch(x){} }; });
+  const ach=achievements(); $("achList").innerHTML=STICKERS.filter(s=>s.ach).map(s=>`<div class="row between ${ach.includes(s.id)?"":"muted"}"><span>${ach.includes(s.id)?s.e:"🔒"} ${s.n}</span><span class="small">${ach.includes(s.id)?"ได้แล้ว":""}</span></div>`).join("");
+  const li=levelOf(totalXp()); $("mascot2").innerHTML=mascotSVG("happy",li,108); $("stageText").textContent=`${mascotName()} Lv.${li+1} ${LEVELS[li].t} — ${LEVELS[li].s}`;
+  $("levelList2").innerHTML=LEVELS.map((l,i)=>`<div class="row between ${i<=li?"":"muted"}"><span>${i<=li?"★":"☆"} Lv.${i+1} ${i<=li?l.t:"???"}</span><span class="num">${l.xp} XP</span></div>`).join("");
+}
+/* map + change */
+const STATIONS=[{kg:115,l:"จุดเริ่ม"},{kg:112,l:"ด่านแรก"},{kg:110,l:"ลบห้า"},{kg:105,l:"ลบสิบ"},{kg:99,l:"ต่ำกว่าร้อย"},{kg:92,l:"เท่าสถิติเดิม"},{kg:85,l:"???"},{kg:78,l:"???"}];
+function renderMap(){
+  const st=weekStats(); const ws=weightSeries();
+  const firstWeek=ws.slice(0,7).map(w=>+w.kg); const base=firstWeek.length? Math.min(settings.start_kg||115, mean(firstWeek)) : (settings.start_kg||115);
+  const cur = st.cur.avg!=null? Math.min(st.cur.avg, 115) : 115;
+  const lost = Math.max(0, base-cur);
+  const days=activeDays().size; const gym=cache.exercise.filter(e=>e.is_strength).length; const fastH=Math.round(cache.fast.reduce((s,f)=>s+(+f.hours||0),0)); const water=cache.daily.reduce((s,d)=>s+(+d.water||0),0); const moves=cache.exercise.length;
+  $("chg").innerHTML=`<div><b class="num">${lost>0?"−"+fmt(lost,1):"0.0"}</b><span>กก. จากช่วงเริ่ม (เฉลี่ย 7 วัน)</span></div><div><b class="num">${days}</b><span>วันที่มา</span></div><div><b class="num">${gym}</b><span>ครั้งที่ยิม/เวท</span></div><div><b class="num">${moves}</b><span>ครั้งที่ขยับทั้งหมด</span></div><div><b class="num">${fastH}</b><span>ชั่วโมงปิดครัวสะสม</span></div><div><b class="num">${water}</b><span>แก้วน้ำสะสม</span></div>`;
+  $("chgNote").textContent = ws.length<14? "ตัวเลข กก. จะเริ่มมีความหมายหลัง 2 สัปดาห์ ตอนนี้ดูแถวอื่นก่อน นั่นคือสิ่งที่ตาชั่งไม่บอก" : "";
+  const prev=weekStats(addDays(ymd(),-7));
+  const row=(l,a,b,dp,goodDown)=>{ const d=(a!=null&&b!=null)? a-b : null; const cls= d==null?"": (goodDown? (d<0?"up":d>0?"dn":"") : (d>0?"up":d<0?"dn":"")); return `<div class="r"><span>${l}</span><span class="num muted">${b!=null?fmt(b,dp):"–"}</span><span class="num">${a!=null?fmt(a,dp):"–"}</span><span class="num d ${cls}">${d!=null?(d>0?"+":"")+fmt(d,dp):""}</span></div>`; };
+  $("cmp").innerHTML=`<div class="r small muted"><span></span><span>ก่อน</span><span>นี้</span><span>ต่าง</span></div>`+row("น้ำหนักเฉลี่ย",st.cur.avg,prev.cur.avg,1,true)+row("วันที่บันทึกมื้อ",st.foodDays,prev.foodDays,0)+row("ยิม/เวท",st.gym,prev.gym,0)+row("โปรตีนเฉลี่ย",st.prot,prev.prot,0)+row("นอนเฉลี่ย",st.sleep,prev.sleep,1)+row("คะแนนพฤติกรรม",st.score,prev.score,0);
+  // map svg
+  const pts=STATIONS.map((s,i)=>({x: i%2? 240:80, y:40+i*72, ...s}));
+  let path=`M${pts[0].x} ${pts[0].y}`; for(let i=1;i<pts.length;i++){ const a=pts[i-1], b=pts[i]; path+=` C${a.x} ${a.y+36}, ${b.x} ${b.y-36}, ${b.x} ${b.y}`; }
+  // position: find segment
+  let idx=0; for(let i=0;i<pts.length-1;i++){ if(cur<=pts[i].kg && cur>pts[i+1].kg){ idx=i; break; } if(cur<=pts[pts.length-1].kg) idx=pts.length-2; }
+  const a=pts[idx], b=pts[idx+1]; const f=Math.max(0,Math.min(1,(a.kg-cur)/(a.kg-b.kg))); const mx=a.x+(b.x-a.x)*f, my=a.y+(b.y-a.y)*f;
+  const reached=i=>cur<=pts[i].kg+0.001; const visible=i=> i<=idx+1;
+  const li=levelOf(totalXp());
+  $("mapSvg").innerHTML=`<path d="${path}" stroke="var(--line)" stroke-width="10" fill="none" stroke-linecap="round"/><path id="mapProg" d="${path}" stroke="var(--accent)" stroke-width="10" fill="none" stroke-linecap="round" opacity=".9"/>`
+    +pts.map((p,i)=>`<g opacity="${visible(i)?1:.25}"><circle cx="${p.x}" cy="${p.y}" r="14" fill="${reached(i)?"var(--accent)":"var(--surface)"}" stroke="var(--accent)" stroke-width="3"/><text x="${p.x}" y="${p.y+5}" text-anchor="middle" font-size="12" fill="${reached(i)?"var(--accent-ink)":"var(--fg)"}" font-weight="700">${visible(i)?p.kg:"?"}</text><text x="${p.x+(i%2?-22:22)}" y="${p.y+4}" text-anchor="${i%2?"end":"start"}" font-size="12" fill="var(--fg)">${visible(i)?p.l:"หมอก"}</text></g>`).join("")
+    +`<g transform="translate(${mx-24} ${my-50})">${mascotSVG("happy",li,48).replace('<svg ','<svg x="0" y="0" ')}</g>`;
+  try{ const pr=$("mapProg"); const L=pr.getTotalLength(); pr.style.strokeDasharray=L; pr.style.strokeDashoffset=L*(1-(idx+f)/(pts.length-1)); }catch(e){}
+  $("mapPos").textContent = st.cur.avg!=null? `ตอนนี้ ${fmt(st.cur.avg,1)} → ด่านถัดไป ${b.kg}` : "ยังไม่มีค่าเฉลี่ย";
 }
 function renderPlay(){
   const xp=totalXp(); const li=levelOf(xp); const cur=LEVELS[li]; const next=LEVELS[li+1];
@@ -624,6 +840,7 @@ function renderPlay(){
   $("xpBar").style.width = next? Math.min(100,(xp-cur.xp)/(next.xp-cur.xp)*100)+"%" : "100%";
   $("xpTotal").textContent=xp;
   const s=streakInfo(); $("streakN").textContent=s.n; $("freezeN").textContent=s.freeze;
+  renderGift(); renderAlbum(); renderMap();
   $("mascot").innerHTML=mascotSVG(mascotMood(),li,96); $("bubble").textContent=bubbleText();
   const qs=questList(); $("questDone").textContent=`${qs.filter(q=>q.done).length}/${qs.length}`;
   $("quests").innerHTML=qs.map(q=>`<div class="quest ${q.done?"done":""}"><div class="box">${q.done?"✓":""}</div><span>${q.label}</span><span class="xp">+${q.xp} XP</span></div>`).join("");
@@ -634,10 +851,10 @@ function renderPlay(){
   // level-up celebration once per device
   try{ const seen=+localStorage.getItem("rt_level")||0; if(li>seen){ localStorage.setItem("rt_level",String(li)); if(seen>0||li>0) celebrate(li); } }catch(e){}
   $("mascotName").placeholder=mascotName();
-  $("levelList").innerHTML=LEVELS.map((l,i)=>`<div class="row between ${i<=li?"":"muted"}"><span>${i<=li?"★":"☆"} Lv.${i+1} ${l.t}</span><span class="num">${l.xp} XP</span></div>`).join("");
+
 }
 function celebrate(li){
-  const d=document.createElement("div"); d.className="celebrate"; d.innerHTML=`<div class="box"><div class="mascot">${mascotSVG("cheer",li,120)}</div><h2>เลเวล ${li+1}: ${LEVELS[li].t}</h2><p class="small">${mascotName()}ได้ของใหม่ ลองดูสิ</p><button class="btn accent block" id="celebOk">เยี่ยม!</button></div>`;
+  const d=document.createElement("div"); d.className="celebrate"; d.innerHTML=`<div class="box"><div class="mascot">${mascotSVG("cheer",li,120)}</div><h2>เลเวล ${li+1}: ${LEVELS[li].t}</h2><p class="small">${LEVELS[li].s}</p><button class="btn accent block" id="celebOk">เยี่ยม!</button></div>`;
   document.body.appendChild(d); d.querySelector("#celebOk").onclick=()=>d.remove(); confetti();
 }
 function confetti(){
@@ -760,7 +977,8 @@ function watch(col){ const u=db.collection(col).onSnapshot(snap=>{ cache[col]=sn
 async function initDb(){
   db = (window.claude&&claude.use)? await claude.use("db") : null;
   if(!db){ $("weighHint").textContent="เปิดหน้านี้ขณะล็อกอิน claude.ai เพื่อให้บันทึกได้"; return; }
-  ["weight","food","exercise","daily","wins","journal","fast","weekly"].forEach(watch);
+  ["weight","food","exercise","daily","wins","journal","fast","weekly","gifts"].forEach(watch);
+  db.doc("collection/equip").onSnapshot(s=>{ cache.collection={...cache.collection, equip: s.exists? s.data(): {}}; renderAll(); },()=>{});
   db.doc("fast/current").onSnapshot(s=>{ fastCurrent = s.exists? s.data(): null; renderKitchen(); },()=>{});
   try{ const s=await db.doc("settings/profile").get(); if(s.exists){ settings={...DEFAULTS,...s.data()}; renderAll(); } }catch(e){}
   db.doc("settings/profile").onSnapshot(s=>{ if(s.exists){ settings={...DEFAULTS,...s.data()}; renderAll(); } },()=>{});
@@ -814,7 +1032,7 @@ function showFoodResult(r, saveable){
 $("foodAnalyze").onclick=()=>analyzeFood(true); $("foodAsk").onclick=()=>analyzeFood(false);
 $("foodSave").onclick = async ()=>{
   if(!pending) return; const r=pending;
-  try{ await add("food",{date:ymd(), time:hm(), meal:selectedMeal||defaultMeal(), text:r.text, items:r.items||[], kcal_low:+r.kcal_low||0, kcal_high:+r.kcal_high||0, protein_g:+r.protein_g||0, fiber_g:+r.fiber_g||0, confidence:r.confidence||"กลาง", score:r.score||{}, feedback:r.feedback||"", social:$("foodSocial").checked, main_driver:r.main_driver||""});
+  try{ await add("food",{date:ymd(), time:hm(), meal:selectedMeal||defaultMeal(), text:r.text, items:r.items||[], kcal_low:+r.kcal_low||0, kcal_high:+r.kcal_high||0, protein_g:+r.protein_g||0, fiber_g:+r.fiber_g||0, confidence:r.confidence||"กลาง", score:r.score||{}, feedback:r.feedback||"", social:$("foodSocial").checked, main_driver:r.main_driver||"", photo:!!photoBlob});
     const wasDinner=(selectedMeal||defaultMeal())==="เย็น"; resetFoodForm(); toast("บันทึกมื้อแล้ว"); if(wasDinner && !fastCurrent && db){ try{ await db.doc("fast/current").set({start_ts:new Date().toISOString(), auto:true}); toast("ปิดครัวให้แล้ว เปิดตอนเช้า"); }catch(e){} } }catch(e){}
 };
 $("foodDiscard").onclick=()=>{ resetFoodForm(); };
@@ -908,11 +1126,11 @@ $("badDay").onclick = async ()=>{
   try{ if(db) await upsert("daily", ymd(), {date:ymd(), bad_day:true, note:"ไม่ไหว"}); }catch(e){}
 };
 $("badDayClose").onclick=()=>{ $("badDayCard").hidden=true; };
-$("goWeek").onclick=()=>show("week");
+$("goWeek").onclick=()=>show("week"); $("goMap").onclick=()=>show("map"); $("goAlbum").onclick=()=>show("album");
 
 /* routing */
-const VIEWS=["home","eat","move","night","talk","week"];
-function show(v){ if(!VIEWS.includes(v)) v="home"; VIEWS.forEach(x=>{ $("view-"+x).hidden = x!==v; }); document.querySelectorAll(".tab").forEach(t=>t.classList.toggle("on",t.dataset.view===v)); if(location.hash!=="#"+v) history.replaceState(null,"","#"+v); window.scrollTo({top:0}); if(v==="week") renderWeek(); if(v==="eat") renderEat(); }
+const VIEWS=["home","eat","move","night","talk","week","map","album"];
+function show(v){ if(!VIEWS.includes(v)) v="home"; VIEWS.forEach(x=>{ $("view-"+x).hidden = x!==v; }); document.querySelectorAll(".tab").forEach(t=>t.classList.toggle("on",t.dataset.view===v)); if(location.hash!=="#"+v) history.replaceState(null,"","#"+v); window.scrollTo({top:0}); if(v==="week") renderWeek(); if(v==="eat") renderEat(); if(v==="map") renderMap(); if(v==="album") renderAlbum(); }
 document.querySelectorAll(".tab").forEach(t=>t.onclick=()=>show(t.dataset.view));
 window.addEventListener("hashchange",()=>show(location.hash.slice(1)));
 show(location.hash.slice(1)||"home");
