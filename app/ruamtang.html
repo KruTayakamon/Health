@@ -192,7 +192,22 @@ img.preview{max-width:100%;border-radius:10px;max-height:220px;object-fit:cover}
 .celebrate .box{background:var(--surface);border-radius:20px;padding:24px 20px;max-width:340px;width:100%;text-align:center;display:flex;flex-direction:column;gap:10px;align-items:center}
 .celebrate .box .mascot{width:120px;height:120px;flex-basis:120px}
 canvas.confetti{position:fixed;inset:0;z-index:31;pointer-events:none}
-@media (prefers-reduced-motion: reduce){ .bar>i,.toast,.xpbar>i{transition:none} .bob{animation:none} }
+.mascot{cursor:pointer;-webkit-tap-highlight-color:transparent}
+.mascot svg{transform-origin:50% 90%;animation:breathe 3.6s ease-in-out infinite}
+@keyframes breathe{0%,100%{transform:scale(1,1)}50%{transform:scale(1.03,.97)}}
+.mascot.boing svg{animation:boing .6s cubic-bezier(.3,1.6,.5,1)}
+@keyframes boing{0%{transform:scale(1)}30%{transform:scale(1.15,.85) translateY(4px)}60%{transform:scale(.92,1.1) translateY(-10px)}100%{transform:scale(1)}}
+.mascot.blink svg [data-eye]{transform-box:fill-box;transform-origin:center;animation:blink .18s ease-in-out}
+@keyframes blink{50%{transform:scaleY(.1)}}
+#formImg{cursor:pointer;animation:breathe 4.2s ease-in-out infinite;transform-origin:50% 90%}
+#formImg.boing{animation:boing .6s cubic-bezier(.3,1.6,.5,1)}
+.xpfloat{position:fixed;z-index:25;pointer-events:none;font-family:var(--display);font-weight:600;color:var(--warm);font-size:1.3rem;text-shadow:0 2px 6px rgba(0,0,0,.15);animation:floatup 1.4s ease-out forwards}
+@keyframes floatup{0%{opacity:0;transform:translate(-50%,10px) scale(.8)}20%{opacity:1;transform:translate(-50%,0) scale(1.1)}100%{opacity:0;transform:translate(-50%,-60px) scale(1)}}
+.quick{display:flex;gap:8px;flex-wrap:wrap}
+.quick button{border:1px solid var(--line);background:var(--bg);border-radius:12px;padding:8px 10px;font-size:.85rem;text-align:left;cursor:pointer;max-width:100%;display:flex;flex-direction:column;gap:2px}
+.quick button small{color:var(--muted);font-size:.72rem}
+.quick button:active{transform:scale(.96)}
+@media (prefers-reduced-motion: reduce){ .bar>i,.toast,.xpbar>i{transition:none} .bob,.mascot svg,#formImg{animation:none!important} .xpfloat{animation-duration:.01s} }
 </style>
 
 <header class="top">
@@ -321,6 +336,10 @@ canvas.confetti{position:fixed;inset:0;z-index:31;pointer-events:none}
 
 <!-- ========== EAT ========== -->
 <section class="view" id="view-eat" hidden>
+  <div class="card" id="quickCard" hidden>
+    <div class="row between"><div class="eyebrow">กินอันเดิม แตะเดียว</div><span class="small muted">ไม่ใช้โควตา AI</span></div>
+    <div class="quick" id="quickList"></div>
+  </div>
   <div class="card">
     <div class="eyebrow">กิน</div>
     <div class="chips" id="mealChips">
@@ -757,7 +776,7 @@ function mascotSVG(mood,level,size){
   const st=LEVELS[level].stage; const eq=equipped(); const S=size||108;
   const eye = (x,y)=> mood==="sleepy" ? `<path d="M${x-4} ${y}q4 3 8 0" stroke="#4A3F55" stroke-width="2.4" fill="none" stroke-linecap="round"/>`
     : (mood==="happy"||mood==="cheer") ? `<path d="M${x-4} ${y+1}q4-5 8 0" stroke="#4A3F55" stroke-width="2.4" fill="none" stroke-linecap="round"/>`
-    : `<circle cx="${x}" cy="${y}" r="2.8" fill="#4A3F55"/><circle cx="${x+1}" cy="${y-1}" r="1" fill="#fff"/>`;
+    : `<g data-eye><circle cx="${x}" cy="${y}" r="2.8" fill="#4A3F55"/><circle cx="${x+1}" cy="${y-1}" r="1" fill="#fff"/></g>`;
   const mouth=(x,y)=> mood==="cheer" ? `<ellipse cx="${x}" cy="${y}" rx="4" ry="3" fill="#D97A8C"/>` : mood==="sleepy" ? `<path d="M${x-4} ${y}h8" stroke="#4A3F55" stroke-width="2" stroke-linecap="round"/>` : `<path d="M${x-5} ${y-1}q5 4 10 0" stroke="#4A3F55" stroke-width="2" fill="none" stroke-linecap="round"/>`;
   const cheeks=(x,y)=>`<circle cx="${x-10}" cy="${y+5}" r="3" fill="#F7A8C0" opacity=".7"/><circle cx="${x+10}" cy="${y+5}" r="3" fill="#F7A8C0" opacity=".7"/>`;
   const wear=(hx,hy)=>{ let w="";
@@ -898,6 +917,7 @@ function renderMap(){
 }
 function renderPlay(){
   const xp=totalXp(); const li=levelOf(xp); const cur=LEVELS[li]; const next=LEVELS[li+1];
+  if(lastXp!=null && xp>lastXp) xpFloat(xp-lastXp); if(db) lastXp=xp;
   $("lvlBadge").textContent="Lv."+(li+1); $("lvlTitle").textContent=cur.t;
   $("xpText").textContent = next? `${xp} / ${next.xp} XP` : `${xp} XP สูงสุดแล้ว`;
   $("xpBar").style.width = next? Math.min(100,(xp-cur.xp)/(next.xp-cur.xp)*100)+"%" : "100%";
@@ -950,6 +970,22 @@ $("kitchenToggle").onclick = async ()=>{
   }catch(e){ toast("ทำไม่สำเร็จ ลองใหม่"); }
 };
 $("mascotSave").onclick = async ()=>{ const n=$("mascotName").value.trim(); if(!n) return; try{ await upsert("settings","profile",{mascot_name:n}); $("mascotName").value=""; toast("ตั้งชื่อแล้ว"); }catch(e){} };
+
+/* ---------- life: tap, blink, xp float, quick foods ---------- */
+let tapN=0, lastXp=null;
+const TAP_LINES=["อะไร จิ้มทำไม 😳","จั๊กจี้! ไปชั่งน้ำหนักไป","ฉันไม่ใช่ปุ่มนะ… โอเคเป็นก็ได้","วันนี้ดื่มน้ำกี่แก้วแล้ว ไม่ต้องตอบ แตะแก้วข้างล่าง","จิ้มฉันได้ XP ไหม… ไม่ได้ 555","รู้ไหมว่าเธอเปิดแอปมาหาฉัน นั่นแหละที่นับ","ถ้าเหงา กดแท็บ คุย ได้นะ ฉันอยู่ตรงนั้นด้วย","กล่องของขวัญเปิดหรือยัง ไปดูดิ","ฮึบ! (ทำท่ายกเวทให้ดู)","ครูขา หนูง่วง… ล้อเล่น ไปต่อ!"];
+function boing(el){ el.classList.remove("boing"); void el.offsetWidth; el.classList.add("boing"); setTimeout(()=>el.classList.remove("boing"),650); }
+$("mascot").onclick=()=>{ boing($("mascot")); $("bubble").textContent=TAP_LINES[(seed(ymd())+tapN++)%TAP_LINES.length]; };
+$("formImg").onclick=()=>{ boing($("formImg")); const f=FORMS[formIndex()]; const tr=TRAITS.filter(t=>{try{return t.ok();}catch(e){return false;}}); toast(tr.length? `${f.name} ผู้${tr[tapN++%tr.length].t}` : `${f.name}: แตะฉันอีกทีก็ไม่ผอมลงนะ 555`); };
+setInterval(()=>{ const m=$("mascot"); if(document.hidden||!m) return; m.classList.add("blink"); setTimeout(()=>m.classList.remove("blink"),200); }, 4200);
+function xpFloat(n){ if(n<=0) return; const r=$("xpBar").getBoundingClientRect(); const el=document.createElement("div"); el.className="xpfloat"; el.textContent=`+${n} XP`; el.style.left=(r.left+r.width/2)+"px"; el.style.top=Math.max(40,r.top-10)+"px"; document.body.appendChild(el); setTimeout(()=>el.remove(),1500); boing($("mascot")); }
+function renderQuick(){
+  const seen=new Map(); cache.food.slice().sort((a,b)=>(a.ts||"")<(b.ts||"")?1:-1).forEach(f=>{ const k=(f.text||"").trim(); if(k&&!seen.has(k)) seen.set(k,{...f,count:0}); if(seen.has(k)) seen.get(k).count++; });
+  const items=[...seen.values()].sort((a,b)=>b.count-a.count).slice(0,6);
+  $("quickCard").hidden=!items.length;
+  $("quickList").innerHTML=items.map((f,i)=>`<button data-i="${i}">${esc(f.text.length>34?f.text.slice(0,34)+"…":f.text)}<small class="num">${fmt(f.kcal_low)}–${fmt(f.kcal_high)} kcal · โปรตีน ${fmt(f.protein_g)} ก.</small></button>`).join("");
+  document.querySelectorAll("#quickList button").forEach(b=>b.onclick=async()=>{ const f=items[+b.dataset.i]; try{ await add("food",{date:ymd(),time:hm(),meal:selectedMeal||defaultMeal(),text:f.text,items:f.items||[],kcal_low:f.kcal_low,kcal_high:f.kcal_high,protein_g:f.protein_g,fiber_g:f.fiber_g||0,confidence:f.confidence||"กลาง",score:f.score||{},feedback:"บันทึกซ้ำ",social:!!f.social}); toast(`บันทึก ${f.text.slice(0,20)} แล้ว`); }catch(e){} });
+}
 
 /* ---------- render ---------- */
 function renderHeader(){ $("hdrDate").textContent = thaiDate(ymd()); }
@@ -1028,7 +1064,7 @@ function renderWeek(){
   const W=$("winsAll"); W.innerHTML = cache.wins.length? cache.wins.slice().sort((a,b)=>a.ts<b.ts?1:-1).map(w=>`<div class="item"><div class="t"><b class="num">${w.date}</b> ${esc(w.text)}</div></div>`).join("") : '<p class="muted">ยังไม่มี</p>';
   $("settingsText").textContent = `วันปกติ ${settings.budget_normal} · วันสังคม ${settings.budget_social} · พื้นต่ำสุด ${settings.floor} · โปรตีน ${settings.protein} ก. · TDEE ที่ใช้ ${settings.tdee} · เป้าถัดไป ${settings.next_milestone} กก.`;
 }
-function renderAll(){ renderHeader(); renderHome(); renderPlay(); renderEat(); renderMove(); renderWeek(); }
+function renderAll(){ renderHeader(); renderHome(); renderPlay(); renderEat(); renderQuick(); renderMove(); renderWeek(); }
 function esc(s){ return String(s).replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c])); }
 
 /* ---------- db ---------- */
