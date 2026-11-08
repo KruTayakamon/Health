@@ -169,6 +169,11 @@ img.preview{max-width:100%;border-radius:10px;max-height:220px;object-fit:cover}
 .visits{display:flex;gap:4px;flex-wrap:wrap}
 .visits i{width:14px;height:14px;border-radius:4px;background:var(--surface);border:1px solid var(--line);display:block}
 .visits i.on{background:var(--accent);border-color:var(--accent)}
+input[type=file].file{display:block;width:100%;border:1px dashed var(--accent);background:var(--accent-soft);border-radius:12px;padding:10px;font-size:.9rem;color:var(--fg)}
+input[type=file].file::file-selector-button{border:none;background:var(--accent);color:var(--accent-ink);border-radius:8px;padding:8px 12px;margin-right:10px;font:inherit}
+.quest{cursor:pointer}
+.quest:active{transform:scale(.99)}
+.quickmove{display:flex;gap:6px;flex-wrap:wrap}
 .linkrow{display:grid;grid-template-columns:1fr 1fr;gap:8px}
 .linkrow .btn{display:flex;flex-direction:column;align-items:center;gap:2px;padding:10px}
 .linkrow .btn span{font-size:1.4rem;line-height:1}
@@ -295,8 +300,7 @@ canvas.confetti{position:fixed;inset:0;z-index:31;pointer-events:none}
     <p class="small" id="bodyHint">ถ่ายหน้าจอ Samsung Health ตอนเช้า หน้าคะแนนพลังงาน + หน้าการนอน (และหน้าหลักถ้าอยากให้นับก้าว) แล้วส่งมา ผมจะอ่านเองและบอกว่าวันนี้เป็นวันแบบไหน</p>
     <div class="thumbs" id="bodyThumbs"></div>
     <div class="row">
-      <label class="btn grow" for="bodyShots" style="cursor:pointer">📱 เลือกภาพหน้าจอ (1–4 รูป)</label>
-      <input type="file" id="bodyShots" accept="image/*" multiple hidden>
+      <input type="file" id="bodyShots" class="file grow" accept="image/*" multiple aria-label="เลือกภาพหน้าจอ Samsung Health 1–4 รูป">
       <button class="btn accent" id="bodyRead" hidden>อ่านและพยากรณ์</button>
     </div>
     <p class="small muted" id="bodyStatus"></p>
@@ -394,8 +398,7 @@ canvas.confetti{position:fixed;inset:0;z-index:31;pointer-events:none}
     <div class="field"><label for="foodText">กินอะไร บอกขนาดด้วยถ้าทำได้ (ข้าวครึ่งจาน หมูกรอบ 6 ชิ้น แก้วใหญ่)</label>
       <textarea id="foodText" placeholder="เช่น กะเพราหมูสับไข่ดาว ข้าวครึ่งจาน จากร้านตามสั่ง"></textarea></div>
     <div class="row">
-      <label class="btn grow" for="foodPhoto" style="cursor:pointer">📷 ถ่ายรูป / เลือกรูป</label>
-      <input type="file" id="foodPhoto" accept="image/*" capture="environment" hidden>
+      <input type="file" id="foodPhoto" class="file grow" accept="image/*" aria-label="ถ่ายรูปหรือเลือกรูปอาหาร">
       <label class="row small" style="gap:6px"><input type="checkbox" id="foodSocial"> มื้อสังคม/บุฟเฟ่ต์</label>
     </div>
     <img class="preview" id="foodPreview" alt="" hidden>
@@ -465,6 +468,12 @@ canvas.confetti{position:fixed;inset:0;z-index:31;pointer-events:none}
     <div class="row">
       <div class="field grow"><label for="moveMin">นาที</label><input type="number" id="moveMin" inputmode="numeric" placeholder="40"></div>
       <div class="field grow"><label for="moveKcalWatch">นาฬิกาบอก (ถ้ามี)</label><input type="number" id="moveKcalWatch" inputmode="numeric" placeholder="kcal"></div>
+    </div>
+    <div class="eyebrow">หรือแตะเดียว (ไม่ใช้โควตา)</div>
+    <div class="quickmove">
+      <button class="chip" data-q="เดิน|20|เบา">เดิน 20 นาที</button><button class="chip" data-q="เดิน|30|เบา">เดิน 30 นาที</button>
+      <button class="chip" data-q="เดินห้าง/เดินเล่นกับเพื่อน|60|เบา">เดินห้าง 1 ชม.</button><button class="chip" data-q="ยืดเหยียด|10|เบา">ยืดเหยียด 10 นาที</button>
+      <button class="chip" data-q="เดินลู่|20|กลาง">เดินลู่ 20 นาที</button>
     </div>
     <button class="btn accent" id="moveAnalyze">ประเมินและบันทึก</button>
     <p class="small muted" id="moveStatus"></p>
@@ -1017,7 +1026,8 @@ function renderPlay(){
   renderGift(); renderForm(); renderAlbum(); renderMap();
   $("mascot").innerHTML=mascotSVG(mascotMood(),li,96); $("bubble").textContent=bubbleText();
   const qs=questList(); $("questDone").textContent=`${qs.filter(q=>q.done).length}/${qs.length}`;
-  $("quests").innerHTML=qs.map(q=>`<div class="quest ${q.done?"done":""}"><div class="box">${q.done?"✓":""}</div><span>${q.label}</span><span class="xp">+${q.xp} XP</span></div>`).join("");
+  $("quests").innerHTML=qs.map(q=>`<div class="quest ${q.done?"done":""}" data-k="${q.k}" role="button" tabindex="0"><div class="box">${q.done?"✓":""}</div><span>${q.label}${q.done?"":'<br><small class="muted">แตะเพื่อทำ</small>'}</span><span class="xp">+${q.xp} XP</span></div>`).join("");
+  document.querySelectorAll("#quests .quest").forEach(el=>el.onclick=()=>questGo(el.dataset.k));
   // water
   const w=dayWater(ymd()); $("waterText").textContent=`${w} / 8 แก้ว`;
   $("glasses").innerHTML=Array.from({length:8},(_,i)=>`<button class="glass" data-i="${i+1}" aria-label="แก้วที่ ${i+1}"><svg viewBox="0 0 34 40"><path d="M5 4h24l-3 32H8z" fill="${i<w?"var(--accent)":"var(--bg)"}" stroke="var(--line)" stroke-width="2"/>${i<w?'<path d="M9 12h16" stroke="rgba(255,255,255,.5)" stroke-width="2"/>':''}</svg></button>`).join("");
@@ -1137,6 +1147,15 @@ function renderBody(){
   if(b.date!==t) $("bodyHint").textContent="ส่งหน้าจอของเช้านี้มา จะได้พยากรณ์วันนี้";
 }
 
+function questGo(k){
+  if(k==="weigh"){ show("home"); $("weighInput").focus(); $("weighCard").scrollIntoView({behavior:"smooth"}); toast("พิมพ์เลขแล้วกดบันทึก"); }
+  else if(k==="body"){ show("home"); $("bodyCard").scrollIntoView({behavior:"smooth"}); toast("เลือกภาพหน้าจอนาฬิกา"); }
+  else if(k==="meal"){ show("eat"); $("foodText").focus(); }
+  else if(k==="move"){ show("move"); toast("แตะเดียวก็ได้ เช่น เดิน 20 นาที"); }
+  else if(k==="fast"){ show("home"); $("kitchenCard").scrollIntoView({behavior:"smooth"}); if(!fastCurrent) $("kitchenToggle").click(); }
+  else if(k==="water"){ show("home"); const w=dayWater(ymd()); upsert("daily", ymd(), {date:ymd(), water:Math.min(8,w+1)}).then(()=>toast("+1 แก้ว")).catch(()=>{}); }
+  else if(k==="night"){ show("night"); }
+}
 /* ---------- render ---------- */
 function renderHeader(){ $("hdrDate").textContent = thaiDate(ymd()); }
 function renderHome(){
@@ -1290,6 +1309,7 @@ function resetFoodForm(){ pending=null; $("foodResult").hidden=true; $("foodText
 $("foodManualSave").onclick = async ()=>{ const k=+$("mKcal").value, p=+$("mProt").value||0; const text=$("foodText").value.trim(); if(!(k>0)){ toast("ใส่แคลอรี่"); return; }
   try{ await add("food",{date:ymd(), time:hm(), meal:selectedMeal||defaultMeal(), text, items:[], kcal_low:Math.round(k*0.9), kcal_high:Math.round(k*1.1), protein_g:p, fiber_g:0, confidence:"กลาง", score:{}, feedback:"บันทึกเอง", social:$("foodSocial").checked}); $("mKcal").value=""; $("mProt").value=""; resetFoodForm(); toast("บันทึกแล้ว"); }catch(e){} };
 
+document.querySelectorAll(".quickmove .chip").forEach(b=>b.onclick=async()=>{ const [type,min,inten]=b.dataset.q.split("|"); const met=/ลู่/.test(type)?5:3.3; try{ await add("exercise",{date:ymd(),time:hm(),type,minutes:+min,intensity:inten,est_kcal:Math.round(met*115*(+min)/60*0.8),is_strength:false,note:"แตะเดียว"}); toast(`บันทึก ${type} ${min} นาที`); }catch(e){} });
 $("moveAnalyze").onclick = async ()=>{
   const text=$("moveText").value.trim(); const min=+$("moveMin").value||0; const watch=+$("moveKcalWatch").value||0;
   if(!text&&!min){ toast("บอกว่าทำอะไรหรือกี่นาที"); return; }
