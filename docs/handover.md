@@ -25,7 +25,7 @@
 | สำเนา/สำรอง | `logs/` ในรีโป | sync ด้วย `ArtifactData list ... out_dir=<scratch>/db` ทุก collection แล้ว `python3 scripts/db_to_logs.py <scratch>/db` |
 | สมองของโค้ช | `CLAUDE.md` + `agents/*.md` + `profile.yaml` | Claude Code อ่านอัตโนมัติทุกเซสชัน |
 | คำสั่งลัด | `.claude/skills/` | `/start` (เริ่มเซสชัน) `/weigh` `/eat` `/workout` `/day-review` `/week-review` `/coach` `/talk` |
-| เช็กอินอัตโนมัติ (scheduled tasks, model = claude-opus-5-5) | บัญชี claude.ai | เช้า 06:40 `trig_01S6Aq15GgYxoz58TNgG5LsC` · กลางวัน 12:40 `trig_01FLdvWHsJsM3wjbTDatu2cB` · ค่ำ 21:20 `trig_014D4SfGuZxiL6VGogqfKcAS` · อาทิตย์ 20:10 สรุปสัปดาห์+จดหมาย `trig_01UbBzF8iJYYKksvxH7son8u` (เวลาไทย) |
+| เช็กอินอัตโนมัติ (scheduled tasks) | บัญชี claude.ai | เช้า 06:40 `trig_01S6Aq15GgYxoz58TNgG5LsC` **Sonnet 5.5** (อ่านภาพนาฬิกา) · กลางวัน 12:40 `trig_01FLdvWHsJsM3wjbTDatu2cB` **Haiku 5.5** · ค่ำ 21:20 `trig_014D4SfGuZxiL6VGogqfKcAS` **Haiku 5.5** · อาทิตย์ 20:10 สรุปสัปดาห์+จดหมาย `trig_01UbBzF8iJYYKksvxH7son8u` **Opus 5.5** (เวลาไทย) — รุ่นตั้งค่าถาวรแล้ว นวลไม่ต้องกดเปลี่ยนเอง (ตกลง 8 พ.ย.) |
 | branch | `ccr-ba264d0d-xyurgd` (= default ของรีโป) | ทุกเซสชันใหม่เห็นทันที |
 
 ## ข้อจำกัดที่รู้แล้ว
