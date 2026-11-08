@@ -297,7 +297,7 @@ canvas.confetti{position:fixed;inset:0;z-index:31;pointer-events:none}
     <div class="row between"><div class="eyebrow">พยากรณ์ร่างกายวันนี้</div><span class="small muted" id="bodyDate"></span></div>
     <div class="vitals" id="vitals" hidden></div>
     <div class="forecast" id="forecast" hidden></div>
-    <p class="small" id="bodyHint">ถ่ายหน้าจอ Samsung Health ตอนเช้า หน้าคะแนนพลังงาน + หน้าการนอน (และหน้าหลักถ้าอยากให้นับก้าว) แล้วส่งมา ผมจะอ่านเองและบอกว่าวันนี้เป็นวันแบบไหน</p>
+    <p class="small" id="bodyHint">ส่งภาพหน้าจอ Samsung Health (คะแนนพลังงาน + การนอน) ให้โค้ชในแชตเช็กอินตอนเช้า โค้ชอ่านแล้วพยากรณ์จะมาขึ้นตรงนี้เอง · ถ้าเครื่องคุณเลือกรูปในแอปนี้ได้ ใช้ช่องข้างล่างก็ได้</p>
     <div class="thumbs" id="bodyThumbs"></div>
     <div class="row">
       <input type="file" id="bodyShots" class="file grow" accept="image/*" multiple aria-label="เลือกภาพหน้าจอ Samsung Health 1–4 รูป">
@@ -406,7 +406,7 @@ canvas.confetti{position:fixed;inset:0;z-index:31;pointer-events:none}
       <button class="btn accent grow" id="foodAnalyze">วิเคราะห์</button>
       <button class="btn grow" id="foodAsk">แค่ถาม ยังไม่กิน</button>
     </div>
-    <p class="small muted" id="foodStatus"></p>
+    <p class="small muted" id="foodStatus">ถ้าเลือกรูปไม่ได้บนเครื่องนี้ พิมพ์บอกแทน หรือส่งรูปให้โค้ชในแชตเช็กอินกลางวัน</p>
   </div>
 
   <div class="card" id="foodResult" hidden>
