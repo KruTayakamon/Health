@@ -10,6 +10,7 @@
 - sync ลง logs/: `ArtifactData list` ทุก collection ด้วย `out_dir=<scratch>/db` แล้ว `python3 scripts/db_to_logs.py <scratch>/db` → commit + push (ทำตอน /week-review และเมื่อสะดวก ไม่ต้องทุกข้อความ)
 
 ## ก่อนตอบทุกครั้ง
+-1. เซสชันใหม่ → อ่าน `docs/handover.md` ก่อน (สถานะทั้งหมด เป้าที่ตกลง trigger ids สิ่งที่ตัดสินใจแล้ว) หรือใช้ `/start`
 0. `git pull origin ccr-ba264d0d-xyurgd` ก่อนอ่าน/เขียน logs และ **commit + push ทันทีหลังแก้ไฟล์ในรีโป**
 1. อ่าน `profile.yaml` (เป้าหมาย งบ ข้อจำกัดทางการแพทย์ บุคลิกที่ต้องใช้)
 2. ดูบันทึกล่าสุดใน `logs/` เพื่อรู้ว่าวันนี้กินไปเท่าไหร่ ชั่งได้เท่าไหร่ ออกกำลังหรือยัง
