@@ -174,6 +174,19 @@ input[type=file].file::file-selector-button{border:none;background:var(--accent)
 .quest{cursor:pointer}
 .quest:active{transform:scale(.99)}
 .quickmove{display:flex;gap:6px;flex-wrap:wrap}
+.scan{background:#1B1530;border-color:transparent;color:#EDE7FF}
+.scan .eyebrow,.scan .muted{color:#B4A7D6}
+.scan .figs{display:grid;grid-template-columns:repeat(3,1fr);gap:6px}
+.scan .fig{display:flex;flex-direction:column;align-items:center;gap:4px;font-size:.72rem;text-align:center}
+.scan .fig svg{width:100%;height:auto;display:block}
+.scan .fig b{font-family:var(--display);font-size:1rem;font-weight:500}
+.scan .fig .d{color:#7FE3C4}
+.mgrid{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.mgrid .field label{font-size:.8rem}
+.comp{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}
+.comp>div{background:var(--bg);border-radius:12px;padding:10px;text-align:center}
+.comp b{display:block;font-family:var(--display);font-size:1.3rem;font-weight:500}
+.comp span{font-size:.75rem;color:var(--muted)}
 .linkrow{display:grid;grid-template-columns:1fr 1fr;gap:8px}
 .linkrow .btn{display:flex;flex-direction:column;align-items:center;gap:2px;padding:10px}
 .linkrow .btn span{font-size:1.4rem;line-height:1}
@@ -369,6 +382,7 @@ canvas.confetti{position:fixed;inset:0;z-index:31;pointer-events:none}
     <div class="linkrow">
       <button class="btn" id="goMap"><span>🗺️</span>แผนที่การเดินทาง</button>
       <button class="btn" id="goAlbum"><span>📒</span>กล่องสะสม</button>
+      <button class="btn" id="goScan"><span>🧬</span>ร่างกายของฉัน</button>
       <button class="btn" id="goWeek"><span>📊</span>สรุปสัปดาห์</button>
       <button class="btn warm" id="badDay"><span>🛌</span>วันนี้ไม่ไหว</button>
     </div>
@@ -556,6 +570,39 @@ canvas.confetti{position:fixed;inset:0;z-index:31;pointer-events:none}
   </div>
 </section>
 
+<!-- ========== MY BODY ========== -->
+<section class="view" id="view-scan" hidden>
+  <div class="card scan">
+    <div class="row between"><div class="eyebrow">ร่างกายของฉัน</div><span class="small muted" id="scanDate"></span></div>
+    <div class="figs">
+      <div class="fig"><div id="figStart"></div><b>เริ่มต้น</b><span id="figStartL"></span></div>
+      <div class="fig"><div id="figNow"></div><b>ล่าสุด</b><span id="figNowL" class="d"></span></div>
+      <div class="fig"><div id="figFuture"></div><b>ที่ 100 กก.</b><span id="figFutureL"></span></div>
+    </div>
+    <p class="small muted" id="scanNote">ทุกเส้นมาจากสายวัดจริงของคุณ ไม่ใช่เดาจากรูป ร่างขวาคือประมาณการเมื่อถึง 100 กก. ตามสัดส่วนปัจจุบัน</p>
+  </div>
+  <div class="card">
+    <div class="row between"><div class="eyebrow">องค์ประกอบร่างกาย (จากนาฬิกา)</div><span class="small muted" id="compDate"></span></div>
+    <div class="comp" id="comp"></div>
+    <svg class="spark" id="compSpark" viewBox="0 0 320 64" preserveAspectRatio="none" aria-label="กราฟไขมันและกล้ามเนื้อ"></svg>
+    <p class="small muted">ส่งหน้าจอ "องค์ประกอบร่างกาย" จาก Samsung Health ให้โค้ชในแชตเช้า โค้ชบันทึกให้ · วัดเวลาเดิมทุกครั้ง หลังเข้าห้องน้ำ ก่อนกิน</p>
+  </div>
+  <div class="card">
+    <div class="eyebrow">วัดตัว (สัปดาห์ละครั้ง วันเดียวกัน)</div>
+    <div class="mgrid">
+      <div class="field"><label for="mWaist">เอว ซม. (ที่สะดือ หายใจออก)</label><input type="number" id="mWaist" inputmode="decimal" step="0.5"></div>
+      <div class="field"><label for="mHip">สะโพก ซม. (ส่วนกว้างสุด)</label><input type="number" id="mHip" inputmode="decimal" step="0.5"></div>
+      <div class="field"><label for="mNeck">คอ ซม. (ใต้ลูกกระเดือก)</label><input type="number" id="mNeck" inputmode="decimal" step="0.5"></div>
+      <div class="field"><label for="mChest">อก ซม. (ระดับหัวนม)</label><input type="number" id="mChest" inputmode="decimal" step="0.5"></div>
+      <div class="field"><label for="mThigh">ต้นขา ซม. (ส่วนกว้างสุด)</label><input type="number" id="mThigh" inputmode="decimal" step="0.5"></div>
+      <div class="field"><label for="mArm">ต้นแขน ซม. (กึ่งกลาง)</label><input type="number" id="mArm" inputmode="decimal" step="0.5"></div>
+    </div>
+    <button class="btn accent" id="mSave">บันทึกการวัด (+15 XP)</button>
+    <p class="small muted" id="mStatus">สายวัดแนบผิว ไม่รัด ยืนตรง วัดข้างขวาเสมอ</p>
+    <div class="list small" id="mList"></div>
+  </div>
+</section>
+
 <!-- ========== ALBUM ========== -->
 <section class="view" id="view-album" hidden>
   <div class="card">
@@ -637,7 +684,7 @@ canvas.confetti{position:fixed;inset:0;z-index:31;pointer-events:none}
 
 <script>
 /* ---------- constants ---------- */
-const DEFAULTS = {eco:false, budget_normal:1700, budget_social:2100, floor:1300, protein:140, tdee:2375, next_milestone:112,
+const DEFAULTS = {eco:false, height_cm:166, budget_normal:1700, budget_social:2100, floor:1300, protein:140, tdee:2375, next_milestone:112,
   name:"ครูทยกมล (ชื่อเล่น นวล เรียกว่า นวล)", start_kg:115, record_low_kg:92, height_cm:166, age:35, sex:"หญิง", conditions:"PCOS (metformin), กำลังหยุด Mounjaro, ยาลดไขมัน"};
 let settings = {...DEFAULTS};
 const FOOD_DB = "ข้าวหมูกรอบ|1 จานร้านตามสั่ง|700-900|28|หมูกรอบ ~100 ก. คือตัวการ\nหมูกรอบ|100 ก. (~8-10 ชิ้น)|400-450|22|ของโปรด—ใช้เป็นกับข้าวร่วมโต๊ะ 5-6 ชิ้น ≈ 220\nข้าวกะเพราหมูสับไข่ดาว|1 จาน|650-800|32|สั่งข้าวครึ่งจาน ไม่เอาน้ำมันเยอะ -200\nข้าวกะเพราไก่ (ไม่มีไข่)|1 จาน|500-650|28\nข้าวมันไก่|1 จาน|600-750|25|ไก่ต้มไม่เอาหนัง ข้าวครึ่งจาน ≈ 400\nข้าวมันไก่ทอด|1 จาน|750-900|26\nข้าวขาหมู|1 จาน|650-850|28|ไม่เอาหนัง/มัน -200\nข้าวหมูแดง|1 จาน|550-700|25|น้ำราดหวาน ขอน้อย\nข้าวราดแกงเขียวหวานไก่|1 จาน|600-750|25|กะทิ\nข้าวราดผัดผักรวมหมู|1 จาน|450-600|20|ทางเลือกดีร้านตามสั่ง\nข้าวต้มปลา/ไก่|1 ชาม|300-400|20|ทางเลือกเช้า/เย็นเบา\nโจ๊กหมูใส่ไข่|1 ชาม|350-450|18\nก๋วยเตี๋ยวน้ำหมู/ไก่|1 ชาม|350-450|20|ไม่ซดน้ำซุปหมด เส้นน้อย\nก๋วยเตี๋ยวแห้ง|1 ชาม|450-550|20\nเย็นตาโฟ|1 ชาม|350-450|18\nผัดไทยกุ้งสด|1 จาน|550-700|20\nผัดซีอิ๊วหมู|1 จาน|550-700|22\nราดหน้าหมู|1 จาน|500-650|22\nส้มตำไทย|1 จาน|120-180|3|ดีมาก (ระวังน้ำตาล) \nไก่ย่าง (ไม่เอาหนัง)|1 ชิ้นสะโพก ~120 ก.|200-250|30|โปรตีนหลักร้านส้มตำ\nไก่ย่าง (มีหนัง)|1 ชิ้นสะโพก|300-350|28\nคอหมูย่าง|100 ก.|300-350|18\nลาบหมู|1 จาน|250-350|22\nน้ำตกหมู|1 จาน|250-350|24\nข้าวเหนียว|1 ห่อเล็ก ~80 ก.|150-180|3\nต้มยำกุ้งน้ำใส|1 ถ้วย|100-150|15|ดีมาก\nต้มยำน้ำข้น|1 ถ้วย|200-300|15\nแกงจืดเต้าหู้หมูสับ|1 ถ้วย|120-180|12|ทางเลือกกินกับแม่\nปลานึ่งมะนาว|1 ตัวกลาง (กินคนเดียวครึ่งตัว)|180-250|30|ทางเลือกดีสุด\nปลาทับทิมทอด|ครึ่งตัว|300-400|28\nไข่เจียว|2 ฟอง ร้านตามสั่ง|250-350|13|น้ำมันเยอะ\nไข่ดาว|1 ฟอง|110-140|6\nไข่ต้ม|1 ฟอง|70-75|6|โปรตีนฉุกเฉิน\nผัดผักบุ้งไฟแดง|1 จาน|150-250|4\nผักลวก/ผักต้ม|1 จานเล็ก|30-60|2|เพิ่มได้ไม่อั้น\nข้าวสวย|1 จานเต็ม (~250 ก.)|320-350|6|ครึ่งจาน ≈ 165\nข้าวสวย|ครึ่งจาน|160-175|3|ค่าเริ่มต้นของแผน\nข้าวกล้อง|ครึ่งจาน|160-175|4\nโกโก้ร้าน (หวานปกติ)|แก้ว 16 oz|300-450|8|ตัวการ\nโกโก้ชงเอง นมสด ไม่ใส่น้ำตาล|โกโก้ 100% 2 ชช. + นมสด 200 มล.|140-160|8|ของโปรดในแผน\nโกโก้ชงเอง นมพร่องมันเนย ไม่ใส่น้ำตาล|โกโก้ 100% 2 ชช. + นม 200 มล.|100-120|8|ประหยัดสุด\nมัทฉะนมสด ชงเอง ไม่หวาน|มัทฉะ 2 ก. + นมสด 200 มล.|130-150|7|ของโปรดในแผน\nมัทฉะลาเต้ร้าน|แก้ว 16 oz|250-400|8\nชานมไข่มุก|แก้ว 16 oz|400-550|4|หลีกเลี่ยง\nน้ำอัดลม|กระป๋อง 325 มล.|130-140|0\nชาเขียวไม่หวาน/น้ำเปล่า|แก้ว|0-5|0|ค่าเริ่มต้นที่ร้าน\nนมสด|200 มล.|120-130|7\nนมโปรตีนสูง (7-11)|ขวด 250-300 มล.|150-200|20|หลังยิม\nอกไก่นุ่ม 7-11|1 ซอง ~100 ก.|100-120|22|โปรตีนฉุกเฉิน\nสลัดผัก 7-11 (ไม่ใส่น้ำสลัด)|1 กล่อง|40-80|3\nน้ำสลัดครีม|1 ซอง|80-120|0|ใช้ครึ่งซอง\nโยเกิร์ตกรีกธรรมดา|1 ถ้วย 150 ก.|100-130|12\nทูน่ากระป๋องในน้ำแร่|1 กระป๋อง 150 ก.|110-140|25\nแซนด์วิชแฮมชีส 7-11|1 ชิ้น|250-320|12\nขนมปังไส้ต่างๆ 7-11|1 ชิ้น|250-350|5\nไส้กรอก 7-11|1 ชิ้น|120-180|6\nชาบูบุฟเฟ่ต์ แบบมีกฎ|1 มื้อ 90 นาที|900-1300|80|ผัก+ซุปใสก่อน เนื้อไม่ติดมัน ไม่เส้น/ทอด/ของหวาน/น้ำหวาน\nชาบูบุฟเฟ่ต์ กินอิสระ|1 มื้อ|2000-3000|90|น้ำจิ้ม+ของทอด+ไอศกรีม+น้ำหวาน\nน้ำจิ้มสุกี้|1 ถ้วยเล็ก|80-120|1|3 ถ้วย ≈ 300\nพริกน้ำส้ม/ซีอิ๊ว/พอนสึ|1 ถ้วยเล็ก|10-30|0|น้ำจิ้มแทน\nเนื้อสันนอก/สันในสไลด์|100 ก.|170-220|22|เลือกชิ้นนี้\nหมูสามชั้นสไลด์|100 ก.|400-500|15|แค่ 2-3 ชิ้น\nอกไก่/ซีฟู้ดสไลด์|100 ก.|100-130|22|กินได้มาก\nไอศกรีมบุฟเฟ่ต์|1 ลูก|120-180|2\nซาชิมิแซลมอน|1 ชิ้น ~15 ก.|30-45|4\nซาชิมิปลาขาว/ทูน่า|1 ชิ้น|20-35|4\nนิกิริซูชิ|1 คำ|60-80|4|ข้าวซูชิมีน้ำตาล 8 คำ ≈ 550\nปลาแซลมอนย่างเซ็ต|1 เซ็ต (ข้าว+ซุป+ผัก)|550-700|38|ทางเลือกดีสุด\nปลาซาบะย่างเซ็ต|1 เซ็ต|550-700|35\nทงคัตสึเซ็ต|1 เซ็ต|900-1200|35\nราเมนทงคตสึ|1 ชาม|700-1000|30\nราเมนโชยุ/น้ำใส|1 ชาม|450-600|25|ไม่ซดน้ำหมด\nซุปมิโซะ|1 ถ้วย|40-70|4\nเอดามาเมะ|1 ถ้วยเล็ก|100-130|9\nสลัดญี่ปุ่น (น้ำสลัดงา)|1 จาน|120-200|3\nไก่คาราอาเกะ|5 ชิ้น|350-450|25\nยากินิกุ (เนื้อย่าง)|100 ก.|200-300|22|ซอสหวาน ขอน้อย\nเทริยากิไก่ข้าว|1 จาน|600-750|30\nกล้วยหอม|1 ผล|90-110|1\nฝรั่ง|1 ผล|80-110|2|ของว่างดีมาก\nแอปเปิล|1 ผล|80-100|0\nมะม่วงสุก|1 ผล|150-200|1\nทุเรียน|1 เม็ด|120-160|1";
@@ -682,7 +729,7 @@ const RED_FLAGS = /ไม่อยากอยู่|อยากตาย|ฆ�
 
 /* ---------- state ---------- */
 let db=null, sample=null, sampleLimits=null;
-let cache = {weight:[], food:[], exercise:[], daily:[], wins:[], journal:[], fast:[], weekly:[], gifts:[], body:[], collection:{}};
+let cache = {weight:[], food:[], exercise:[], daily:[], wins:[], journal:[], fast:[], weekly:[], gifts:[], body:[], measure:[], collection:{}};
 let fastCurrent=null; let ringTimer=null;
 let unsub = [];
 let pending = null; // analysed food awaiting save
@@ -823,7 +870,7 @@ const TEASE={
  coupon:["คูปอง: โกโก้ร้าน 1 แก้วโดยไม่ต้องรู้สึกผิด (นับในงบวันสังคม)","คูปอง: หมูกรอบ 6 ชิ้นเป็นกับข้าวร่วมโต๊ะ ใช้ได้สัปดาห์นี้","คูปอง: ข้ามเช็กอินก่อนนอน 1 คืน XP ยังได้ครบ","คูปอง: ชาบูกับเพื่อน ฉันไม่ถามอะไรเลยนอกจากน้ำจิ้ม"]};
 function seed(s){ let x=0; for(const c of s) x=(x*31+c.charCodeAt(0))>>>0; return x; }
 function pick(arr,key){ return arr[seed(ymd()+"|"+key+"|"+(settings.mascot_name||""))%arr.length]; }
-const XP={weigh:10, meal:5, mealCap:4, move:15, strength:5, night:10, fast:10, water:5, week:20, bad:5, win:5, body:10};
+const XP={weigh:10, meal:5, mealCap:4, move:15, strength:5, night:10, fast:10, water:5, week:20, bad:5, win:5, body:10, measure:15};
 function dayWater(d){ const x=cache.daily.find(z=>z.date===d); return x? (+x.water||0):0; }
 function xpBreakdown(){
   const b={weigh:cache.weight.length*XP.weigh, meal:0, move:0, night:0, fast:0, water:0, week:cache.weekly.length*XP.week, bad:0, win:cache.wins.length*XP.win};
@@ -832,7 +879,7 @@ function xpBreakdown(){
   cache.daily.forEach(d=>{ if(d.sleep_h!=null) b.night+=XP.night; if(d.bad_day) b.bad+=XP.bad; if((+d.water||0)>=6) b.water+=XP.water; });
   cache.fast.forEach(f=>{ if((+f.hours||0)>=12) b.fast+=XP.fast; });
   b.gift=cache.gifts.filter(g=>g.opened&&g.type==="xp").reduce((s,g)=>s+(+g.xp||0),0);
-  b.body=cache.body.length*XP.body;
+  b.body=cache.body.length*XP.body; b.measure=cache.measure.length*XP.measure;
   return b;
 }
 function totalXp(){ return Object.values(xpBreakdown()).reduce((a,c)=>a+c,0); }
@@ -1114,6 +1161,53 @@ async function logGym(kind){
 }
 $("gymDone").onclick=()=>logGym("full"); $("gymSauna").onclick=()=>logGym("sauna");
 
+/* ---------- my body: measurements + wireframe ---------- */
+function navyBF(w,hip,neck,hcm){ if(!(w>0&&hip>0&&neck>0&&hcm>0)) return null; const v=163.205*Math.log10(w+hip-neck)-97.684*Math.log10(hcm)-78.387; return Math.round(v*10)/10; }
+function measures(){ return cache.measure.slice().sort((a,b)=>a.date<b.date?-1:1); }
+function wireframe(m,label,color){
+  // m: {chest,waist,hip,thigh,arm,neck} cm → half-widths in px (figure 120 wide, 260 tall); circumference/π ≈ width
+  const k=0.62; const W=c=>Math.max(8,(c||80)/Math.PI*k);
+  const sh=W((m.chest||100)*1.08), ch=W(m.chest||100), wa=W(m.waist||95), hp=W(m.hip||110), th=W((m.thigh||60)*1.0)*0.55, kn=th*0.62, ca=th*0.52, an=th*0.36, nk=W(m.neck||36)*0.9, hd=16;
+  const cx=60; const rings=[[22,nk,"neck"],[40,sh,"sh"],[62,ch,"ch"],[92,wa,"wa"],[122,hp,"hp"]];
+  let s=`<svg viewBox="0 0 120 262" xmlns="http://www.w3.org/2000/svg"><rect width="120" height="262" rx="10" fill="#120D22"/>`;
+  s+=`<g stroke="${color}" stroke-width="1" fill="none" opacity=".9">`;
+  // head
+  s+=`<ellipse cx="${cx}" cy="14" rx="${hd*0.75}" ry="${hd*0.95}"/><path d="M${cx-hd*0.75} 14h${hd*1.5}M${cx} ${14-hd*0.95}v${hd*1.9}"/>`;
+  // torso outline left/right through rings
+  const L=rings.map(r=>`${cx-r[1]} ${r[0]}`).join(" L"), R=rings.slice().reverse().map(r=>`${cx+r[1]} ${r[0]}`).join(" L");
+  s+=`<path d="M${L} L${cx-hp*0.85} 140 L${cx+hp*0.85} 140 L${R} Z"/>`;
+  rings.forEach(r=>{ s+=`<ellipse cx="${cx}" cy="${r[0]}" rx="${r[1]}" ry="${Math.max(3,r[1]*0.22)}"/>`; });
+  for(let y=48;y<140;y+=10){ const t=(y-40)/100; const halfw=rings.reduce((acc,r,i,arr)=>{ if(i===0) return acc; const a=arr[i-1]; if(y>=a[0]&&y<=r[0]){ const f=(y-a[0])/(r[0]-a[0]); return a[1]+(r[1]-a[1])*f; } return acc; }, hp); s+=`<ellipse cx="${cx}" cy="${y}" rx="${halfw}" ry="${Math.max(2,halfw*0.2)}" opacity=".45"/>`; }
+  for(let i=-3;i<=3;i++){ s+=`<path d="M${cx+sh*i/3.5} 40 Q${cx+wa*i/3.5} 92 ${cx+hp*i/3.5} 140" opacity=".5"/>`; }
+  // arms
+  [[-1,"l"],[1,"r"]].forEach(([d])=>{ const ax=cx+d*(sh+W(m.arm||32)*0.55); s+=`<path d="M${cx+d*sh} 42 Q${ax} 70 ${ax-d*2} 118 L${ax-d*6} 150" stroke-width="1.2"/><path d="M${cx+d*(sh-1)} 46 Q${ax-d*W(m.arm||32)*0.9} 72 ${ax-d*W(m.arm||32)*0.8-d*2} 118" />`; for(let y=56;y<=112;y+=14){ s+=`<ellipse cx="${ax-d*W(m.arm||32)*0.42}" cy="${y}" rx="${W(m.arm||32)*0.45}" ry="2.5" opacity=".6"/>`; } });
+  // legs
+  [[-1],[1]].forEach(([d])=>{ const lx=cx+d*hp*0.45; s+=`<path d="M${lx-d*th} 140 L${lx-d*kn} 196 L${lx-d*ca} 230 L${lx-d*an} 256 L${lx+d*an} 256 L${lx+d*ca} 230 L${lx+d*kn} 196 L${lx+d*th} 140"/>`; [[150,th*0.98],[165,th*0.9],[180,th*0.78],[196,kn],[212,ca*1.05],[230,ca],[246,an*1.1]].forEach(r=>{ s+=`<ellipse cx="${lx}" cy="${r[0]}" rx="${r[1]}" ry="${Math.max(2,r[1]*0.25)}" opacity=".6"/>`; }); });
+  s+=`</g></svg>`; return s;
+}
+function projectTo(m,wNow,wTarget){ if(!wNow||!wTarget) return m; const f=Math.sqrt(wTarget/wNow); const soft=1-(1-f)*0.55; return {chest:(m.chest||100)*soft, waist:(m.waist||95)*f, hip:(m.hip||110)*f, thigh:(m.thigh||60)*f, arm:(m.arm||32)*f, neck:(m.neck||36)*soft}; }
+function renderScan(){
+  const ms=measures(); const first=ms[0], last=ms[ms.length-1];
+  const ws=weightSeries(); const wNow= ws.length? +ws[ws.length-1].kg : 115;
+  const demo={chest:118,waist:112,hip:128,thigh:68,arm:38,neck:38};
+  const a=first||demo, b=last||demo; const col="#B39DFF";
+  $("figStart").innerHTML=wireframe(a,"",col); $("figNow").innerHTML=wireframe(b,"","#7FE3C4"); $("figFuture").innerHTML=wireframe(projectTo(b,wNow,100),"","#FFD54F");
+  $("figStartL").textContent= first? `${first.date} · เอว ${first.waist}` : "ยังไม่วัด (ตัวอย่าง)";
+  $("figNowL").textContent= last? `${last.date} · เอว ${last.waist}${first&&last!==first?` (${(last.waist-first.waist>0?"+":"")+fmt(last.waist-first.waist,1)})`:""}` : "วัดแล้วจะขึ้นตรงนี้";
+  $("figFutureL").textContent= last? `เอว ≈ ${fmt(projectTo(b,wNow,100).waist,0)} ซม. (ประมาณ)` : "ประมาณการ";
+  $("scanDate").textContent = last? `วัดล่าสุด ${thaiDate(last.date)}` : "";
+  $("scanNote").textContent = ms.length? "ทุกเส้นมาจากสายวัดจริงของคุณ ไม่ใช่เดาจากรูป ร่างขวาคือประมาณการเมื่อถึง 100 กก. ตามสัดส่วนปัจจุบัน" : "ตอนนี้เป็นร่างตัวอย่าง วัดตัวครั้งแรกข้างล่างแล้วโครงจะเป็นของคุณจริง ๆ";
+  // composition from watch
+  const bc=cache.body.filter(x=>x.body_fat_pct!=null||x.muscle_kg!=null).sort((x,y)=>x.date<y.date?-1:1); const lb=bc[bc.length-1];
+  const navy = last? navyBF(+last.waist,+last.hip,+last.neck,settings.height_cm||166) : null;
+  $("compDate").textContent= lb? thaiDate(lb.date):"";
+  $("comp").innerHTML = `<div><b class="num">${lb&&lb.body_fat_pct!=null?fmt(lb.body_fat_pct,1)+"%":"–"}</b><span>ไขมัน (นาฬิกา)</span></div><div><b class="num">${lb&&lb.muscle_kg!=null?fmt(lb.muscle_kg,1):"–"}</b><span>กล้ามเนื้อ กก.</span></div><div><b class="num">${navy!=null?fmt(navy,1)+"%":"–"}</b><span>ไขมัน (สูตรสายวัด)</span></div>`;
+  const svg=$("compSpark"); if(bc.length<2){ svg.innerHTML=`<text x="4" y="38" font-size="12" fill="var(--muted)">กราฟจะขึ้นเมื่อมีการวัดจากนาฬิกา 2 ครั้งขึ้นไป</text>`; }
+  else { const f=bc.map(x=>+x.body_fat_pct).filter(v=>!isNaN(v)); const mu=bc.map(x=>+x.muscle_kg).filter(v=>!isNaN(v)); const n=bc.length; const X=i=>6+i/(n-1)*308; const line=(arr,col)=>{ if(arr.length<2) return ""; const lo=Math.min(...arr)-1,hi=Math.max(...arr)+1; const Y=v=>58-(v-lo)/(hi-lo)*48; return `<path d="${arr.map((v,i)=>(i?"L":"M")+X(i).toFixed(1)+" "+Y(v).toFixed(1)).join(" ")}" stroke="${col}" stroke-width="2.5" fill="none" stroke-linecap="round"/>`; }; svg.innerHTML=line(f,"var(--warm)")+line(mu,"var(--accent)")+`<text x="6" y="12" font-size="10" fill="var(--warm)">ไขมัน %</text><text x="60" y="12" font-size="10" fill="var(--accent)">กล้ามเนื้อ กก.</text>`; }
+  $("mList").innerHTML = ms.slice().reverse().slice(0,6).map(m=>`<div class="item"><div class="t"><b class="num">${m.date}</b> เอว ${m.waist} · สะโพก ${m.hip} · คอ ${m.neck}${m.chest?` · อก ${m.chest}`:""}${m.thigh?` · ต้นขา ${m.thigh}`:""}${m.arm?` · แขน ${m.arm}`:""}${m.navy_bf!=null?` · ไขมัน ≈ ${m.navy_bf}%`:""}</div></div>`).join("");
+}
+$("mSave").onclick=async()=>{ const g=id=>parseFloat($(id).value)||null; const m={date:ymd(), waist:g("mWaist"), hip:g("mHip"), neck:g("mNeck"), chest:g("mChest"), thigh:g("mThigh"), arm:g("mArm")}; if(!(m.waist&&m.hip)){ toast("อย่างน้อยต้องมีเอวและสะโพก"); return; } m.navy_bf=navyBF(m.waist,m.hip,m.neck,settings.height_cm||166); try{ await setDoc("measure", ymd(), m); ["mWaist","mHip","mNeck","mChest","mThigh","mArm"].forEach(i=>$(i).value=""); $("mStatus").textContent = m.navy_bf!=null? `บันทึกแล้ว · ไขมันจากสูตรสายวัด ≈ ${m.navy_bf}% (ใช้ดูแนวโน้ม ไม่ใช่ค่าแน่นอน)` : "บันทึกแล้ว"; toast("วัดตัวแล้ว +15 XP"); await add("wins",{date:ymd(),text:`วัดตัวครั้งใหม่ เอว ${m.waist} ซม.`}); }catch(e){} };
+
 /* ---------- body weather (Samsung Health screenshots) ---------- */
 const RULES_BODY_READ=`อ่านตัวเลขจากภาพหน้าจอแอป Samsung Health (ภาษาไทย) ของ Galaxy Watch 8 ให้ครบที่สุด ถ้าไม่มีให้ใส่ null ห้ามเดา
 ตอบ JSON เท่านั้น: {"energy_score":80,"energy_label":"ดี","sleep_start":"01:43","sleep_end":"07:12","sleep_hours":5.5,"sleep_score":null,"deep_sleep_min":null,"sleep_hr":72,"hrv_ms":54,"skin_temp_delta":0.6,"breathing":12.0,"steps":6483,"resting_hr":null,"hr_now":87,"stress":null,"vascular_load":"สูงขึ้นเล็กน้อย","age_index":322,"age_label":"ต่ำ","body_fat_pct":null,"muscle_kg":null,"weight_kg":null,"cycle_day":null,"cycle_phase":null,"workouts":[],"factors":{"กิจกรรมวันก่อนหน้า":"พอใช้"},"notes":"สิ่งที่เห็นเพิ่มเติมสั้น ๆ"}
@@ -1234,7 +1328,7 @@ function renderWeek(){
   $("ecoToggle").checked=!!settings.eco;
   $("settingsText").textContent = `วันปกติ ${settings.budget_normal} · วันสังคม ${settings.budget_social} · พื้นต่ำสุด ${settings.floor} · โปรตีน ${settings.protein} ก. · TDEE ที่ใช้ ${settings.tdee} · เป้าถัดไป ${settings.next_milestone} กก.`;
 }
-function renderAll(){ renderHeader(); renderHome(); renderPlay(); renderBody(); renderEat(); renderQuick(); renderMove(); renderGym(); renderWeek(); }
+function renderAll(){ renderHeader(); renderHome(); renderPlay(); renderBody(); renderEat(); renderQuick(); renderMove(); renderGym(); renderWeek(); renderScan(); }
 function esc(s){ return String(s).replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c])); }
 
 /* ---------- db ---------- */
@@ -1246,7 +1340,7 @@ function watch(col){ const u=db.collection(col).onSnapshot(snap=>{ cache[col]=sn
 async function initDb(){
   db = (window.claude&&claude.use)? await claude.use("db") : null;
   if(!db){ $("weighHint").textContent="เปิดหน้านี้ขณะล็อกอิน claude.ai เพื่อให้บันทึกได้"; return; }
-  ["weight","food","exercise","daily","wins","journal","fast","weekly","gifts","body"].forEach(watch);
+  ["weight","food","exercise","daily","wins","journal","fast","weekly","gifts","body","measure"].forEach(watch);
   db.doc("collection/equip").onSnapshot(s=>{ cache.collection={...cache.collection, equip: s.exists? s.data(): {}}; renderAll(); },()=>{});
   db.doc("fast/current").onSnapshot(s=>{ fastCurrent = s.exists? s.data(): null; renderKitchen(); },()=>{});
   try{ const s=await db.doc("settings/profile").get(); if(s.exists){ settings={...DEFAULTS,...s.data()}; renderAll(); } }catch(e){}
@@ -1396,10 +1490,10 @@ $("badDay").onclick = async ()=>{
   try{ if(db) await upsert("daily", ymd(), {date:ymd(), bad_day:true, note:"ไม่ไหว"}); }catch(e){}
 };
 $("badDayClose").onclick=()=>{ $("badDayCard").hidden=true; };
-$("goWeek").onclick=()=>show("week"); $("goMap").onclick=()=>show("map"); $("goAlbum").onclick=()=>show("album");
+$("goWeek").onclick=()=>show("week"); $("goMap").onclick=()=>show("map"); $("goAlbum").onclick=()=>show("album"); $("goScan").onclick=()=>show("scan");
 
 /* routing */
-const VIEWS=["home","eat","move","night","talk","week","map","album"];
+const VIEWS=["home","eat","move","night","talk","week","map","album","scan"];
 function show(v){ if(!VIEWS.includes(v)) v="home"; VIEWS.forEach(x=>{ $("view-"+x).hidden = x!==v; }); document.querySelectorAll(".tab").forEach(t=>t.classList.toggle("on",t.dataset.view===v)); if(location.hash!=="#"+v) history.replaceState(null,"","#"+v); window.scrollTo({top:0}); if(v==="week") renderWeek(); if(v==="eat") renderEat(); if(v==="map") renderMap(); if(v==="album") renderAlbum(); }
 document.querySelectorAll(".tab").forEach(t=>t.onclick=()=>show(t.dataset.view));
 window.addEventListener("hashchange",()=>show(location.hash.slice(1)));
