@@ -199,15 +199,23 @@ canvas.confetti{position:fixed;inset:0;z-index:31;pointer-events:none}
 @keyframes boing{0%{transform:scale(1)}30%{transform:scale(1.15,.85) translateY(4px)}60%{transform:scale(.92,1.1) translateY(-10px)}100%{transform:scale(1)}}
 .mascot.blink svg [data-eye]{transform-box:fill-box;transform-origin:center;animation:blink .18s ease-in-out}
 @keyframes blink{50%{transform:scaleY(.1)}}
-#formImg{cursor:pointer;animation:breathe 4.2s ease-in-out infinite;transform-origin:50% 90%}
-#formImg.boing{animation:boing .6s cubic-bezier(.3,1.6,.5,1)}
+.mascot.wave [data-arm]{transform-box:fill-box;transform-origin:20% 10%;animation:wave .9s ease-in-out}
+@keyframes wave{0%,100%{transform:rotate(0)}25%{transform:rotate(-35deg)}50%{transform:rotate(-10deg)}75%{transform:rotate(-35deg)}}
+.zoo svg{width:100%;height:auto;aspect-ratio:1;border-radius:16px;background:var(--bg);display:block}
+.zoo>div.lock svg{filter:brightness(0) opacity(.18)}
+.pick{display:grid;grid-template-columns:repeat(5,1fr);gap:6px}
+.pick button{border:1px solid var(--line);background:var(--bg);border-radius:14px;padding:4px 2px 6px;cursor:pointer;font-size:.72rem;display:flex;flex-direction:column;align-items:center;gap:2px;color:var(--fg)}
+.pick button.on{border-color:var(--accent);background:var(--accent-soft)}
+.pick svg{width:100%;height:auto}
+.stagebar{height:8px;border-radius:5px;background:var(--surface);overflow:hidden}
+.stagebar>i{display:block;height:100%;background:var(--accent);border-radius:5px}
 .xpfloat{position:fixed;z-index:25;pointer-events:none;font-family:var(--display);font-weight:600;color:var(--warm);font-size:1.3rem;text-shadow:0 2px 6px rgba(0,0,0,.15);animation:floatup 1.4s ease-out forwards}
 @keyframes floatup{0%{opacity:0;transform:translate(-50%,10px) scale(.8)}20%{opacity:1;transform:translate(-50%,0) scale(1.1)}100%{opacity:0;transform:translate(-50%,-60px) scale(1)}}
 .quick{display:flex;gap:8px;flex-wrap:wrap}
 .quick button{border:1px solid var(--line);background:var(--bg);border-radius:12px;padding:8px 10px;font-size:.85rem;text-align:left;cursor:pointer;max-width:100%;display:flex;flex-direction:column;gap:2px}
 .quick button small{color:var(--muted);font-size:.72rem}
 .quick button:active{transform:scale(.96)}
-@media (prefers-reduced-motion: reduce){ .bar>i,.toast,.xpbar>i{transition:none} .bob,.mascot svg,#formImg{animation:none!important} .xpfloat{animation-duration:.01s} }
+@media (prefers-reduced-motion: reduce){ .bar>i,.toast,.xpbar>i{transition:none} .bob,.mascot svg,.mascot [data-arm]{animation:none!important} .xpfloat{animation-duration:.01s} }
 </style>
 
 <header class="top">
@@ -232,9 +240,16 @@ canvas.confetti{position:fixed;inset:0;z-index:31;pointer-events:none}
     </div>
   </div>
 
+  <div class="card" id="pickCard" hidden>
+    <div class="eyebrow">เลือกเพื่อนร่วมทาง</div>
+    <p class="small">ตัวนี้จะอยู่กับคุณตลอดทาง และค่อย ๆ เปลี่ยนรูปร่างไปพร้อมกับคุณ เปลี่ยนตัวทีหลังได้ ของขวัญไม่หาย</p>
+    <div class="pick" id="pickHome"></div>
+  </div>
+
   <div class="card form" id="formCard">
-    <div class="row between"><div class="eyebrow">ร่างประจำด่านของคุณ</div><span class="small muted num" id="formKg"></span></div>
-    <div class="top"><img id="formImg" alt=""><div class="grow" style="min-width:0"><div class="nm" id="formName"></div><p class="small" id="formBio"></p></div></div>
+    <div class="row between"><div class="eyebrow">รูปร่างของเพื่อน</div><span class="small muted num" id="formKg"></span></div>
+    <div><div class="nm" id="formName"></div><p class="small" id="formBio"></p></div>
+    <div class="stagebar"><i id="stageBar"></i></div>
     <div class="traits" id="formTraits"></div>
     <p class="small muted" id="formNext"></p>
   </div>
@@ -496,13 +511,17 @@ canvas.confetti{position:fixed;inset:0;z-index:31;pointer-events:none}
     <div class="album" id="album"></div>
   </div>
   <div class="card">
-    <div class="row between"><div class="eyebrow">ขบวนร่าง</div><span class="small muted num" id="zooCount"></span></div>
-    <p class="small muted">เปลี่ยนตามค่าเฉลี่ย 7 วันที่ "เคยถึง" ถึงแล้วไม่ถอยกลับ ร่างข้างหน้ายังเป็นเงา</p>
+    <div class="row between"><div class="eyebrow">เส้นทางรูปร่าง</div><span class="small muted num" id="zooCount"></span></div>
+    <p class="small muted">รูปร่างเปลี่ยนตามค่าเฉลี่ย 7 วันที่ต่ำที่สุดที่เคยถึง ถึงแล้วไม่ถอยกลับ ทุกด่านได้ของขวัญใส่ให้เพื่อน ด่านข้างหน้ายังเป็นเงา</p>
     <div class="zoo" id="zoo"></div>
   </div>
   <div class="card">
     <div class="eyebrow">ความสำเร็จ</div>
     <div class="list small" id="achList"></div>
+  </div>
+  <div class="card">
+    <div class="eyebrow">เปลี่ยนเพื่อน</div>
+    <div class="pick" id="pickAlbum"></div>
   </div>
   <div class="card">
     <div class="eyebrow">เลเวลของเพื่อน</div>
@@ -665,16 +684,23 @@ function weekStats(end=ymd()){
 
 /* ---------- play layer: XP, levels, streak, quests, mascot ---------- */
 const LEVELS=[
- {xp:0,t:"ไข่น้อย",stage:"egg",s:"ยังอยู่ในไข่ รอให้มีคนมาเคาะ"},
- {xp:50,t:"หนอนตื่นแล้ว",stage:"cat",s:"ฟักแล้ว! ตัวเล็กแต่หิวใบไม้"},
- {xp:120,t:"หนอนกินใบไม้",stage:"cat",s:"ได้ใบไม้เป็นของตัวเอง"},
- {xp:220,t:"หนอนตัวเก่ง",stage:"cat",s:"ผ้าพันคอ + ดอกไม้ เริ่มมีสไตล์"},
- {xp:350,t:"ดักแด้",stage:"pupa",s:"ข้างในกำลังเปลี่ยน ข้างนอกยังดูเหมือนเดิม เหมือนตาชั่งที่ช้ากว่านิสัย"},
- {xp:520,t:"ดักแด้เรืองแสง",stage:"pupa",s:"ใกล้แล้ว อย่าเพิ่งเปิดดู"},
- {xp:740,t:"ผีเสื้อแรกบิน",stage:"fly",s:"ออกมาแล้ว! ปีกยังสั่นอยู่เลย"},
- {xp:1000,t:"ผีเสื้อสีสวย",stage:"fly",s:"ลายปีกเต็มแล้ว"},
- {xp:1350,t:"ผีเสื้อมงกุฎ",stage:"fly",s:"ใครจะเชื่อว่าเคยเป็นไข่"},
- {xp:1800,t:"ผีเสื้อทอง",stage:"fly",s:"ตำนานของสวนนี้"}];
+ {xp:0,t:"เพิ่งรู้จัก",s:"เพิ่งเจอกัน ยังเขิน ๆ"},
+ {xp:50,t:"เพื่อนใหม่",s:"ได้ผ้าพันคอผืนแรก เริ่มสนิทแล้ว"},
+ {xp:120,t:"เพื่อนกินข้าว",s:"รู้แล้วว่าเธอชอบโกโก้"},
+ {xp:220,t:"เพื่อนชั่งน้ำหนัก",s:"ได้ดอกไม้ทัดหู ใส่แล้วหล่อ/สวยขึ้น 3%"},
+ {xp:350,t:"เพื่อนซี้",s:"ตอนนี้แซวได้เต็มที่แล้วนะ"},
+ {xp:520,t:"คู่หูยิม",s:"ได้ดาวติดอก เพราะเธอขยันจริง"},
+ {xp:740,t:"คู่หูตัวจริง",s:"รู้ใจกันแล้ว ไม่ต้องพูดเยอะ"},
+ {xp:1000,t:"ร่วมทาง",s:"ได้ออร่าวิบวับ ใครเห็นก็รู้ว่าไม่ธรรมดา"},
+ {xp:1350,t:"ครอบครัว",s:"อยู่ด้วยกันมานานจนเป็นครอบครัว"},
+ {xp:1800,t:"ตำนานร่วมทาง",s:"ได้รัศมีทอง เพราะเธอไม่เคยทิ้งกันจริง ๆ"}];
+const SPECIES={
+ elephant:{n:"ช้าง",dn:"น้องปุ๊ก",c:"#C9B8F0",d:"#A894DE",b:"#ECE5FC"},
+ hippo:{n:"ฮิปโป",dn:"น้องโป",c:"#F4B8CF",d:"#E293B1",b:"#FCE1EB"},
+ bear:{n:"หมี",dn:"น้องหมีมี่",c:"#E8C4A0",d:"#CFA27A",b:"#F8E8D6"},
+ penguin:{n:"เพนกวิน",dn:"น้องกวิ้น",c:"#9FB4E6",d:"#7C93CF",b:"#FFFFFF"},
+ dragon:{n:"มังกรน้อย",dn:"น้องมังกี้",c:"#A8E0C8",d:"#7CC7A6",b:"#FFF1BF"}};
+function species(){ return SPECIES[settings.species]? settings.species : "elephant"; }
 const STICKERS=[
  {id:"egg",e:"🥚",n:"ไข่ต้มคู่ใจ",r:1},{id:"cocoa",e:"🍫",n:"โกโก้ชงเอง",r:1},{id:"matcha",e:"🍵",n:"มัทฉะนมสด",r:1},{id:"leaf",e:"🍃",n:"ใบไม้หนอน",r:1},
  {id:"sprout",e:"🌱",n:"ต้นอ่อน",r:1},{id:"sun",e:"☀️",n:"เช้าใหม่",r:1},{id:"walk",e:"👟",n:"เดินเล่น",r:1},{id:"cloud",e:"☁️",n:"เมฆนุ่ม",r:1},
@@ -684,17 +710,19 @@ const STICKERS=[
  {id:"a_scale",e:"⚖️",n:"ชั่งครั้งแรก",ach:1},{id:"a_scale7",e:"📅",n:"ชั่ง 7 วัน",ach:1},{id:"a_gym",e:"🏋️",n:"วันยิมแรก",ach:1},{id:"a_gym10",e:"💪",n:"ยิม 10 ครั้ง",ach:1},
  {id:"a_photo",e:"📷",n:"ถ่ายรูปมื้อแรก",ach:1},{id:"a_moon",e:"🌙",n:"ปิดครัวครบ 12",ach:1},{id:"a_water",e:"💧",n:"น้ำครบ 8",ach:1},{id:"a_fire7",e:"🔥",n:"7 วันติด",ach:1},
  {id:"a_back",e:"🫶",n:"กลับมาแล้ว",ach:1},{id:"a_rest",e:"🛌",n:"วันพักก็มา",ach:1},{id:"a_week",e:"📊",n:"สรุปสัปดาห์แรก",ach:1},{id:"a_112",e:"🚩",n:"ถึงด่าน 112",ach:1},
- {id:"a_pupa",e:"🦋",n:"ผ่านดักแด้",ach:1}];
+ {id:"a_pupa",e:"🏅",n:"เลเวล 7 แล้ว",ach:1}];
 const FORMS=[
- {kg:115,img:"animals/elephant.png",name:"ช้างน้อยปุ๊กลุ๊ก",base:"อวบอั๋น",bio:"ตัวใหญ่ ใจใหญ่ และจำได้ทุกอย่าง รวมถึงตอนที่เคยทำได้ 92 ช้างไม่เคยลืม"},
- {kg:112,img:"animals/hippo.png",name:"ฮิปโปแช่น้ำ",base:"ชิลล์ ๆ",bio:"ดูอืดแต่วิ่งเร็วกว่าคน และรักน้ำเป็นชีวิตจิตใจ (8 แก้วนะ ไม่ใช่สระ)"},
- {kg:110,img:"animals/cow.png",name:"วัวนมโปรตีน",base:"เคี้ยวช้า",bio:"กินช้า เคี้ยวนาน โปรตีนเต็มที่ ไม่รีบไปไหน เพราะรู้ว่าจะไปถึงอยู่ดี"},
- {kg:105,img:"animals/bear.png",name:"หมีนักยกเวท",base:"แกร่ง",bio:"ยกของหนักได้สบาย แต่ให้ความสำคัญกับการนอนเป็นอันดับหนึ่งเสมอ"},
- {kg:99,img:"animals/tiger.png",name:"เสือต่ำกว่าร้อย",base:"สง่า",bio:"เดินเงียบ ตาคม ไม่ต้องบอกใครว่ากำลังทำอะไร ผลลัพธ์พูดเอง"},
- {kg:92,img:"animals/cat.png",name:"เหมียวสถิติเดิม",base:"อิสระ",bio:"มาถึงจุดที่เคยมาแล้ว แต่คราวนี้มาด้วยนิสัย ไม่ใช่ความบังเอิญ"},
- {kg:85,img:"animals/swan.png",name:"หงส์ขาวหน้าสระ",base:"สง่างาม",bio:"ใครจะเชื่อว่าเคยเป็นช้าง หงส์ไม่พูดถึง หงส์แค่ว่ายต่อ"},
- {kg:78,img:"animals/peacock.png",name:"นกยูงรำแพน",base:"เฉิดฉาย",bio:"ถึงเวลาแสดงตัวแล้ว จะโพสต์หรือไม่โพสต์ก็เรื่องของนกยูง"},
- {kg:70,img:"animals/dragon.png",name:"มังกรทองร่วมทาง",base:"ตำนาน",bio:"ในตำนานเล่าว่ามีครูคนหนึ่งเริ่มจากพิมพ์เลขบนตาชั่งวันละครั้ง"}];
+ {kg:115,title:"ปุ๊กลุ๊กอวบอั๋น",gift:null,bio:"ตัวกลม ใจใหญ่ ความจำดี จำได้ด้วยว่าเธอเคยทำได้ถึง 92"},
+ {kg:112,title:"กลมกลิ้งชิลล์ ๆ",gift:"รองเท้าผ้าใบ",bio:"ดูอืดแต่จริง ๆ ขาเริ่มเร็วขึ้นแล้ว ได้รองเท้าผ้าใบคู่แรก"},
+ {kg:110,title:"เคี้ยวช้าโปรตีนแน่น",gift:"ผ้าคาดผมยิม",bio:"กินช้า เคี้ยวนาน ไม่รีบ เพราะรู้ว่าไปถึงแน่"},
+ {kg:105,title:"บึกบึนนักยกเวท",gift:"เหรียญนักยกเวท",bio:"ยกของหนักได้สบาย แต่การนอนสำคัญที่สุด"},
+ {kg:99,title:"ต่ำกว่าร้อยสง่างาม",gift:"ผ้าคลุมฮีโร่",bio:"เดินเงียบ ตาคม ไม่ต้องบอกใคร ผลลัพธ์พูดเอง"},
+ {kg:92,title:"สถิติเดิมกลับมาแล้ว",gift:"แว่นกันแดด",bio:"มาถึงจุดที่เคยมา แต่คราวนี้มาด้วยนิสัย ไม่ใช่โชค"},
+ {kg:85,title:"เพรียวลมหน้าสระ",gift:"สร้อยไข่มุก",bio:"ใครจะเชื่อว่าเคยกลมขนาดนั้น ไม่พูดถึง แค่ว่ายต่อ"},
+ {kg:78,title:"เฉิดฉายรำแพน",gift:"ปีกนางฟ้า",bio:"ถึงเวลาแสดงตัวแล้ว จะโพสต์หรือไม่ก็เรื่องของเรา"},
+ {kg:70,title:"ตำนานร่วมทาง",gift:"มงกุฎทอง",bio:"ในตำนานเล่าว่ามีครูคนหนึ่ง เริ่มจากพิมพ์เลขบนตาชั่งวันละครั้ง"}];
+function chubFor(kg){ const p=Math.max(0,Math.min(1,(115-kg)/45)); return 1-0.32*p; }
+function chubNow(){ const low=lowestAvgEver(); return chubFor(low==null?115:Math.min(115,low)); }
 const TRAITS=[
  {id:"smart",t:"ฉลาดหลักแหลม",how:"บันทึกมื้อ 7 วัน",ok:()=>new Set(cache.food.map(f=>f.date)).size>=7},
  {id:"strong",t:"บึกบึน",how:"ยิม/เวท 3 ครั้ง",ok:()=>cache.exercise.filter(e=>e.is_strength).length>=3},
@@ -712,16 +740,20 @@ function lowestAvgEver(){ // lowest 7-day average ever reached (needs ≥4 weigh
 function formIndex(){ const low=lowestAvgEver(); if(low==null) return 0; let i=0; FORMS.forEach((f,k)=>{ if(low<=f.kg+0.001) i=k; }); return i; }
 function renderForm(){
   const i=formIndex(); const f=FORMS[i]; const next=FORMS[i+1]; const low=lowestAvgEver();
-  $("formImg").src=f.img; $("formImg").alt=f.name; $("formName").textContent=f.name; $("formBio").textContent=f.bio;
+  $("formName").textContent=`${mascotName()} ${f.title}`; $("formBio").textContent=f.bio;
   $("formKg").textContent = low!=null? `ต่ำสุดที่เคยถึง ${fmt(low,1)}` : "รอชั่งครบ 4 วัน";
+  const cur=low==null?115:Math.min(115,low); $("stageBar").style.width = next? Math.max(3,Math.min(100,(f.kg-cur)/(f.kg-next.kg)*100))+"%" : "100%";
   const earned=TRAITS.filter(t=>{ try{return t.ok();}catch(e){return false;} });
-  $("formTraits").innerHTML=`<span class="trait base">${f.base}</span>`+earned.map(t=>`<span class="trait">${t.t}</span>`).join("")+TRAITS.filter(t=>!earned.includes(t)).slice(0,2).map(t=>`<span class="trait lock" title="${t.how}">🔒 ${t.how}</span>`).join("");
-  $("formNext").textContent = next? `ร่างถัดไปรออยู่ที่ ${next.kg} กก. (ค่าเฉลี่ย 7 วัน) ยังเป็นเงาอยู่ในกล่องสะสม` : "สุดทางแล้ว นี่คือตำนาน";
+  $("formTraits").innerHTML=earned.map(t=>`<span class="trait">${t.t}</span>`).join("")+TRAITS.filter(t=>!earned.includes(t)).slice(0,2).map(t=>`<span class="trait lock" title="${t.how}">🔒 ${t.how}</span>`).join("");
+  $("formNext").textContent = next? `ด่านถัดไป ${next.kg} กก. ได้ ${next.gift} และรูปร่างใหม่` : "สุดทางแล้ว นี่คือตำนาน";
   $("zooCount").textContent=`${i+1} / ${FORMS.length}`;
-  $("zoo").innerHTML=FORMS.map((x,k)=>`<div class="${k<i?"":k===i?"now":"lock"}"><img src="${x.img}" alt="" loading="lazy"><span>${k<=i? x.name : "??? · "+x.kg}</span></div>`).join("");
+  $("zoo").innerHTML=FORMS.map((x,k)=>`<div class="${k<i?"":k===i?"now":"lock"}">${mascotSVG("happy",levelOf(totalXp()),120,chubFor(x.kg),k)}<span>${k<=i? x.kg+" · "+(x.gift||"จุดเริ่ม") : "??? · "+x.kg}</span></div>`).join("");
+  const sp=species(); const pk=Object.entries(SPECIES).map(([id,s])=>`<button class="${id===sp&&settings.species?"on":""}" data-sp="${id}">${mascotSVG("happy",0,64,1,0,id)}${s.n}</button>`).join("");
+  $("pickHome").innerHTML=pk; $("pickAlbum").innerHTML=pk; $("pickCard").hidden=!db||!!settings.species;
+  document.querySelectorAll(".pick button").forEach(b=>b.onclick=async()=>{ try{ await upsert("settings","profile",{species:b.dataset.sp}); toast(`เลือก${SPECIES[b.dataset.sp].n}แล้ว`); }catch(e){} });
   try{ const seen=localStorage.getItem("rt_form"); if(seen!=null && i>+seen){ celebrateForm(i); } localStorage.setItem("rt_form",String(i)); }catch(e){}
 }
-function celebrateForm(i){ const f=FORMS[i]; const d=document.createElement("div"); d.className="celebrate"; d.innerHTML=`<div class="box"><img src="${f.img}" alt="" style="width:140px;height:140px;border-radius:28px"><h2>ร่างใหม่: ${f.name}</h2><p class="small">${f.bio}</p><button class="btn accent block" id="celebOk2">เย้!</button></div>`; document.body.appendChild(d); d.querySelector("#celebOk2").onclick=()=>d.remove(); confetti(); }
+function celebrateForm(i){ const f=FORMS[i]; const d=document.createElement("div"); d.className="celebrate"; d.innerHTML=`<div class="box"><div class="mascot" style="width:150px;height:150px;flex-basis:150px">${mascotSVG("cheer",levelOf(totalXp()),150)}</div><h2>${f.title}</h2><p class="small">ถึง ${f.kg} แล้ว! ${mascotName()}ได้ ${f.gift} และเพรียวขึ้น</p><button class="btn accent block" id="celebOk2">เย้!</button></div>`; document.body.appendChild(d); d.querySelector("#celebOk2").onclick=()=>d.remove(); confetti(); }
 const TEASE={
  morning:["ตื่นยัง 👀 ตาชั่งรอจนง่วงแล้วนะ","เช้านี้ขอเลขเดียว แล้วฉันจะเงียบทั้งวัน สัญญา (อาจจะ)","ชั่งก่อน กาแฟทีหลัง… ล้อเล่น กาแฟก่อนก็ได้ แต่ชั่งด้วยนะ","ตาชั่งบอกว่าคิดถึง เหยียบหน่อย"],
  late:["ยังไม่ชั่งก็ไม่ว่า พรุ่งนี้เช้าฉันจะทวง… เบา ๆ","วันนี้ข้ามตาชั่งไปก่อน บันทึกมื้อสักมื้อให้ฉันดูหน่อยสิ","ไม่ชั่งก็ได้ แต่แวะมาหาแบบนี้ฉันก็ดีใจแล้ว"],
@@ -770,50 +802,61 @@ function questList(){
     {k:"night",label:"เช็กอินก่อนนอน",xp:XP.night,done:cache.daily.some(d=>d.date===t&&d.sleep_h!=null)},
   ];
 }
-function mascotName(){ return settings.mascot_name||"น้องปุย"; }
+function mascotName(){ return settings.mascot_name||SPECIES[species()].dn; }
 function equipped(){ return (cache.collection&&cache.collection.equip)||{}; }
-function mascotSVG(mood,level,size){
-  const st=LEVELS[level].stage; const eq=equipped(); const S=size||108;
-  const eye = (x,y)=> mood==="sleepy" ? `<path d="M${x-4} ${y}q4 3 8 0" stroke="#4A3F55" stroke-width="2.4" fill="none" stroke-linecap="round"/>`
+function mascotSVG(mood,level,size,chub,stageIdx,spId){
+  const sp=SPECIES[spId||species()]; const id=spId||species(); const S=size||108; const eq=equipped();
+  const k=chub==null? chubNow() : chub; const si=stageIdx==null? formIndex() : stageIdx; const s=(k-0.68)/0.32;
+  const rx=23+13*s, ry=27+3*s, cy=74, hx=60, hy=40, hr=19;
+  const eyeY = id==="hippo"?35: id==="penguin"?40: 38;
+  const eye=(x,y)=> mood==="sleepy" ? `<path d="M${x-4} ${y}q4 3 8 0" stroke="#4A3F55" stroke-width="2.4" fill="none" stroke-linecap="round"/>`
     : (mood==="happy"||mood==="cheer") ? `<path d="M${x-4} ${y+1}q4-5 8 0" stroke="#4A3F55" stroke-width="2.4" fill="none" stroke-linecap="round"/>`
-    : `<g data-eye><circle cx="${x}" cy="${y}" r="2.8" fill="#4A3F55"/><circle cx="${x+1}" cy="${y-1}" r="1" fill="#fff"/></g>`;
-  const mouth=(x,y)=> mood==="cheer" ? `<ellipse cx="${x}" cy="${y}" rx="4" ry="3" fill="#D97A8C"/>` : mood==="sleepy" ? `<path d="M${x-4} ${y}h8" stroke="#4A3F55" stroke-width="2" stroke-linecap="round"/>` : `<path d="M${x-5} ${y-1}q5 4 10 0" stroke="#4A3F55" stroke-width="2" fill="none" stroke-linecap="round"/>`;
-  const cheeks=(x,y)=>`<circle cx="${x-10}" cy="${y+5}" r="3" fill="#F7A8C0" opacity=".7"/><circle cx="${x+10}" cy="${y+5}" r="3" fill="#F7A8C0" opacity=".7"/>`;
-  const wear=(hx,hy)=>{ let w="";
-    if(eq.bow) w+=`<g transform="translate(${hx+12} ${hy-16})"><path d="M0 0l-9-6v12zM0 0l9-6v12z" fill="#F48FB1"/><circle r="2.5" fill="#E91E63"/></g>`;
-    if(eq.beret) w+=`<ellipse cx="${hx}" cy="${hy-17}" rx="16" ry="6" fill="#B39DDB"/><circle cx="${hx+2}" cy="${hy-23}" r="2" fill="#B39DDB"/>`;
-    if(eq.flowercrown) w+=`<g fill="#F8BBD0"><circle cx="${hx-12}" cy="${hy-16}" r="3.5"/><circle cx="${hx-4}" cy="${hy-19}" r="3.5"/><circle cx="${hx+4}" cy="${hy-19}" r="3.5"/><circle cx="${hx+12}" cy="${hy-16}" r="3.5"/></g><g fill="#FFF59D"><circle cx="${hx-12}" cy="${hy-16}" r="1.3"/><circle cx="${hx-4}" cy="${hy-19}" r="1.3"/><circle cx="${hx+4}" cy="${hy-19}" r="1.3"/><circle cx="${hx+12}" cy="${hy-16}" r="1.3"/></g>`;
-    if(eq.balloon) w+=`<path d="M${hx+28} ${hy+10}q6-14 2-30" stroke="#8C8198" stroke-width="1" fill="none"/><ellipse cx="${hx+30}" cy="${hy-26}" rx="9" ry="11" fill="#90CAF9"/><circle cx="${hx+27}" cy="${hy-30}" r="2.5" fill="#fff" opacity=".7"/>`;
-    return w; };
-  const sparkle = mood==="cheer"||level>=5 ? '<g fill="#FFD54F"><path d="M16 18l2 5 5 2-5 2-2 5-2-5-5-2 5-2z"/><path d="M104 70l1.5 3.5 3.5 1.5-3.5 1.5-1.5 3.5-1.5-3.5-3.5-1.5 3.5-1.5z"/></g>' : '';
-  const zz = mood==="sleepy" ? '<text x="98" y="26" font-size="14" fill="#A99DB8" font-family="sans-serif">z</text><text x="106" y="16" font-size="11" fill="#A99DB8" font-family="sans-serif">z</text>' : '';
-  let body="";
-  if(st==="egg"){
-    body=`<path d="M20 78q30 10 80 0" stroke="#A5D6A7" stroke-width="6" stroke-linecap="round"/><path d="M60 22c-18 0-30 20-30 40a30 26 0 0 0 60 0c0-20-12-40-30-40z" fill="#DFF5EA" stroke="#B7E3CF" stroke-width="2"/>
-      <circle cx="46" cy="40" r="4" fill="#CFF0E4"/><circle cx="74" cy="34" r="3" fill="#CFF0E4"/><circle cx="68" cy="68" r="4" fill="#CFF0E4"/>
-      ${eye(50,52)}${eye(70,52)}${mouth(60,61)}${cheeks(60,50)}${wear(60,40)}`;
-  } else if(st==="cat"){
-    const segs=[[24,74,13,"#C5E8D5"],[40,70,14,"#CFF0E4"],[56,67,15,"#DDF4EA"]];
-    body=`<path d="M8 86q52 10 104 0" stroke="#A5D6A7" stroke-width="6" stroke-linecap="round"/>`+segs.map(s=>`<circle cx="${s[0]}" cy="${s[1]}" r="${s[2]}" fill="${s[3]}"/>`).join("")
-      +`<circle cx="78" cy="58" r="20" fill="#E6F7EF"/><path d="M70 40q-4-10-10-12M86 40q4-10 10-12" stroke="#8C8198" stroke-width="2" fill="none" stroke-linecap="round"/><circle cx="60" cy="28" r="3" fill="#F48FB1"/><circle cx="96" cy="28" r="3" fill="#F48FB1"/>
-      ${eye(70,56)}${eye(86,56)}${mouth(78,66)}${cheeks(78,54)}`
-      +(level>=2?'<path d="M18 56q10-12 22 0q-10-4-22 0z" fill="#A5D6A7"/><path d="M22 55q6 2 14 0" stroke="#81C784" stroke-width="1.2"/>':'')
-      +(level>=3?'<path d="M60 76q18 8 36 0" stroke="#F48FB1" stroke-width="6" fill="none" stroke-linecap="round"/><g transform="translate(96 40)"><circle r="3.5" fill="#F8BBD0"/><circle cx="5" cy="-2" r="2.6" fill="#F8BBD0"/><circle cx="-4" cy="-3" r="2.6" fill="#F8BBD0"/><circle cx="1" cy="-5" r="2.6" fill="#F8BBD0"/><circle r="1.6" fill="#FFF59D"/></g>':'')
-      +wear(78,52);
-  } else if(st==="pupa"){
-    body=`<path d="M60 6v14" stroke="#81C784" stroke-width="3"/><path d="M40 12q20-10 40 0" stroke="#A5D6A7" stroke-width="5" fill="none" stroke-linecap="round"/>
-      <path d="M60 20c-16 0-26 18-26 38s10 30 26 30 26-10 26-30-10-38-26-38z" fill="${level>=5?"#E8DDFB":"#D9F0F4"}" stroke="${level>=5?"#C4B5FD":"#A8DCE6"}" stroke-width="2"/>
-      <path d="M44 40q16 6 32 0M42 56q18 6 36 0M46 72q14 5 28 0" stroke="${level>=5?"#C4B5FD":"#A8DCE6"}" stroke-width="2" fill="none" opacity=".8"/>
-      ${eye(52,50)}${eye(68,50)}${mouth(60,60)}${cheeks(60,48)}${level>=5?'<g fill="#FFF59D" opacity=".9"><circle cx="30" cy="30" r="3"/><circle cx="92" cy="36" r="2.5"/><circle cx="28" cy="76" r="2"/><circle cx="94" cy="80" r="3"/></g>':''}${wear(60,40)}`;
-  } else {
-    const wc = level>=9 ? ["#FFE082","#FFD54F"] : level>=7 ? ["#F8BBD0","#CE93D8"] : ["#F3D1E6","#D7C6F5"];
-    const pat = level>=7 ? '<g fill="#fff" opacity=".7"><circle cx="30" cy="44" r="5"/><circle cx="90" cy="44" r="5"/><circle cx="34" cy="70" r="3.5"/><circle cx="86" cy="70" r="3.5"/></g>' : '';
-    body=`<g class="wing"><path d="M58 52C40 20 8 22 10 44c2 16 24 20 44 16zM58 60C40 90 12 92 12 74c0-14 24-18 46-14z" fill="${wc[0]}" stroke="${wc[1]}" stroke-width="2"/><path d="M62 52C80 20 112 22 110 44c-2 16-24 20-44 16zM62 60c18 30 46 32 46 14 0-14-24-18-46-14z" fill="${wc[0]}" stroke="${wc[1]}" stroke-width="2"/></g>${pat}
-      <ellipse cx="60" cy="58" rx="9" ry="22" fill="#CFF0E4" stroke="#B7E3CF" stroke-width="2"/><circle cx="60" cy="36" r="13" fill="#E6F7EF"/>
-      <path d="M54 25q-4-9-10-10M66 25q4-9 10-10" stroke="#8C8198" stroke-width="2" fill="none" stroke-linecap="round"/><circle cx="44" cy="15" r="2.5" fill="#F48FB1"/><circle cx="76" cy="15" r="2.5" fill="#F48FB1"/>
-      ${eye(55,35)}${eye(65,35)}${mouth(60,43)}${cheeks(60,33)}${level>=8?'<path d="M48 22l4 6 8-9 8 9 4-6v10H48z" fill="#FFD54F" stroke="#F9A825"/>':''}${wear(60,30)}`;
-  }
-  return `<svg viewBox="0 0 120 100" width="${S}" height="${S}" aria-label="${mascotName()}"><ellipse cx="60" cy="94" rx="30" ry="4" fill="rgba(74,63,85,.08)"/>${body}${sparkle}${zz}</svg>`;
+    : `<g data-eye><circle cx="${x}" cy="${y}" r="3" fill="#4A3F55"/><circle cx="${x+1}" cy="${y-1}" r="1.1" fill="#fff"/></g>`;
+  const mouth=(x,y)=> mood==="cheer" ? `<ellipse cx="${x}" cy="${y}" rx="3.6" ry="2.8" fill="#D97A8C"/>` : mood==="sleepy" ? `<path d="M${x-3} ${y}h6" stroke="#4A3F55" stroke-width="2" stroke-linecap="round"/>` : `<path d="M${x-4} ${y-1}q4 3.5 8 0" stroke="#4A3F55" stroke-width="2" fill="none" stroke-linecap="round"/>`;
+  const has=n=>si>=n;
+  let back="", body="", head="", face="", front="";
+  // behind body
+  if(has(4)) back+=`<path d="M${hx-14} 52Q${hx-rx-10} 90 ${hx-rx+2} 102H${hx+rx-2}Q${hx+rx+10} 90 ${hx+14} 52z" fill="#F48FB1" opacity=".9"/>`;
+  if(has(7)) back+=`<g fill="#fff" stroke="#E6DDFB" stroke-width="1.5"><path d="M${hx-rx+4} 64q-22-14-24 4 10 10 24 4z"/><path d="M${hx+rx-4} 64q22-14 24 4-10 10-24 4z"/></g>`;
+  if(id==="dragon"){ back+=`<path d="M${hx-rx+6} 62q-20-18-22 2 8 4 22 6z" fill="${sp.b}" stroke="${sp.d}" stroke-width="1.5"/><path d="M${hx+rx-6} 62q20-18 22 2-8 4-22 6z" fill="${sp.b}" stroke="${sp.d}" stroke-width="1.5"/><path d="M${hx+rx-4} 88q16 4 20-8l-4 1 1-5-5 3z" fill="${sp.c}"/>`; }
+  // body
+  body+=`<ellipse cx="${hx}" cy="${cy}" rx="${rx}" ry="${ry}" fill="${sp.c}"/><ellipse cx="${hx}" cy="${cy+4}" rx="${rx*0.62}" ry="${ry*0.62}" fill="${sp.b}"/>`;
+  const fc = has(1)? "#8E7CC3" : sp.d; const fx=Math.max(12,rx*0.55);
+  body+=`<ellipse cx="${hx-fx}" cy="101" rx="9" ry="5" fill="${fc}"/><ellipse cx="${hx+fx}" cy="101" rx="9" ry="5" fill="${fc}"/>`+(has(1)?`<path d="M${hx-fx-5} 100h10M${hx+fx-5} 100h10" stroke="#fff" stroke-width="1.5"/>`:"");
+  if(level>=5) body+=`<path d="M${hx} ${cy-4}l2.2 4.6 5 .7-3.6 3.5.9 5-4.5-2.4-4.5 2.4.9-5-3.6-3.5 5-.7z" fill="#FFD54F"/>`;
+  if(has(3)) body+=`<path d="M${hx-7} 56l7 12 7-12" stroke="#E57373" stroke-width="3" fill="none"/><circle cx="${hx}" cy="70" r="5" fill="#FFD54F" stroke="#F9A825"/>`;
+  const armC = id==="penguin"? sp.d : sp.c;
+  const arms=`<ellipse cx="${hx-rx+3}" cy="70" rx="5.5" ry="11" fill="${armC}" transform="rotate(18 ${hx-rx+3} 70)"/><g data-arm><ellipse cx="${hx+rx-3}" cy="70" rx="5.5" ry="11" fill="${armC}" transform="rotate(-18 ${hx+rx-3} 70)"/></g>`;
+  // head + species
+  if(id==="elephant") head+=`<ellipse cx="${hx-19}" cy="${hy}" rx="13" ry="15" fill="${sp.c}"/><ellipse cx="${hx+19}" cy="${hy}" rx="13" ry="15" fill="${sp.c}"/><ellipse cx="${hx-19}" cy="${hy}" rx="8" ry="10" fill="#F7C5D9"/><ellipse cx="${hx+19}" cy="${hy}" rx="8" ry="10" fill="#F7C5D9"/>`;
+  if(id==="hippo") head+=`<circle cx="${hx-13}" cy="24" r="4.5" fill="${sp.d}"/><circle cx="${hx+13}" cy="24" r="4.5" fill="${sp.d}"/>`;
+  if(id==="bear") head+=`<circle cx="${hx-14}" cy="25" r="7" fill="${sp.c}"/><circle cx="${hx+14}" cy="25" r="7" fill="${sp.c}"/><circle cx="${hx-14}" cy="25" r="3.5" fill="#F7C5D9"/><circle cx="${hx+14}" cy="25" r="3.5" fill="#F7C5D9"/>`;
+  if(id==="dragon") head+=`<path d="M${hx-9} 25l-3-10 8 7zM${hx+9} 25l3-10-8 7z" fill="#FFD54F"/>`;
+  head+=`<circle cx="${hx}" cy="${hy}" r="${hr}" fill="${sp.c}"/>`;
+  if(id==="penguin") head+=`<ellipse cx="${hx}" cy="${hy+3}" rx="14" ry="12" fill="#fff"/>`;
+  if(id==="dragon") head+=`<path d="M${hx-3} 21l3-5 3 5z" fill="${sp.d}"/>`;
+  // face
+  face+=eye(hx-7,eyeY)+eye(hx+7,eyeY)+`<circle cx="${hx-12}" cy="${eyeY+6}" r="3" fill="#F7A8C0" opacity=".75"/><circle cx="${hx+12}" cy="${eyeY+6}" r="3" fill="#F7A8C0" opacity=".75"/>`;
+  if(id==="elephant") face+=`<path d="M${hx-4} ${hy+5}q-3 13 4 18q4 2 4-2q-4-4-1-16z" fill="${sp.c}" stroke="${sp.d}" stroke-width="1"/>`;
+  else if(id==="hippo") face+=`<ellipse cx="${hx}" cy="${hy+8}" rx="14" ry="8.5" fill="${sp.b}"/><circle cx="${hx-5}" cy="${hy+6}" r="1.6" fill="${sp.d}"/><circle cx="${hx+5}" cy="${hy+6}" r="1.6" fill="${sp.d}"/>`+mouth(hx,hy+12);
+  else if(id==="bear") face+=`<ellipse cx="${hx}" cy="${hy+7}" rx="8" ry="6" fill="${sp.b}"/><ellipse cx="${hx}" cy="${hy+5}" rx="2.6" ry="2" fill="#4A3F55"/>`+mouth(hx,hy+10);
+  else if(id==="penguin") face+=`<path d="M${hx-4} ${hy+5}h8l-4 5z" fill="#FFB74D"/>`;
+  else face+=mouth(hx,hy+8);
+  // accessories on head/neck
+  if(level>=1) front+=`<path d="M${hx-15} ${hy+16}q15 8 30 0" stroke="#F48FB1" stroke-width="5" fill="none" stroke-linecap="round"/>`;
+  if(has(6)) front+=Array.from({length:7},(_,i)=>`<circle cx="${hx-12+i*4}" cy="${hy+19+Math.sin(i/6*Math.PI)*3}" r="1.8" fill="#fff" stroke="#E6DDFB" stroke-width=".6"/>`).join("");
+  if(has(2)) front+=`<path d="M${hx-18} ${hy-6}q18-10 36 0" stroke="#F48FB1" stroke-width="4" fill="none"/>`;
+  if(has(5)) front+=`<g><rect x="${hx-14}" y="${eyeY-4}" width="11" height="8" rx="3" fill="#4A3F55" opacity=".85"/><rect x="${hx+3}" y="${eyeY-4}" width="11" height="8" rx="3" fill="#4A3F55" opacity=".85"/><path d="M${hx-3} ${eyeY}h6" stroke="#4A3F55" stroke-width="1.5"/></g>`;
+  if(level>=3) front+=`<g transform="translate(${hx+15} ${hy-14})"><circle r="3.5" fill="#F8BBD0"/><circle cx="4.5" cy="-2" r="2.6" fill="#F8BBD0"/><circle cx="-4" cy="-3" r="2.6" fill="#F8BBD0"/><circle cx="1" cy="-5" r="2.6" fill="#F8BBD0"/><circle r="1.6" fill="#FFF59D"/></g>`;
+  if(has(8)) front+=`<path d="M${hx-11} ${hy-17}l4 6 7-9 7 9 4-6v10h-22z" fill="#FFD54F" stroke="#F9A825"/>`;
+  if(level>=9) front+=`<ellipse cx="${hx}" cy="${hy-26}" rx="13" ry="3.5" fill="none" stroke="#FFD54F" stroke-width="2.5"/>`;
+  if(eq.bow) front+=`<g transform="translate(${hx-14} ${hy-15})"><path d="M0 0l-8-5v10zM0 0l8-5v10z" fill="#F48FB1"/><circle r="2.3" fill="#E91E63"/></g>`;
+  if(eq.beret) front+=`<ellipse cx="${hx}" cy="${hy-17}" rx="15" ry="5.5" fill="#B39DDB"/><circle cx="${hx+2}" cy="${hy-22}" r="2" fill="#B39DDB"/>`;
+  if(eq.flowercrown) front+=`<g fill="#F8BBD0">${[-12,-4,4,12].map(dx=>`<circle cx="${hx+dx}" cy="${hy-17+Math.abs(dx)/4}" r="3.3"/>`).join("")}</g>`;
+  if(eq.balloon) front+=`<path d="M${hx+rx-2} 66q8-20 6-44" stroke="#8C8198" stroke-width="1" fill="none"/><ellipse cx="${hx+rx+4}" cy="16" rx="8" ry="10" fill="#90CAF9"/>`;
+  const sparkle = mood==="cheer"||level>=7 ? '<g fill="#FFD54F"><path d="M14 20l2 5 5 2-5 2-2 5-2-5-5-2 5-2z"/><path d="M106 60l1.5 3.5 3.5 1.5-3.5 1.5-1.5 3.5-1.5-3.5-3.5-1.5 3.5-1.5z"/></g>' : '';
+  const zz = mood==="sleepy" ? '<text x="96" y="24" font-size="13" fill="#A99DB8" font-family="sans-serif">z</text><text x="104" y="14" font-size="10" fill="#A99DB8" font-family="sans-serif">z</text>' : '';
+  return `<svg viewBox="0 0 120 110" width="${S}" height="${S}" aria-label="${mascotName()}"><ellipse cx="60" cy="105" rx="${rx+4}" ry="4" fill="rgba(74,63,85,.08)"/>${back}${body}${arms}${head}${face}${front}${sparkle}${zz}</svg>`;
 }
 function mascotMood(){
   const t=ymd(); const h=new Date().getHours(); const bad=cache.daily.find(d=>d.date===t&&d.bad_day);
@@ -911,7 +954,7 @@ function renderMap(){
   const li=levelOf(totalXp());
   $("mapSvg").innerHTML=`<path d="${path}" stroke="var(--line)" stroke-width="10" fill="none" stroke-linecap="round"/><path id="mapProg" d="${path}" stroke="var(--accent)" stroke-width="10" fill="none" stroke-linecap="round" opacity=".9"/>`
     +pts.map((p,i)=>`<g opacity="${visible(i)?1:.25}"><circle cx="${p.x}" cy="${p.y}" r="14" fill="${reached(i)?"var(--accent)":"var(--surface)"}" stroke="var(--accent)" stroke-width="3"/><text x="${p.x}" y="${p.y+5}" text-anchor="middle" font-size="12" fill="${reached(i)?"var(--accent-ink)":"var(--fg)"}" font-weight="700">${visible(i)?p.kg:"?"}</text><text x="${p.x+(i%2?-22:22)}" y="${p.y+4}" text-anchor="${i%2?"end":"start"}" font-size="12" fill="var(--fg)">${visible(i)?p.l:"หมอก"}</text></g>`).join("")
-    +`<image href="${FORMS[formIndex()].img}" x="${mx-26}" y="${my-58}" width="52" height="52" style="filter:drop-shadow(0 3px 4px rgba(0,0,0,.15))"/>`;
+    +`<g transform="translate(${mx-27} ${my-60})">${mascotSVG("happy",li,54).replace('<svg ','<svg x="0" y="0" ')}</g>`;
   try{ const pr=$("mapProg"); const L=pr.getTotalLength(); pr.style.strokeDasharray=L; pr.style.strokeDashoffset=L*(1-(idx+f)/(pts.length-1)); }catch(e){}
   $("mapPos").textContent = st.cur.avg!=null? `ตอนนี้ ${fmt(st.cur.avg,1)} → ด่านถัดไป ${b.kg}` : "ยังไม่มีค่าเฉลี่ย";
 }
@@ -975,8 +1018,7 @@ $("mascotSave").onclick = async ()=>{ const n=$("mascotName").value.trim(); if(!
 let tapN=0, lastXp=null;
 const TAP_LINES=["อะไร จิ้มทำไม 😳","จั๊กจี้! ไปชั่งน้ำหนักไป","ฉันไม่ใช่ปุ่มนะ… โอเคเป็นก็ได้","วันนี้ดื่มน้ำกี่แก้วแล้ว ไม่ต้องตอบ แตะแก้วข้างล่าง","จิ้มฉันได้ XP ไหม… ไม่ได้ 555","รู้ไหมว่าเธอเปิดแอปมาหาฉัน นั่นแหละที่นับ","ถ้าเหงา กดแท็บ คุย ได้นะ ฉันอยู่ตรงนั้นด้วย","กล่องของขวัญเปิดหรือยัง ไปดูดิ","ฮึบ! (ทำท่ายกเวทให้ดู)","ครูขา หนูง่วง… ล้อเล่น ไปต่อ!"];
 function boing(el){ el.classList.remove("boing"); void el.offsetWidth; el.classList.add("boing"); setTimeout(()=>el.classList.remove("boing"),650); }
-$("mascot").onclick=()=>{ boing($("mascot")); $("bubble").textContent=TAP_LINES[(seed(ymd())+tapN++)%TAP_LINES.length]; };
-$("formImg").onclick=()=>{ boing($("formImg")); const f=FORMS[formIndex()]; const tr=TRAITS.filter(t=>{try{return t.ok();}catch(e){return false;}}); toast(tr.length? `${f.name} ผู้${tr[tapN++%tr.length].t}` : `${f.name}: แตะฉันอีกทีก็ไม่ผอมลงนะ 555`); };
+$("mascot").onclick=()=>{ boing($("mascot")); const m=$("mascot"); m.classList.remove("wave"); void m.offsetWidth; m.classList.add("wave"); setTimeout(()=>m.classList.remove("wave"),950); $("bubble").textContent=TAP_LINES[(seed(ymd())+tapN++)%TAP_LINES.length]; };
 setInterval(()=>{ const m=$("mascot"); if(document.hidden||!m) return; m.classList.add("blink"); setTimeout(()=>m.classList.remove("blink"),200); }, 4200);
 function xpFloat(n){ if(n<=0) return; const r=$("xpBar").getBoundingClientRect(); const el=document.createElement("div"); el.className="xpfloat"; el.textContent=`+${n} XP`; el.style.left=(r.left+r.width/2)+"px"; el.style.top=Math.max(40,r.top-10)+"px"; document.body.appendChild(el); setTimeout(()=>el.remove(),1500); boing($("mascot")); }
 function renderQuick(){
