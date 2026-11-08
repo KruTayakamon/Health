@@ -153,6 +153,14 @@ img.preview{max-width:100%;border-radius:10px;max-height:220px;object-fit:cover}
 .zoo>div.lock img{filter:grayscale(1) brightness(.3) contrast(0);opacity:.35}
 .zoo>div.now{color:var(--fg);font-weight:500}
 .zoo>div.now img{outline:3px solid var(--accent)}
+.body{background:linear-gradient(150deg,var(--sky),var(--lilac));border-color:transparent}
+.vitals{display:grid;grid-template-columns:repeat(4,1fr);gap:6px}
+.vitals>div{background:var(--surface);border-radius:10px;padding:6px 4px;text-align:center}
+.vitals b{display:block;font-family:var(--display);font-size:1.05rem;font-weight:500}
+.vitals span{font-size:.68rem;color:var(--muted)}
+.forecast{background:var(--surface);border-radius:12px;padding:12px;white-space:pre-wrap;font-size:.95rem}
+.thumbs{display:flex;gap:6px;flex-wrap:wrap}
+.thumbs img{width:48px;height:48px;object-fit:cover;border-radius:8px}
 .linkrow{display:grid;grid-template-columns:1fr 1fr;gap:8px}
 .linkrow .btn{display:flex;flex-direction:column;align-items:center;gap:2px;padding:10px}
 .linkrow .btn span{font-size:1.4rem;line-height:1}
@@ -270,6 +278,20 @@ canvas.confetti{position:fixed;inset:0;z-index:31;pointer-events:none}
       <button class="btn accent" id="weighSave">บันทึก</button>
     </div>
     <p class="small muted" id="weighHint">ชั่งหลังเข้าห้องน้ำ ก่อนกิน ชุดเดิม แล้วไม่ต้องดูเลขรายวัน ดูค่าเฉลี่ย 7 วันข้างล่างแทน</p>
+  </div>
+
+  <div class="card body" id="bodyCard">
+    <div class="row between"><div class="eyebrow">พยากรณ์ร่างกายวันนี้</div><span class="small muted" id="bodyDate"></span></div>
+    <div class="vitals" id="vitals" hidden></div>
+    <div class="forecast" id="forecast" hidden></div>
+    <p class="small" id="bodyHint">ถ่ายหน้าจอ Samsung Health ตอนเช้า หน้าคะแนนพลังงาน + หน้าการนอน (และหน้าหลักถ้าอยากให้นับก้าว) แล้วส่งมา ผมจะอ่านเองและบอกว่าวันนี้เป็นวันแบบไหน</p>
+    <div class="thumbs" id="bodyThumbs"></div>
+    <div class="row">
+      <label class="btn grow" for="bodyShots" style="cursor:pointer">📱 เลือกภาพหน้าจอ (1–4 รูป)</label>
+      <input type="file" id="bodyShots" accept="image/*" multiple hidden>
+      <button class="btn accent" id="bodyRead" hidden>อ่านและพยากรณ์</button>
+    </div>
+    <p class="small muted" id="bodyStatus"></p>
   </div>
 
   <div class="card">
@@ -628,7 +650,7 @@ const RED_FLAGS = /ไม่อยากอยู่|อยากตาย|ฆ�
 
 /* ---------- state ---------- */
 let db=null, sample=null, sampleLimits=null;
-let cache = {weight:[], food:[], exercise:[], daily:[], wins:[], journal:[], fast:[], weekly:[], gifts:[], collection:{}};
+let cache = {weight:[], food:[], exercise:[], daily:[], wins:[], journal:[], fast:[], weekly:[], gifts:[], body:[], collection:{}};
 let fastCurrent=null; let ringTimer=null;
 let unsub = [];
 let pending = null; // analysed food awaiting save
@@ -769,7 +791,7 @@ const TEASE={
  coupon:["คูปอง: โกโก้ร้าน 1 แก้วโดยไม่ต้องรู้สึกผิด (นับในงบวันสังคม)","คูปอง: หมูกรอบ 6 ชิ้นเป็นกับข้าวร่วมโต๊ะ ใช้ได้สัปดาห์นี้","คูปอง: ข้ามเช็กอินก่อนนอน 1 คืน XP ยังได้ครบ","คูปอง: ชาบูกับเพื่อน ฉันไม่ถามอะไรเลยนอกจากน้ำจิ้ม"]};
 function seed(s){ let x=0; for(const c of s) x=(x*31+c.charCodeAt(0))>>>0; return x; }
 function pick(arr,key){ return arr[seed(ymd()+"|"+key+"|"+(settings.mascot_name||""))%arr.length]; }
-const XP={weigh:10, meal:5, mealCap:4, move:15, strength:5, night:10, fast:10, water:5, week:20, bad:5, win:5};
+const XP={weigh:10, meal:5, mealCap:4, move:15, strength:5, night:10, fast:10, water:5, week:20, bad:5, win:5, body:10};
 function dayWater(d){ const x=cache.daily.find(z=>z.date===d); return x? (+x.water||0):0; }
 function xpBreakdown(){
   const b={weigh:cache.weight.length*XP.weigh, meal:0, move:0, night:0, fast:0, water:0, week:cache.weekly.length*XP.week, bad:0, win:cache.wins.length*XP.win};
@@ -778,11 +800,12 @@ function xpBreakdown(){
   cache.daily.forEach(d=>{ if(d.sleep_h!=null) b.night+=XP.night; if(d.bad_day) b.bad+=XP.bad; if((+d.water||0)>=6) b.water+=XP.water; });
   cache.fast.forEach(f=>{ if((+f.hours||0)>=12) b.fast+=XP.fast; });
   b.gift=cache.gifts.filter(g=>g.opened&&g.type==="xp").reduce((s,g)=>s+(+g.xp||0),0);
+  b.body=cache.body.length*XP.body;
   return b;
 }
 function totalXp(){ return Object.values(xpBreakdown()).reduce((a,c)=>a+c,0); }
 function levelOf(xp){ let i=0; LEVELS.forEach((l,k)=>{ if(xp>=l.xp) i=k; }); return i; }
-function activeDays(){ return new Set([...cache.weight,...cache.food,...cache.exercise,...cache.daily,...cache.wins,...cache.fast].map(x=>x.date).filter(Boolean)); }
+function activeDays(){ return new Set([...cache.weight,...cache.food,...cache.exercise,...cache.daily,...cache.wins,...cache.fast,...cache.body].map(x=>x.date).filter(Boolean)); }
 function streakInfo(){
   const days=activeDays(); let d=ymd(); let n=0; let freezes=1+cache.gifts.filter(g=>g.opened&&g.type==="freeze"&&g.date>=addDays(ymd(),-6)).length; let used=0;
   if(!days.has(d)){ d=addDays(d,-1); if(!days.has(d)) return {n:0,freeze:1}; }
@@ -795,6 +818,7 @@ function questList(){
   const t=ymd(); const fastToday=cache.fast.some(f=>f.date===t&&(+f.hours||0)>=12);
   return [
     {k:"weigh",label:"พิมพ์เลขบนตาชั่ง",xp:XP.weigh,done:cache.weight.some(w=>w.date===t)},
+    {k:"body",label:"ส่งหน้าจอนาฬิกา (พยากรณ์ร่างกาย)",xp:XP.body,done:cache.body.some(b=>b.date===t)},
     {k:"meal",label:"บันทึกอย่างน้อย 1 มื้อ",xp:XP.meal,done:todayFood().length>0},
     {k:"move",label:"ขยับ (เดินก็นับ)",xp:XP.move,done:cache.exercise.some(e=>e.date===t)},
     {k:"fast",label:"ปิดครัวครบ 12 ชม.",xp:XP.fast,done:fastToday},
@@ -1029,6 +1053,39 @@ function renderQuick(){
   document.querySelectorAll("#quickList button").forEach(b=>b.onclick=async()=>{ const f=items[+b.dataset.i]; try{ await add("food",{date:ymd(),time:hm(),meal:selectedMeal||defaultMeal(),text:f.text,items:f.items||[],kcal_low:f.kcal_low,kcal_high:f.kcal_high,protein_g:f.protein_g,fiber_g:f.fiber_g||0,confidence:f.confidence||"กลาง",score:f.score||{},feedback:"บันทึกซ้ำ",social:!!f.social}); toast(`บันทึก ${f.text.slice(0,20)} แล้ว`); }catch(e){} });
 }
 
+/* ---------- body weather (Samsung Health screenshots) ---------- */
+const RULES_BODY_READ=`อ่านตัวเลขจากภาพหน้าจอแอป Samsung Health (ภาษาไทย) ของ Galaxy Watch 8 ให้ครบที่สุด ถ้าไม่มีให้ใส่ null ห้ามเดา
+ตอบ JSON เท่านั้น: {"energy_score":80,"energy_label":"ดี","sleep_start":"01:43","sleep_end":"07:12","sleep_hours":5.5,"sleep_score":null,"deep_sleep_min":null,"sleep_hr":72,"hrv_ms":54,"skin_temp_delta":0.6,"breathing":12.0,"steps":6483,"resting_hr":null,"hr_now":87,"stress":null,"vascular_load":"สูงขึ้นเล็กน้อย","age_index":322,"age_label":"ต่ำ","body_fat_pct":null,"muscle_kg":null,"weight_kg":null,"cycle_day":null,"cycle_phase":null,"workouts":[],"factors":{"กิจกรรมวันก่อนหน้า":"พอใช้"},"notes":"สิ่งที่เห็นเพิ่มเติมสั้น ๆ"}
+sleep_hours คำนวณจาก sleep_start ถึง sleep_end ถ้ามี (ข้ามเที่ยงคืนได้) factors = ปัจจัยคะแนนพลังงานทุกข้อที่เห็นพร้อมระดับ`;
+const RULES_BODY_FORECAST=`คุณคือ "นักอ่านร่างกาย" ของ ${DEFAULTS.name} (หญิง 35 ครู ~115 กก. PCOS กิน metformin กำลังหยุด Mounjaro นอนดึกบ่อย บอกว่า "เดี๋ยวมีแรง เดี๋ยวไม่มีแรง ไม่เข้าใจร่างกายตัวเอง") ตอบภาษาไทย เพื่อนสนิทที่ตรงไปตรงมา ไม่ใช่หมอ
+หน้าที่: อธิบายว่า "วันนี้เป็นวันแบบไหน" จากข้อมูลนาฬิกา และทำให้เธอเข้าใจว่าความรู้สึกท้อ/หิว/ไม่มีแรงมีสาเหตุทางร่างกาย ไม่ใช่ความอ่อนแอ
+หลักที่ใช้: นอน <6 ชม. หรือนอนหลัง 01:00 → วันนี้หิวขึ้น (ฮอร์โมนหิวสูงขึ้น) อารมณ์ตกง่าย ตัดสินใจแย่ลงตอนบ่าย → แผน: โปรตีนเช้าครบ ของว่างบ่ายเตรียมไว้ ขยับเบา · หัวใจขณะหลับสูงกว่าค่าปกติของเธอ (หรือ >70) / HRV ต่ำกว่าปกติ → ร่างกายยังไม่ฟื้น ไม่ใช่วันยิมหนัก เดินพอ · อุณหภูมิผิว +0.5 ขึ้นไปหลายวันติด → อาจใกล้ประจำเดือนหรือเริ่มไม่สบาย น้ำหนักอาจขึ้นจากน้ำ ห้ามตกใจ · คะแนนพลังงาน ≥75 → วันดี ใช้ให้คุ้ม ยิมได้ · 50–74 → วันกลาง ทำตามแผนปกติ · <50 → วันพัก ขั้นต่ำสุดอย่างเดียว · ก้าว <5,000 เมื่อวาน → วันนี้เพิ่มเดิน 2,000 · ภาระหลอดเลือดสูงขึ้น → สัญญาณเครียด/นอนน้อย ไม่ต้องกลัว แต่ให้พักจริง
+ถ้ามีประวัติหลายวัน ให้ชี้ "รูปแบบ" ที่เห็น 1 ข้อ (เช่น ทุกครั้งที่นอนหลังตีหนึ่ง วันถัดมาหิวระดับ 7+)
+รูปแบบคำตอบ 5 บรรทัดพอดี: (1) วันนี้เป็นวันแบบ: ดี/กลาง/พัก + เหตุผลจากตัวเลข 1 ประโยค (2) สิ่งที่ร่างกายจะทำวันนี้ (หิว/อารมณ์/แรง) พูดให้เธอเข้าใจตัวเอง (3) แผนกิน 1 ประโยค (4) แผนขยับ 1 ประโยค (5) "ทำต่อ 1 อย่าง: ..." ไม่ตำหนิ ไม่พูดเรื่องน้ำหนักตัว ไม่วินิจฉัยโรค ถ้าเห็นค่าผิดปกติมาก (หัวใจขณะหลับ >90, หายใจ >20) ให้บอกว่าควรปรึกษาหมอ`;
+let bodyBlobs=[];
+$("bodyShots").onchange=async e=>{ const fs=[...(e.target.files||[])].slice(0,4); bodyBlobs=[]; $("bodyThumbs").innerHTML=""; for(const f of fs){ const b=await shrink(f); bodyBlobs.push(b); const im=document.createElement("img"); im.src=URL.createObjectURL(b); $("bodyThumbs").appendChild(im); } $("bodyRead").hidden=!bodyBlobs.length; };
+function bodyHistoryText(){ const rows=cache.body.slice().sort((a,b)=>a.date<b.date?1:-1).slice(0,10); return rows.map(r=>`${r.date}: พลังงาน ${r.energy_score??"-"} นอน ${r.sleep_hours??"-"}ชม. (${r.sleep_start??"-"}–${r.sleep_end??"-"}) HRหลับ ${r.sleep_hr??"-"} HRV ${r.hrv_ms??"-"} ผิว ${r.skin_temp_delta??"-"} ก้าว ${r.steps??"-"} | หิว ${(cache.daily.find(d=>d.date===r.date)||{}).hunger??"-"} เครียด ${(cache.daily.find(d=>d.date===r.date)||{}).stress??"-"} กิน ${fmt(cache.food.filter(f=>f.date===r.date).reduce((s,f)=>s+((+f.kcal_low||0)+(+f.kcal_high||0))/2,0))}`).join("\n"); }
+$("bodyRead").onclick=async()=>{
+  if(!sample||!bodyBlobs.length) return; $("bodyStatus").textContent="กำลังอ่านหน้าจอ…"; $("bodyRead").disabled=true;
+  try{
+    const r=await safeJSON(RULES_BODY_READ,{images:bodyBlobs,modelTier:"default",cache:false});
+    const t=ymd(); const doc={date:t,...r}; Object.keys(doc).forEach(k=>{ if(doc[k]===undefined) delete doc[k]; });
+    $("bodyStatus").textContent="อ่านได้แล้ว กำลังพยากรณ์…";
+    const fc=await sample(RULES_BODY_FORECAST+`\n\nวันนี้ ${t} ${hm()} ข้อมูลที่อ่านได้: ${JSON.stringify(r)}\nประวัติ 10 วันล่าสุด (วันที่: นาฬิกา | ความรู้สึกที่เธอบันทึก):\n${bodyHistoryText()||"ยังไม่มี"}\nสัปดาห์นี้ยิม ${weekStats().gym} ครั้ง`,{modelTier:"default",cache:false});
+    doc.forecast=fc.text; await upsert("body",t,doc); bodyBlobs=[]; $("bodyThumbs").innerHTML=""; $("bodyRead").hidden=true; $("bodyShots").value=""; $("bodyStatus").textContent=""; toast("พยากรณ์วันนี้พร้อมแล้ว");
+  }catch(e){ $("bodyStatus").textContent=errMsg(e); }
+  finally{ $("bodyRead").disabled=false; }
+};
+function renderBody(){
+  const t=ymd(); const b=cache.body.find(x=>x.date===t)||cache.body.slice().sort((a,b)=>a.date<b.date?1:-1)[0];
+  if(!b){ $("vitals").hidden=true; $("forecast").hidden=true; $("bodyHint").hidden=false; $("bodyDate").textContent=""; return; }
+  $("bodyDate").textContent = b.date===t? "วันนี้" : thaiDate(b.date)+" (ล่าสุด)";
+  const v=[["พลังงาน",b.energy_score],["นอน",b.sleep_hours!=null?fmt(b.sleep_hours,1)+" ชม.":null],["HR หลับ",b.sleep_hr],["HRV",b.hrv_ms!=null?b.hrv_ms+" ms":null],["ผิว",b.skin_temp_delta!=null?(b.skin_temp_delta>0?"+":"")+b.skin_temp_delta+"°":null],["ก้าว",b.steps!=null?fmt(b.steps):null],["หายใจ",b.breathing],["หลับ",b.sleep_start&&b.sleep_end?b.sleep_start+"–"+b.sleep_end:null]].filter(x=>x[1]!=null&&x[1]!=="");
+  $("vitals").innerHTML=v.map(x=>`<div><b class="num">${x[1]}</b><span>${x[0]}</span></div>`).join(""); $("vitals").hidden=!v.length;
+  $("forecast").textContent=b.forecast||""; $("forecast").hidden=!b.forecast; $("bodyHint").hidden = b.date===t;
+  if(b.date!==t) $("bodyHint").textContent="ส่งหน้าจอของเช้านี้มา จะได้พยากรณ์วันนี้";
+}
+
 /* ---------- render ---------- */
 function renderHeader(){ $("hdrDate").textContent = thaiDate(ymd()); }
 function renderHome(){
@@ -1106,7 +1163,7 @@ function renderWeek(){
   const W=$("winsAll"); W.innerHTML = cache.wins.length? cache.wins.slice().sort((a,b)=>a.ts<b.ts?1:-1).map(w=>`<div class="item"><div class="t"><b class="num">${w.date}</b> ${esc(w.text)}</div></div>`).join("") : '<p class="muted">ยังไม่มี</p>';
   $("settingsText").textContent = `วันปกติ ${settings.budget_normal} · วันสังคม ${settings.budget_social} · พื้นต่ำสุด ${settings.floor} · โปรตีน ${settings.protein} ก. · TDEE ที่ใช้ ${settings.tdee} · เป้าถัดไป ${settings.next_milestone} กก.`;
 }
-function renderAll(){ renderHeader(); renderHome(); renderPlay(); renderEat(); renderQuick(); renderMove(); renderWeek(); }
+function renderAll(){ renderHeader(); renderHome(); renderPlay(); renderBody(); renderEat(); renderQuick(); renderMove(); renderWeek(); }
 function esc(s){ return String(s).replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c])); }
 
 /* ---------- db ---------- */
@@ -1118,7 +1175,7 @@ function watch(col){ const u=db.collection(col).onSnapshot(snap=>{ cache[col]=sn
 async function initDb(){
   db = (window.claude&&claude.use)? await claude.use("db") : null;
   if(!db){ $("weighHint").textContent="เปิดหน้านี้ขณะล็อกอิน claude.ai เพื่อให้บันทึกได้"; return; }
-  ["weight","food","exercise","daily","wins","journal","fast","weekly","gifts"].forEach(watch);
+  ["weight","food","exercise","daily","wins","journal","fast","weekly","gifts","body"].forEach(watch);
   db.doc("collection/equip").onSnapshot(s=>{ cache.collection={...cache.collection, equip: s.exists? s.data(): {}}; renderAll(); },()=>{});
   db.doc("fast/current").onSnapshot(s=>{ fastCurrent = s.exists? s.data(): null; renderKitchen(); },()=>{});
   try{ const s=await db.doc("settings/profile").get(); if(s.exists){ settings={...DEFAULTS,...s.data()}; renderAll(); } }catch(e){}

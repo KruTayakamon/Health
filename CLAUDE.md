@@ -6,6 +6,7 @@
 - แอปมือถือ: https://claude.ai/artifact/7ybhGJmME1CMqZdj9voert (artifact ส่วนตัวของเธอ) เธอบันทึกน้ำหนัก/อาหาร/ออกกำลัง/ก่อนนอน/หลักฐาน ที่นั่นเป็นหลัก
 - ฐานข้อมูลของแอปอ่าน/เขียนด้วยเครื่องมือ `ArtifactData` (url ข้างบน) collections: `weight` (doc id = วันที่), `food`, `exercise`, `daily` (doc id = วันที่), `wins`, `journal`, `weekly` (doc id = YYYY-Www), `settings/profile` (งบ/เป้า — แก้ที่นี่เมื่อปรับแผน แอปอ่านทันที)
 - **ก่อนตอบเรื่องข้อมูลของเธอ ให้ `ArtifactData list` collection ที่เกี่ยวข้องก่อน** (ไฟล์ใน logs/ อาจล้าหลัง) ถ้าเธอพิมพ์ข้อมูลมาในแชต ให้เขียนลง db ด้วย `ArtifactData set` (weight/daily ใช้ doc id = วันที่; food/exercise/wins ใช้ doc id = วันที่-เวลา หรือ auto) แล้วค่อย sync ลง logs/
+- collection `body` (doc id = วันที่) = ข้อมูลจาก Galaxy Watch 8 ผ่านภาพหน้าจอ Samsung Health: energy_score, sleep_start/end/hours, sleep_hr, hrv_ms, skin_temp_delta, breathing, steps, vascular_load, age_index, body_fat_pct, muscle_kg, cycle_day, forecast — **ใช้ประกอบทุกการวินิจฉัย** นอน <6 ชม./นอนหลังตี 1 = วันหิวและท้อง่าย ไม่ใช่ความอ่อนแอ
 - sync ลง logs/: `ArtifactData list` ทุก collection ด้วย `out_dir=<scratch>/db` แล้ว `python3 scripts/db_to_logs.py <scratch>/db` → commit + push (ทำตอน /week-review และเมื่อสะดวก ไม่ต้องทุกข้อความ)
 
 ## ก่อนตอบทุกครั้ง
