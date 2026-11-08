@@ -161,6 +161,14 @@ img.preview{max-width:100%;border-radius:10px;max-height:220px;object-fit:cover}
 .forecast{background:var(--surface);border-radius:12px;padding:12px;white-space:pre-wrap;font-size:.95rem}
 .thumbs{display:flex;gap:6px;flex-wrap:wrap}
 .thumbs img{width:48px;height:48px;object-fit:cover;border-radius:8px}
+.gym{background:linear-gradient(150deg,var(--mint),var(--butter));border-color:transparent}
+.sess{display:flex;flex-direction:column;gap:6px}
+.sess label{display:flex;gap:10px;align-items:flex-start;background:var(--surface);border-radius:10px;padding:8px 10px;font-size:.92rem;cursor:pointer}
+.sess input{margin-top:4px;accent-color:var(--accent)}
+.sess small{display:block;color:var(--muted);font-size:.78rem}
+.visits{display:flex;gap:4px;flex-wrap:wrap}
+.visits i{width:14px;height:14px;border-radius:4px;background:var(--surface);border:1px solid var(--line);display:block}
+.visits i.on{background:var(--accent);border-color:var(--accent)}
 .linkrow{display:grid;grid-template-columns:1fr 1fr;gap:8px}
 .linkrow .btn{display:flex;flex-direction:column;align-items:center;gap:2px;padding:10px}
 .linkrow .btn span{font-size:1.4rem;line-height:1}
@@ -436,6 +444,20 @@ canvas.confetti{position:fixed;inset:0;z-index:31;pointer-events:none}
 
 <!-- ========== MOVE ========== -->
 <section class="view" id="view-move" hidden>
+  <div class="card gym" id="gymCard">
+    <div class="row between"><div class="eyebrow">ยิม 90 วัน · ไปให้ครบ 30 ครั้ง</div><span class="small num" id="gymCount">0 / 30</span></div>
+    <div class="visits" id="gymVisits"></div>
+    <p class="small" id="gymWhy">สมาชิกเหลือ ~3 เดือน ทุกครั้งที่ไปนับหมด แม้ไปแค่อบไอน้ำ กฎเดียวคือ "ไปให้ถึงประตู" ที่เหลือค่อยว่ากัน</p>
+    <div class="divider"></div>
+    <div class="row between"><h3 id="sessTitle">วันนี้ที่ยิม</h3><span class="pill" id="sessTag"></span></div>
+    <p class="small muted" id="sessNote"></p>
+    <div class="sess" id="sessList"></div>
+    <div class="row">
+      <button class="btn accent grow" id="gymDone">ถึงยิมแล้ว / ทำเสร็จ บันทึก</button>
+      <button class="btn grow" id="gymSauna">วันนี้แค่ซาวน่า ก็นับ</button>
+    </div>
+    <p class="small muted" id="gymStatus"></p>
+  </div>
   <div class="card">
     <div class="eyebrow">ขยับ</div>
     <div class="field"><label for="moveText">ทำอะไร นานแค่ไหน (เดินลู่ 40 นาที / เวท 4 ท่า + เดิน 15 / เดินห้างกับเพื่อน 1 ชม.)</label>
@@ -1053,6 +1075,32 @@ function renderQuick(){
   document.querySelectorAll("#quickList button").forEach(b=>b.onclick=async()=>{ const f=items[+b.dataset.i]; try{ await add("food",{date:ymd(),time:hm(),meal:selectedMeal||defaultMeal(),text:f.text,items:f.items||[],kcal_low:f.kcal_low,kcal_high:f.kcal_high,protein_g:f.protein_g,fiber_g:f.fiber_g||0,confidence:f.confidence||"กลาง",score:f.score||{},feedback:"บันทึกซ้ำ",social:!!f.social}); toast(`บันทึก ${f.text.slice(0,20)} แล้ว`); }catch(e){} });
 }
 
+/* ---------- gym 90-day program ---------- */
+const GYM_START="2026-11-09", GYM_GOAL=30;
+const SESS={
+ easy:{t:"แค่ไปให้ถึง",n:"สัปดาห์แรก ๆ เป้าคือร่างกายจำทางไปยิม ไม่ใช่เหนื่อย",x:[["เดินลู่ 15 นาที","ความเร็วพูดคุยได้ ชันนิดหน่อยถ้าไหว"],["Leg press 2×12","น้ำหนักเบาจนรู้สึกว่าง่ายไป"],["Chest press 2×12","เบา ๆ จับฟอร์ม"],["Seated row 2×12","ดึงช้า ปล่อยช้า"],["อบไอน้ำ/ซาวน่า 10 นาที","รางวัลของการมาถึง ดื่มน้ำก่อนและหลัง"]]},
+ A:{t:"Full body A",n:"ขา อก หลัง · เพิ่มน้ำหนักเมื่อทำ 12 ครั้งได้ครบ 2 ครั้งติด",x:[["Leg press 3×12",""],["Chest press 3×12",""],["Seated row 3×12",""],["Leg curl 2×12","เครื่องงอขา"],["Plank 2×20 วิ","เข่าแตะพื้นได้"],["เดินลู่ชัน 15 นาที","ชัน 5–8% ความเร็วช้า"],["ซาวน่าถ้าอยาก",""]]},
+ B:{t:"Full body B",n:"หลัง ไหล่ สะโพก · ท่าสะโพกช่วยเข่ามาก",x:[["Lat pulldown 3×12",""],["Shoulder press 3×12","เบากว่าที่คิด"],["Glute bridge 2×15","นอนหงายยกสะโพก ไม่ต้องใช้เครื่อง"],["Leg extension 2×12 เบา","ถ้าเข่าไม่ชอบ ข้ามได้"],["Face pull / ยางยืด 2×15",""],["ปั่นจักรยาน 15 นาที",""],["ซาวน่าถ้าอยาก",""]]},
+ C:{t:"วันคาร์ดิโอ / คลาส",n:"เข้าคลาสอะไรก็ได้ที่มี หรือเลือกเครื่องที่ชอบ · วันนี้ไม่ต้องยก",x:[["คลาส 1 คลาส หรือ 30 นาที","เครื่องเดินวงรี / จักรยาน / ลู่ สลับได้"],["ยืดเหยียด 5 นาที",""],["อบไอน้ำ 10 นาที","วันนี้มาเพื่อให้ร่างกายชอบยิม"]]}};
+function gymVisits(){ return cache.exercise.filter(e=>e.date>=GYM_START&&/ยิม|เวท|ซาวน่า|อบไอน้ำ|คลาส|gym/i.test((e.type||"")+(e.note||""))); }
+function todaySession(){ const v=gymVisits(); const n=v.length; const doneToday=v.some(e=>e.date===ymd()); if(n<6) return {key:"easy",idx:n,doneToday}; const r=["A","C","B","A","C","B"][(n-6)%6]; return {key:r,idx:n,doneToday}; }
+function renderGym(){
+  const v=gymVisits(); const n=v.length; $("gymCount").textContent=`${n} / ${GYM_GOAL}`;
+  $("gymVisits").innerHTML=Array.from({length:GYM_GOAL},(_,i)=>`<i class="${i<n?"on":""}"></i>`).join("");
+  const s=todaySession(); const S=SESS[s.key]; $("sessTitle").textContent= s.doneToday? "วันนี้ไปแล้ว เยี่ยม": "วันนี้ที่ยิม: "+S.t; $("sessTag").textContent=`ครั้งที่ ${n+(s.doneToday?0:1)}`; $("sessNote").textContent=S.n;
+  $("sessList").innerHTML=S.x.map((x,i)=>`<label><input type="checkbox" data-i="${i}"><span>${x[0]}<small>${x[1]}</small></span></label>`).join("");
+  const d=Math.max(0,Math.floor((new Date(ymd()+"T12:00:00")-new Date(GYM_START+"T12:00:00"))/86400000)); const pace=n/Math.max(1,d)*90;
+  $("gymWhy").textContent = d<1? "สมาชิกเหลือ ~3 เดือน ทุกครั้งที่ไปนับหมด แม้ไปแค่อบไอน้ำ กฎเดียวคือ ไปให้ถึงประตู ที่เหลือค่อยว่ากัน" : `วันที่ ${d} ของ 90 · ที่อัตรานี้จะได้ ${Math.round(pace)} ครั้ง ${pace>=GYM_GOAL?"ทัน 30 แน่":"เพิ่มอีกนิดก็ทัน"} · ไปแค่ซาวน่าก็นับ`;
+}
+async function logGym(kind){
+  const s=todaySession(); const S=SESS[s.key]; const checked=[...document.querySelectorAll("#sessList input:checked")].map(c=>S.x[+c.dataset.i][0]);
+  const type = kind==="sauna"? "ยิม (ซาวน่า/อบไอน้ำ)": "ยิม "+S.t; const strength = kind!=="sauna" && s.key!=="C"; const minutes = kind==="sauna"? 15 : s.key==="easy"? 35 : 45;
+  try{ await add("exercise",{date:ymd(),time:hm(),type,minutes,intensity:kind==="sauna"?"เบา":"กลาง",est_kcal:kind==="sauna"?30:Math.round(3.5*115*minutes/60*0.8),is_strength:strength,note:checked.join(", ")||(kind==="sauna"?"ไปให้ถึงประตู":"")});
+    await add("wins",{date:ymd(),text: kind==="sauna"? "ไปยิมทั้งที่ไม่อยากออกกำลัง แค่ไปอบไอน้ำก็ยังไป" : `ยิมครั้งที่ ${gymVisits().length+1}: ${S.t}`});
+    $("gymStatus").textContent = strength? "บันทึกแล้ว · โปรตีน 25–40 ก. ภายใน 2 ชม. (อกไก่ 7-11 / ไข่ต้ม 2 / นมโปรตีน)" : "บันทึกแล้ว ดื่มน้ำเยอะ ๆ"; toast("นับแล้ว +XP"); }catch(e){}
+}
+$("gymDone").onclick=()=>logGym("full"); $("gymSauna").onclick=()=>logGym("sauna");
+
 /* ---------- body weather (Samsung Health screenshots) ---------- */
 const RULES_BODY_READ=`อ่านตัวเลขจากภาพหน้าจอแอป Samsung Health (ภาษาไทย) ของ Galaxy Watch 8 ให้ครบที่สุด ถ้าไม่มีให้ใส่ null ห้ามเดา
 ตอบ JSON เท่านั้น: {"energy_score":80,"energy_label":"ดี","sleep_start":"01:43","sleep_end":"07:12","sleep_hours":5.5,"sleep_score":null,"deep_sleep_min":null,"sleep_hr":72,"hrv_ms":54,"skin_temp_delta":0.6,"breathing":12.0,"steps":6483,"resting_hr":null,"hr_now":87,"stress":null,"vascular_load":"สูงขึ้นเล็กน้อย","age_index":322,"age_label":"ต่ำ","body_fat_pct":null,"muscle_kg":null,"weight_kg":null,"cycle_day":null,"cycle_phase":null,"workouts":[],"factors":{"กิจกรรมวันก่อนหน้า":"พอใช้"},"notes":"สิ่งที่เห็นเพิ่มเติมสั้น ๆ"}
@@ -1163,7 +1211,7 @@ function renderWeek(){
   const W=$("winsAll"); W.innerHTML = cache.wins.length? cache.wins.slice().sort((a,b)=>a.ts<b.ts?1:-1).map(w=>`<div class="item"><div class="t"><b class="num">${w.date}</b> ${esc(w.text)}</div></div>`).join("") : '<p class="muted">ยังไม่มี</p>';
   $("settingsText").textContent = `วันปกติ ${settings.budget_normal} · วันสังคม ${settings.budget_social} · พื้นต่ำสุด ${settings.floor} · โปรตีน ${settings.protein} ก. · TDEE ที่ใช้ ${settings.tdee} · เป้าถัดไป ${settings.next_milestone} กก.`;
 }
-function renderAll(){ renderHeader(); renderHome(); renderPlay(); renderBody(); renderEat(); renderQuick(); renderMove(); renderWeek(); }
+function renderAll(){ renderHeader(); renderHome(); renderPlay(); renderBody(); renderEat(); renderQuick(); renderMove(); renderGym(); renderWeek(); }
 function esc(s){ return String(s).replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c])); }
 
 /* ---------- db ---------- */
