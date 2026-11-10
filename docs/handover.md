@@ -25,7 +25,7 @@
 | สำเนา/สำรอง | `logs/` ในรีโป | sync ด้วย `ArtifactData list ... out_dir=<scratch>/db` ทุก collection แล้ว `python3 scripts/db_to_logs.py <scratch>/db` |
 | สมองของโค้ช | `CLAUDE.md` + `agents/*.md` + `profile.yaml` | Claude Code อ่านอัตโนมัติทุกเซสชัน |
 | คำสั่งลัด | `.claude/skills/` | `/start` (เริ่มเซสชัน) `/weigh` `/eat` `/workout` `/day-review` `/week-review` `/coach` `/talk` |
-| เช็กอินอัตโนมัติ (scheduled tasks) | บัญชี claude.ai | **ตั้งแต่ 9 พ.ย. ทุกตัวยิงเข้า session หลัก `session_014JoK5UwaeApnV9uyHE9Gks` (บทสนทนาเดียวกับที่นวลคุย)** เพราะแบบสร้างเซสชันใหม่ นวลไม่เห็นข้อความและโค้ชขาดบริบท (06:40 วันแรกสับสนวันที่) · เช้า 06:40 `trig_01XMPJzEgh4im4PYR7bjUqjd` · กลางวัน 12:40 `trig_015q85eYiWZzbiufgfnf6NeW` · ค่ำ 21:20 `trig_01D3FEUhS4mXy75PsCLtfJG1` · อาทิตย์ 20:10 `trig_01FCNGcLZ9CZfoyyaEDBUA72` (เวลาไทย) · รุ่น = รุ่นของ session หลัก (ตั้งผ่าน /model ในหน้าแชต) · ทุก prompt เริ่มด้วย `TZ=Asia/Bangkok date +%F` เพื่อไม่สับสนวันที่ · นวลตั้งนาฬิกาปลุกมือถือ 3 เวลาเป็นตัวเตือนหลัก แล้วเปิดแชตนี้ |
+| เช็กอินอัตโนมัติ (scheduled tasks) | บัญชี claude.ai | **ยกเลิกทั้งหมดแล้ว 11 พ.ย. 2026 ตามที่นวลขอ** (ลบทั้ง 4: เช้า/กลางวัน/ค่ำ/สรุปสัปดาห์) · **อย่าสร้างใหม่เองโดยไม่ถามนวล** · ถ้านวลอยากได้กลับมา ให้ถามก่อนว่าอยากได้เวลาไหน กี่ครั้ง · ตอนนี้โค้ชทำงานเมื่อนวลเปิดแชตมาเอง ใช้นาฬิกาปลุกมือถือเป็นตัวเตือนถ้าต้องการ |
 | branch | `ccr-ba264d0d-xyurgd` (= default ของรีโป) | ทุกเซสชันใหม่เห็นทันที |
 
 ## ข้อจำกัดที่รู้แล้ว
