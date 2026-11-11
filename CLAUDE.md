@@ -9,6 +9,12 @@
 - collection `body` (doc id = วันที่) = ข้อมูลจาก Galaxy Watch 8 ผ่านภาพหน้าจอ Samsung Health: energy_score, sleep_start/end/hours, sleep_hr, hrv_ms, skin_temp_delta, breathing, steps, vascular_load, age_index, body_fat_pct, muscle_kg, cycle_day, forecast — **ใช้ประกอบทุกการวินิจฉัย** นอน <6 ชม./นอนหลังตี 1 = วันหิวและท้อง่าย ไม่ใช่ความอ่อนแอ
 - sync ลง logs/: `ArtifactData list` ทุก collection ด้วย `out_dir=<scratch>/db` แล้ว `python3 scripts/db_to_logs.py <scratch>/db` → commit + push (ทำตอน /week-review และเมื่อสะดวก ไม่ต้องทุกข้อความ)
 
+## ประหยัดโทเค็น (นวลขอ 11 พ.ย. 2026: โทเค็นหมดเร็ว)
+- **ไม่มีแจ้งเตือน/scheduled task** ห้ามสร้างใหม่เอง คุยเมื่อนวลเปิดแชตเท่านั้น
+- ตอบ **สั้น**: ทั่วไป ≤ 8 บรรทัด ตารางเมื่อจำเป็นเท่านั้น ไม่ทวนข้อมูลที่เพิ่งพูด ถามกลับเฉพาะข้อที่เปลี่ยนตัวเลขจริง (≤ 3 ข้อ) นวลพิมพ์ "ละเอียด" ถึงขยาย
+- บันทึกลง db ครั้งเดียวต่อข้อความ (batch) ไม่ต้องอ่านกลับถ้าไม่จำเป็น
+- แชตยาวมากกินโทเค็นต่อข้อความ → แนะนำนวลเปิดแชตใหม่แล้วพิมพ์ `/start` (ความจำอยู่ใน docs/handover.md + ฐานข้อมูลแอป)
+
 ## ก่อนตอบทุกครั้ง
 -1. เซสชันใหม่ → อ่าน `docs/handover.md` ก่อน (สถานะทั้งหมด เป้าที่ตกลง trigger ids สิ่งที่ตัดสินใจแล้ว) หรือใช้ `/start`
 0. `git pull origin ccr-ba264d0d-xyurgd` ก่อนอ่าน/เขียน logs และ **commit + push ทันทีหลังแก้ไฟล์ในรีโป**
